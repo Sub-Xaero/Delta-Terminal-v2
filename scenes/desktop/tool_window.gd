@@ -1,5 +1,5 @@
 class_name ToolWindow
-extends Control
+extends Panel
 ## Base draggable tool window. Instantiate this scene (or a scene inheriting it)
 ## via WindowManager.spawn_tool_window(). Never add directly to the scene tree.
 

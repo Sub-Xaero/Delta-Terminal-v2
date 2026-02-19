@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/desktop/tool_window.gd" id="1_tw"]
 
-[node name="ToolWindow" type="Control"]
+[node name="ToolWindow" type="Panel"]
 custom_minimum_size = Vector2(320, 220)
 script = ExtResource("1_tw")
 
