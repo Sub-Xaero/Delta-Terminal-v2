@@ -110,8 +110,8 @@ func _update_info_panel(node_id: String) -> void:
 	info_services.text = "Services:\n  %s" % (
 		", ".join(svcs) if not svcs.is_empty() else "Unknown — run port scan"
 	)
-	var is_own     := data.get("security", 1) == 0
-	var is_active  := node_id == NetworkSim.connected_node_id
+	var is_own:    bool = data.get("security", 1) == 0
+	var is_active: bool = node_id == NetworkSim.connected_node_id
 	connect_btn.text     = "CONNECTED" if is_active else "CONNECT"
 	connect_btn.disabled = is_active or is_own
 	disconnect_btn.visible = is_active
