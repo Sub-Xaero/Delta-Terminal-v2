@@ -46,6 +46,7 @@ func connect_to_node(node_id: String) -> bool:
 func disconnect_from_node() -> void:
 	if not is_connected:
 		return
+	EventBus.log_message.emit("Disconnected from %s" % nodes[connected_node_id]["ip"], "info")
 	is_connected = false
 	connected_node_id = ""
 	bounce_chain.clear()
