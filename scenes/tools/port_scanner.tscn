@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/port_scanner.gd" id="2_ps"]
+
+[node name="PortScanner" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(420, 360)
+script = ExtResource("2_ps")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="InputRow" type="HBoxContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="IPInput" type="LineEdit" parent="ContentArea/Margin/VBox/InputRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Target IP address..."
+
+[node name="ScanBtn" type="Button" parent="ContentArea/Margin/VBox/InputRow"]
+text = "SCAN"
+
+[node name="ScanBar" type="ProgressBar" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+show_percentage = false
+value = 0
+
+[node name="Scroll" type="ScrollContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Output" type="VBoxContainer" parent="ContentArea/Margin/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3

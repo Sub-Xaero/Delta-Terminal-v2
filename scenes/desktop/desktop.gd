@@ -6,6 +6,7 @@ extends Control
 const SystemLogScene       := preload("res://scenes/tools/system_log.tscn")
 const NetworkMapScene      := preload("res://scenes/tools/network_map.tscn")
 const PasswordCrackerScene := preload("res://scenes/tools/password_cracker.tscn")
+const PortScannerScene     := preload("res://scenes/tools/port_scanner.tscn")
 const TraceTrackerScene    := preload("res://scenes/tools/trace_tracker.tscn")
 
 @onready var window_manager: WindowManager = $WindowLayer
@@ -25,6 +26,7 @@ func _setup_context_menu() -> void:
 	# Stubs — populate with real tool scenes as they are built
 	context_menu.add_item("Network Map", 0)
 	context_menu.add_separator()
+	context_menu.add_item("Port Scanner", 5)
 	context_menu.add_item("Password Cracker", 1)
 	context_menu.add_item("Trace Tracker", 2)
 	context_menu.add_separator()
@@ -55,6 +57,8 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			window_manager.spawn_tool_window(TraceTrackerScene, "Trace Tracker")
 		3:
 			window_manager.spawn_tool_window(SystemLogScene, "System Log")
+		5:
+			window_manager.spawn_tool_window(PortScannerScene, "Port Scanner")
 		4:
 			var handle: String = GameManager.player_data.get("handle", "ghost")
 			EventBus.log_message.emit(
