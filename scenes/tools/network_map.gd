@@ -64,8 +64,8 @@ func _rebuild_edges() -> void:
 			if not NetworkSim.nodes.has(target_id):
 				continue
 			var to: Vector2 = NetworkSim.nodes[target_id].get("map_position", Vector2.ZERO)
-			var chained := node_id in in_chain and target_id in in_chain
-			var active  := node_id == NetworkSim.connected_node_id \
+			var chained: bool = node_id in in_chain and target_id in in_chain
+			var active:  bool = node_id == NetworkSim.connected_node_id \
 						or target_id == NetworkSim.connected_node_id
 
 			edges.append({
