@@ -15,9 +15,9 @@ func _ready() -> void:
 func _setup_context_menu() -> void:
 	context_menu.clear()
 	# Stubs — populate with real tool scenes as they are built
-	context_menu.add_item("Open Terminal", 0)
-	context_menu.add_item("Open Network Map", 1)
+	context_menu.add_item("Network Map", 0)
 	context_menu.add_separator()
+	context_menu.add_item("System Log", 1)
 	context_menu.add_item("System Info", 2)
 	context_menu.id_pressed.connect(_on_context_menu_id_pressed)
 
@@ -33,11 +33,11 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_context_menu_id_pressed(id: int) -> void:
 	match id:
 		0:
-			# TODO: load terminal scene and call window_manager.spawn_tool_window(...)
-			EventBus.log_message.emit("Terminal: not yet implemented", "info")
-		1:
 			# TODO: load network map scene
 			EventBus.log_message.emit("Network Map: not yet implemented", "info")
+		1:
+			# TODO: load system log scene
+			EventBus.log_message.emit("System Log: not yet implemented", "info")
 		2:
 			var handle: String = GameManager.player_data.get("handle", "ghost")
 			EventBus.log_message.emit(
