@@ -3,8 +3,9 @@ extends Control
 ## Root desktop scene — the in-game OS shell.
 ## Hosts the WindowManager, Taskbar, and right-click context menu.
 
-const SystemLogScene    := preload("res://scenes/tools/system_log.tscn")
-const NetworkMapScene   := preload("res://scenes/tools/network_map.tscn")
+const SystemLogScene      := preload("res://scenes/tools/system_log.tscn")
+const NetworkMapScene     := preload("res://scenes/tools/network_map.tscn")
+const PasswordCrackerScene := preload("res://scenes/tools/password_cracker.tscn")
 
 @onready var window_manager: WindowManager = $WindowLayer
 @onready var context_menu: PopupMenu = $ContextMenu
@@ -21,8 +22,10 @@ func _setup_context_menu() -> void:
 	# Stubs — populate with real tool scenes as they are built
 	context_menu.add_item("Network Map", 0)
 	context_menu.add_separator()
-	context_menu.add_item("System Log", 1)
-	context_menu.add_item("System Info", 2)
+	context_menu.add_item("Password Cracker", 1)
+	context_menu.add_separator()
+	context_menu.add_item("System Log", 2)
+	context_menu.add_item("System Info", 3)
 	context_menu.id_pressed.connect(_on_context_menu_id_pressed)
 
 
@@ -39,8 +42,10 @@ func _on_context_menu_id_pressed(id: int) -> void:
 		0:
 			window_manager.spawn_tool_window(NetworkMapScene, "Network Map")
 		1:
-			window_manager.spawn_tool_window(SystemLogScene, "System Log")
+			window_manager.spawn_tool_window(PasswordCrackerScene, "Password Cracker")
 		2:
+			window_manager.spawn_tool_window(SystemLogScene, "System Log")
+		3:
 			var handle: String = GameManager.player_data.get("handle", "ghost")
 			EventBus.log_message.emit(
 				"DeltaTerminal v2 — handle: %s  credits: %d  rating: %d" % [

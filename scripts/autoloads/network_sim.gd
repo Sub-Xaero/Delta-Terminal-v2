@@ -9,6 +9,7 @@ var nodes: Dictionary = {}
 var connected_node_id: String = ""
 var bounce_chain: Array[String] = []   # ordered list of node ids routed through
 var is_connected: bool = false
+var cracked_nodes: Array[String] = []
 
 # ── Trace state ───────────────────────────────────────────────────────────────
 var trace_active: bool = false
@@ -75,6 +76,17 @@ func start_trace(duration: float) -> void:
 func _complete_trace() -> void:
 	trace_active = false
 	EventBus.trace_completed.emit()
+
+
+# ── Cracking ──────────────────────────────────────────────────────────────────
+
+func crack_node(node_id: String) -> void:
+	if node_id in cracked_nodes:
+		return
+	cracked_nodes.append(node_id)
+	EventBus.log_message.emit(
+		"Access granted: %s  [%s]" % [nodes[node_id]["ip"], nodes[node_id]["name"]], "info"
+	)
 
 
 # ── Node data ─────────────────────────────────────────────────────────────────
