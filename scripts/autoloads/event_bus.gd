@@ -28,3 +28,4 @@ signal mission_failed(mission_id: String, reason: String)
 # ── System / UI ───────────────────────────────────────────────────────────────
 signal log_message(text: String, level: String)   # level: "info" | "warn" | "error"
 signal player_stats_changed()
+signal context_menu_requested(at_position: Vector2)

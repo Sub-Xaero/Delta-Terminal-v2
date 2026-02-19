@@ -44,6 +44,8 @@ func _apply_theme() -> void:
 
 func _on_self_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			EventBus.context_menu_requested.emit(get_global_mouse_position())
 		window_focused.emit(tool_name)
 
 

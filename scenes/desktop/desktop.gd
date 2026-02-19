@@ -14,6 +14,7 @@ const PasswordCrackerScene := preload("res://scenes/tools/password_cracker.tscn"
 func _ready() -> void:
 	GameManager.transition_to(GameManager.State.DESKTOP)
 	_setup_context_menu()
+	EventBus.context_menu_requested.connect(_show_context_menu)
 	window_manager.spawn_tool_window(SystemLogScene, "System Log")
 
 
@@ -32,9 +33,13 @@ func _setup_context_menu() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			context_menu.position = Vector2i(get_global_mouse_position())
-			context_menu.popup()
+			_show_context_menu(get_global_mouse_position())
 			get_viewport().set_input_as_handled()
+
+
+func _show_context_menu(at_position: Vector2) -> void:
+	context_menu.position = Vector2i(at_position)
+	context_menu.popup()
 
 
 func _on_context_menu_id_pressed(id: int) -> void:

@@ -15,6 +15,20 @@ func _ready() -> void:
 	EventBus.tool_closed.connect(_on_tool_closed)
 	_apply_theme()
 	_update_clock()
+	_add_launch_button()
+
+
+func _add_launch_button() -> void:
+	var btn := Button.new()
+	btn.text = "[ LAUNCH ]"
+	btn.add_theme_color_override("font_color", Color(1.0, 0.08, 0.55))
+	btn.pressed.connect(func():
+		EventBus.context_menu_requested.emit(btn.global_position + Vector2(0.0, -4.0))
+	)
+	task_items.add_child(btn)
+	# Separator to visually divide launch button from tool buttons
+	var sep := VSeparator.new()
+	task_items.add_child(sep)
 
 
 func _process(_delta: float) -> void:
