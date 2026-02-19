@@ -23,12 +23,12 @@ func _process(_delta: float) -> void:
 
 func _apply_theme() -> void:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.10, 0.04)
-	style.border_color = Color(0.0, 0.7, 0.25)
+	style.bg_color = Color(0.04, 0.03, 0.10)
+	style.border_color = Color(0.0, 0.88, 1.0)
 	style.border_width_top = 1
 	add_theme_stylebox_override("panel", style)
 
-	clock_label.add_theme_color_override("font_color", Color(0.0, 1.0, 0.3))
+	clock_label.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
 
 
 func _update_clock() -> void:
@@ -42,7 +42,8 @@ func _on_tool_opened(p_tool_name: String) -> void:
 
 	var btn := Button.new()
 	btn.text = "[ %s ]" % p_tool_name
-	btn.add_theme_color_override("font_color", Color(0.0, 1.0, 0.3))
+	btn.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	btn.pressed.connect(func(): EventBus.tool_focus_requested.emit(p_tool_name))
 	task_items.add_child(btn)
 	_task_buttons[p_tool_name] = btn
 

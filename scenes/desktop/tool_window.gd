@@ -27,19 +27,19 @@ func _ready() -> void:
 
 func _apply_theme() -> void:
 	var title_style := StyleBoxFlat.new()
-	title_style.bg_color = Color(0.04, 0.12, 0.04)
-	title_style.border_color = Color(0.0, 0.8, 0.3)
+	title_style.bg_color = Color(0.06, 0.04, 0.14)
+	title_style.border_color = Color(0.0, 0.88, 1.0)
 	title_style.set_border_width_all(1)
 	title_bar.add_theme_stylebox_override("panel", title_style)
 
 	var window_style := StyleBoxFlat.new()
-	window_style.bg_color = Color(0.02, 0.06, 0.02, 0.95)
-	window_style.border_color = Color(0.0, 0.8, 0.3)
+	window_style.bg_color = Color(0.04, 0.03, 0.10, 0.95)
+	window_style.border_color = Color(0.0, 0.88, 1.0)
 	window_style.set_border_width_all(1)
 	add_theme_stylebox_override("panel", window_style)
 
-	title_label.add_theme_color_override("font_color", Color(0.0, 1.0, 0.3))
-	close_button.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
+	title_label.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0))
+	close_button.add_theme_color_override("font_color", Color(1.0, 0.08, 0.55))
 
 
 func _on_self_input(event: InputEvent) -> void:

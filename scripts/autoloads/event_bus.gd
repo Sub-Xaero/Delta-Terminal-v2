@@ -15,6 +15,7 @@ signal trace_completed()
 # ── Tools ─────────────────────────────────────────────────────────────────────
 signal tool_opened(tool_name: String)
 signal tool_closed(tool_name: String)
+signal tool_focus_requested(tool_name: String)
 signal tool_task_started(tool_name: String, task_id: String)
 signal tool_task_completed(tool_name: String, task_id: String, success: bool)
 

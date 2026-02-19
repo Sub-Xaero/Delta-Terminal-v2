@@ -9,6 +9,12 @@ var open_windows: Dictionary = {}
 
 func _ready() -> void:
 	EventBus.tool_closed.connect(_on_tool_closed)
+	EventBus.tool_focus_requested.connect(focus_tool_window)
+
+
+func focus_tool_window(p_tool_name: String) -> void:
+	if open_windows.has(p_tool_name):
+		_focus_window(open_windows[p_tool_name])
 
 
 ## Spawns a new tool window from a PackedScene, or focuses it if already open.
