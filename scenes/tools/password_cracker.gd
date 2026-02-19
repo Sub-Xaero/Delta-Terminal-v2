@@ -1,7 +1,8 @@
 class_name PasswordCracker
 extends ToolWindow
-## Password cracker tool. Runs a timed crack against the connected node while
-## the trace closes in. Crack faster than the trace to gain access.
+## Password cracker tool. Owns crack progress only — trace display is handled
+## by the Trace Tracker tool. Starts a trace via NetworkSim when cracking begins
+## and reacts to trace_completed to detect failure.
 
 enum State { IDLE, READY, CRACKING, SUCCESS, FAILED }
 
@@ -14,8 +15,6 @@ const GRID_ROWS := 4
 @onready var char_grid:    RichTextLabel = $ContentArea/Margin/VBox/GridPanel/GridMargin/CharGrid
 @onready var crack_pct:    Label         = $ContentArea/Margin/VBox/CrackPct
 @onready var crack_bar:    ProgressBar   = $ContentArea/Margin/VBox/CrackBar
-@onready var trace_pct:    Label         = $ContentArea/Margin/VBox/TracePct
-@onready var trace_bar:    ProgressBar   = $ContentArea/Margin/VBox/TraceBar
 @onready var action_btn:   Button        = $ContentArea/Margin/VBox/ActionBtn
 
 # ── State ──────────────────────────────────────────────────────────────────────
@@ -23,14 +22,12 @@ var _state:          State = State.IDLE
 var _crack_progress: float = 0.0
 var _crack_duration: float = 0.0
 var _crack_elapsed:  float = 0.0
-var _trace_fill:     StyleBoxFlat        # kept by reference so we can mutate its colour
 
 
 func _ready() -> void:
 	super._ready()
 	EventBus.network_connected.connect(_on_network_connected)
 	EventBus.network_disconnected.connect(_on_network_disconnected)
-	EventBus.trace_progress.connect(_on_trace_progress)
 	EventBus.trace_completed.connect(_on_trace_completed)
 	action_btn.pressed.connect(_on_action_pressed)
 	_setup_theme()
@@ -73,7 +70,7 @@ func _update_char_grid() -> void:
 
 func _on_action_pressed() -> void:
 	match _state:
-		State.READY:   _start_crack()
+		State.READY:    _start_crack()
 		State.CRACKING: _abort_crack()
 
 
@@ -116,29 +113,16 @@ func _on_network_connected(node_id: String) -> void:
 	_crack_progress = 0.0
 	_crack_elapsed  = 0.0
 	crack_bar.value = 0.0
-	trace_bar.value = 0.0
 	_update_ui()
 
 
 func _on_network_disconnected() -> void:
-	if _state == State.CRACKING:
-		NetworkSim.disconnect_from_node()  # stop trace
 	_state          = State.IDLE
 	_crack_progress = 0.0
 	_crack_elapsed  = 0.0
 	crack_bar.value = 0.0
-	trace_bar.value = 0.0
 	crack_pct.text  = "CRACK:  0%"
-	trace_pct.text  = "TRACE:  0%"
 	_update_ui()
-
-
-func _on_trace_progress(p: float) -> void:
-	if _state != State.CRACKING:
-		return
-	trace_bar.value    = p * 100.0
-	trace_pct.text     = "TRACE:  %d%%" % roundi(p * 100.0)
-	_trace_fill.bg_color = _trace_colour(p)
 
 
 func _on_trace_completed() -> void:
@@ -193,13 +177,6 @@ func _setup_theme() -> void:
 	crack_bg.bg_color = Color(0.04, 0.12, 0.18)
 	crack_bar.add_theme_stylebox_override("background", crack_bg)
 
-	_trace_fill = StyleBoxFlat.new()
-	_trace_fill.bg_color = Color(0.0, 0.88, 1.0)
-	trace_bar.add_theme_stylebox_override("fill", _trace_fill)
-	var trace_bg := StyleBoxFlat.new()
-	trace_bg.bg_color = Color(0.04, 0.12, 0.18)
-	trace_bar.add_theme_stylebox_override("background", trace_bg)
-
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color(0.02, 0.06, 0.08)
 	panel_style.border_color = Color(0.0, 0.88, 1.0)
@@ -208,19 +185,8 @@ func _setup_theme() -> void:
 		"panel", panel_style
 	)
 
-	for lbl: Label in [crack_pct, trace_pct]:
-		lbl.add_theme_color_override("font_color", Color(0.45, 0.6, 0.65))
+	crack_pct.add_theme_color_override("font_color", Color(0.45, 0.6, 0.65))
 	action_btn.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
-
-
-func _trace_colour(progress: float) -> Color:
-	if progress < 0.5:
-		return Color(0.0, 0.88, 1.0)
-	if progress < 0.8:
-		var t: float = (progress - 0.5) / 0.3
-		return Color(0.0, 0.88, 1.0).lerp(Color(1.0, 0.75, 0.0), t)
-	var t: float = (progress - 0.8) / 0.2
-	return Color(1.0, 0.75, 0.0).lerp(Color(1.0, 0.08, 0.55), t)
 
 
 func _crack_time(security: int) -> float:
