@@ -1,0 +1,59 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/network_map.gd" id="2_nm"]
+[ext_resource type="Script" path="res://scenes/tools/network_map_canvas.gd" id="3_nmc"]
+
+[node name="NetworkMap" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(700, 460)
+script = ExtResource("2_nm")
+
+[node name="HSplit" type="HSplitContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+split_offset = -200
+
+[node name="MapCanvas" type="Control" parent="ContentArea/HSplit"]
+clip_contents = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3_nmc")
+
+[node name="InfoPanel" type="Panel" parent="ContentArea/HSplit"]
+custom_minimum_size = Vector2(200, 0)
+size_flags_horizontal = 0
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/HSplit/InfoPanel"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+
+[node name="NodeName" type="Label" parent="ContentArea/HSplit/InfoPanel/VBox"]
+text = "— No target selected —"
+autowrap_mode = 2
+
+[node name="NodeIP" type="Label" parent="ContentArea/HSplit/InfoPanel/VBox"]
+text = ""
+
+[node name="NodeSecurity" type="Label" parent="ContentArea/HSplit/InfoPanel/VBox"]
+text = ""
+
+[node name="NodeServices" type="Label" parent="ContentArea/HSplit/InfoPanel/VBox"]
+text = ""
+autowrap_mode = 2
+
+[node name="Spacer" type="Control" parent="ContentArea/HSplit/InfoPanel/VBox"]
+custom_minimum_size = Vector2(0, 8)
+
+[node name="ConnectBtn" type="Button" parent="ContentArea/HSplit/InfoPanel/VBox"]
+text = "CONNECT"
+disabled = true
+
+[node name="DisconnectBtn" type="Button" parent="ContentArea/HSplit/InfoPanel/VBox"]
+text = "DISCONNECT"
+visible = false

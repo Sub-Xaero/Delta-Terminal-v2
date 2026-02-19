@@ -3,7 +3,8 @@ extends Control
 ## Root desktop scene — the in-game OS shell.
 ## Hosts the WindowManager, Taskbar, and right-click context menu.
 
-const SystemLogScene := preload("res://scenes/tools/system_log.tscn")
+const SystemLogScene    := preload("res://scenes/tools/system_log.tscn")
+const NetworkMapScene   := preload("res://scenes/tools/network_map.tscn")
 
 @onready var window_manager: WindowManager = $WindowLayer
 @onready var context_menu: PopupMenu = $ContextMenu
@@ -36,8 +37,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_context_menu_id_pressed(id: int) -> void:
 	match id:
 		0:
-			# TODO: load network map scene
-			EventBus.log_message.emit("Network Map: not yet implemented", "info")
+			window_manager.spawn_tool_window(NetworkMapScene, "Network Map")
 		1:
 			window_manager.spawn_tool_window(SystemLogScene, "System Log")
 		2:

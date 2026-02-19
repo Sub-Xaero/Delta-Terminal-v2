@@ -87,12 +87,67 @@ func get_node_data(node_id: String) -> Dictionary:
 
 
 func _register_default_nodes() -> void:
-	# Placeholder starting nodes — replace with data-driven loading later.
+	# Starting network — replace with data-driven loading later.
+	# map_position: pixel coords on the NetworkMapCanvas (~490 × 420 visible area)
+	# connections: array of node IDs this node has a known route to
+
 	register_node({
-		"id": "gateway_01",
-		"ip": "192.168.0.1",
-		"name": "Local Gateway",
-		"security": 1,
+		"id": "local_01",
+		"ip": "127.0.0.1",
+		"name": "Local Machine",
+		"security": 0,
+		"map_position": Vector2(70, 200),
 		"files": [],
-		"services": ["shell"],
+		"services": [],
+		"connections": ["isp_01", "isp_02"],
+	})
+	register_node({
+		"id": "isp_01",
+		"ip": "81.14.22.1",
+		"name": "Sentinel ISP",
+		"security": 1,
+		"map_position": Vector2(210, 110),
+		"files": [],
+		"services": ["relay"],
+		"connections": ["univ_01", "corp_01"],
+	})
+	register_node({
+		"id": "isp_02",
+		"ip": "81.14.22.2",
+		"name": "Sentinel ISP (Backup)",
+		"security": 1,
+		"map_position": Vector2(210, 300),
+		"files": [],
+		"services": ["relay"],
+		"connections": ["corp_01", "darknet_01"],
+	})
+	register_node({
+		"id": "univ_01",
+		"ip": "193.62.18.5",
+		"name": "NeoTech University",
+		"security": 2,
+		"map_position": Vector2(370, 60),
+		"files": [],
+		"services": [],
+		"connections": ["corp_01"],
+	})
+	register_node({
+		"id": "corp_01",
+		"ip": "84.23.119.41",
+		"name": "ArcTech Systems",
+		"security": 3,
+		"map_position": Vector2(370, 200),
+		"files": [],
+		"services": [],
+		"connections": [],
+	})
+	register_node({
+		"id": "darknet_01",
+		"ip": "10.0.13.37",
+		"name": "Darknet Relay",
+		"security": 2,
+		"map_position": Vector2(370, 350),
+		"files": [],
+		"services": ["relay"],
+		"connections": ["corp_01"],
 	})

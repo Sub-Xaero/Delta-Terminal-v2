@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/tools/network_map_node.gd" id="1_nmn"]
+
+[node name="NetworkMapNode" type="Control"]
+custom_minimum_size = Vector2(56, 74)
+mouse_filter = 0
+script = ExtResource("1_nmn")
+
+[node name="IPLabel" type="Label" parent="."]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -18.0
+horizontal_alignment = 1
+vertical_alignment = 1
+text = ""
