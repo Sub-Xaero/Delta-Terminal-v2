@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://ctwabcdef01234"]
+
+[ext_resource type="Script" path="res://scenes/desktop/tool_window.gd" id="1_tw"]
+
+[node name="ToolWindow" type="Control"]
+custom_minimum_size = Vector2(320, 220)
+script = ExtResource("1_tw")
+
+[node name="TitleBar" type="Panel" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+offset_bottom = 28.0
+
+[node name="TitleLabel" type="Label" parent="TitleBar"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_right = -32.0
+vertical_alignment = 1
+text = "Tool"
+
+[node name="CloseButton" type="Button" parent="TitleBar"]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -30.0
+offset_right = -2.0
+offset_top = 2.0
+offset_bottom = -2.0
+text = "x"
+
+[node name="ContentArea" type="Control" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 28.0
