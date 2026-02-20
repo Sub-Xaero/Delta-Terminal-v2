@@ -75,7 +75,6 @@ func _add_active_entry(mission: MissionData) -> void:
 
 func _add_available_entry(mission: MissionData) -> void:
 	var row := HBoxContainer.new()
-	row.theme_override_constants_set = false
 
 	var info := VBoxContainer.new()
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
