@@ -20,6 +20,11 @@ var _cpu_bar:        ProgressBar  = null
 var _cpu_val_label:  Label        = null
 var _cpu_fill_style: StyleBoxFlat = null
 
+# ── Heat indicator refs ────────────────────────────────────────────────────────
+var _heat_val_label:  Label        = null
+var _heat_bar:        ProgressBar  = null
+var _heat_bar_fill:   StyleBoxFlat = null
+
 # ── Trace monitor refs ─────────────────────────────────────────────────────────
 enum TraceState { INACTIVE, ACTIVE, COMPLETE }
 var _trace_state:      TraceState   = TraceState.INACTIVE
@@ -45,7 +50,9 @@ func _ready() -> void:
 	EventBus.trace_progress.connect(_on_trace_progress)
 	EventBus.trace_completed.connect(_on_trace_completed)
 	EventBus.faction_rep_changed.connect(_on_faction_rep_changed)
+	EventBus.player_heat_changed.connect(_on_heat_changed)
 	_build_hardware_section()
+	_build_heat_section()
 	_build_trace_section()
 	_build_faction_section()
 
@@ -158,6 +165,81 @@ func _build_monitor_row(tag: String) -> HBoxContainer:
 		_cpu_fill_style = fill_style
 
 	return hbox
+
+
+# ── Heat indicator ────────────────────────────────────────────────────────────
+
+func _build_heat_section() -> void:
+	_widget_slots.add_child(HSeparator.new())
+
+	var section_lbl := Label.new()
+	section_lbl.text = "// HEAT //"
+	section_lbl.add_theme_font_size_override("font_size", 9)
+	section_lbl.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	_widget_slots.add_child(section_lbl)
+
+	_widget_slots.add_child(HSeparator.new())
+
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 4)
+
+	var tag_lbl := Label.new()
+	tag_lbl.text = "HEAT"
+	tag_lbl.custom_minimum_size = Vector2(28, 0)
+	tag_lbl.add_theme_font_size_override("font_size", 9)
+	tag_lbl.add_theme_color_override("font_color", Color(0.35, 0.35, 0.45))
+	hbox.add_child(tag_lbl)
+
+	_heat_bar = ProgressBar.new()
+	_heat_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_heat_bar.size_flags_vertical   = Control.SIZE_SHRINK_CENTER
+	_heat_bar.custom_minimum_size   = Vector2(0, 6)
+	_heat_bar.max_value     = 100.0
+	_heat_bar.min_value     = 0.0
+	_heat_bar.show_percentage = false
+
+	_heat_bar_fill = StyleBoxFlat.new()
+	_heat_bar_fill.bg_color = Color(0.0, 0.88, 0.4)
+	_heat_bar_fill.corner_radius_top_left     = 2
+	_heat_bar_fill.corner_radius_top_right    = 2
+	_heat_bar_fill.corner_radius_bottom_left  = 2
+	_heat_bar_fill.corner_radius_bottom_right = 2
+	_heat_bar.add_theme_stylebox_override("fill", _heat_bar_fill)
+
+	var bar_bg := StyleBoxFlat.new()
+	bar_bg.bg_color     = Color(0.04, 0.06, 0.10)
+	bar_bg.border_color = Color(0.0, 0.88, 1.0, 0.25)
+	bar_bg.set_border_width_all(1)
+	_heat_bar.add_theme_stylebox_override("background", bar_bg)
+	hbox.add_child(_heat_bar)
+
+	_heat_val_label = Label.new()
+	_heat_val_label.add_theme_font_size_override("font_size", 9)
+	_heat_val_label.add_theme_color_override("font_color", Color(0.0, 0.88, 0.4))
+	hbox.add_child(_heat_val_label)
+
+	_widget_slots.add_child(hbox)
+	_update_heat_display(GameManager.player_data.get("heat", 0))
+
+
+func _update_heat_display(heat: int) -> void:
+	if _heat_bar == null:
+		return
+	_heat_bar.value = heat
+	_heat_val_label.text = "%d" % heat
+	var col: Color
+	if heat < 50:
+		col = Color(0.0, 0.88, 0.4)     # green
+	elif heat < 75:
+		col = Color(1.0, 0.75, 0.0)     # amber
+	else:
+		col = Color(1.0, 0.08, 0.55)    # hot pink
+	_heat_bar_fill.bg_color = col
+	_heat_val_label.add_theme_color_override("font_color", col)
+
+
+func _on_heat_changed(new_heat: int) -> void:
+	_update_heat_display(new_heat)
 
 
 func _build_trace_section() -> void:
