@@ -13,9 +13,10 @@ const LABEL_H    := 18.0   # height reserved below circle for the IP label
 var node_id:   String     = ""
 var node_data: Dictionary = {}
 
-var _selected:   bool = false
-var _connected:  bool = false
-var _hovered:    bool = false
+var _selected:     bool = false
+var _connected:    bool = false
+var _hovered:      bool = false
+var _undiscovered: bool = false
 
 @onready var ip_label: Label = $IPLabel
 
@@ -28,8 +29,15 @@ func _ready() -> void:
 func setup(data: Dictionary) -> void:
 	node_id   = data["id"]
 	node_data = data
-	ip_label.text = data.get("ip", "")
+	_undiscovered = node_id not in NetworkSim.discovered_nodes
+	ip_label.text = "???.???.???.???" if _undiscovered else data.get("ip", "")
 	custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE + LABEL_H)
+	queue_redraw()
+
+
+func set_undiscovered(val: bool) -> void:
+	_undiscovered = val
+	ip_label.text = "???.???.???.???" if _undiscovered else node_data.get("ip", "")
 	queue_redraw()
 
 
@@ -49,7 +57,16 @@ func _draw() -> void:
 	var fill   := Color(0.04, 0.03, 0.10)
 
 	draw_circle(center, RADIUS, fill)
-	draw_arc(center, RADIUS, 0.0, TAU, 64, border, 2.0, true)
+	draw_arc(center, RADIUS, 0.0, TAU, 64, border, 2.0 if not _undiscovered else 1.0, true)
+
+	# Draw "?" label in centre for undiscovered nodes
+	if _undiscovered:
+		var font := ThemeDB.fallback_font
+		var font_size: int = 16
+		var text_size := font.get_string_size("?", HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
+		var text_pos := center - text_size * 0.5 + Vector2(0, text_size.y * 0.5)
+		draw_string(font, text_pos, "?", HORIZONTAL_ALIGNMENT_CENTER, -1, font_size, Color(0.25, 0.25, 0.35))
+		return
 
 	# Outer glow ring on selection / active connection / hover
 	if _selected or _connected or _hovered:
@@ -62,6 +79,8 @@ func _draw() -> void:
 
 
 func _border_colour() -> Color:
+	if _undiscovered:
+		return Color(0.2, 0.2, 0.28)    # dim grey — undiscovered
 	if _connected:
 		return Color(0.0, 0.88, 1.0)    # cyan — active
 	if _selected:
@@ -77,6 +96,8 @@ func _border_colour() -> Color:
 
 
 func _gui_input(event: InputEvent) -> void:
+	if _undiscovered:
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if event.double_click:
 			node_double_clicked.emit(node_id)

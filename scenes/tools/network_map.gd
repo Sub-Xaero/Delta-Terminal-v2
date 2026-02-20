@@ -24,6 +24,7 @@ func _ready() -> void:
 	EventBus.network_connected.connect(_on_network_connected)
 	EventBus.network_disconnected.connect(_on_network_disconnected)
 	EventBus.bounce_chain_updated.connect(_on_bounce_chain_updated)
+	EventBus.node_discovered.connect(_on_node_discovered)
 	connect_btn.pressed.connect(_on_connect_pressed)
 	disconnect_btn.pressed.connect(NetworkSim.disconnect_from_node)
 	_apply_info_panel_theme()
@@ -64,13 +65,20 @@ func _spawn_node_widget(data: Dictionary) -> void:
 func _rebuild_edges() -> void:
 	var edges: Array = []
 	var in_chain := NetworkSim.bounce_chain
+	var discovered := NetworkSim.discovered_nodes
 
 	for node_id in NetworkSim.nodes:
+		# Skip edges originating from undiscovered nodes
+		if node_id not in discovered:
+			continue
 		var data: Dictionary = NetworkSim.nodes[node_id]
 		var from: Vector2 = data.get("map_position", Vector2.ZERO)
 
 		for target_id in data.get("connections", []):
 			if not NetworkSim.nodes.has(target_id):
+				continue
+			# Skip edges to undiscovered nodes
+			if target_id not in discovered:
 				continue
 			var to: Vector2 = NetworkSim.nodes[target_id].get("map_position", Vector2.ZERO)
 			var chained: bool = node_id in in_chain and target_id in in_chain
@@ -165,6 +173,12 @@ func _on_network_disconnected() -> void:
 
 
 func _on_bounce_chain_updated(_chain: Array) -> void:
+	_rebuild_edges()
+
+
+func _on_node_discovered(node_id: String) -> void:
+	if _node_widgets.has(node_id):
+		_node_widgets[node_id].set_undiscovered(false)
 	_rebuild_edges()
 
 
