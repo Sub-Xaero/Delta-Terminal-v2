@@ -18,10 +18,9 @@ const _FREE_TOOLS: Array = [
 	"File Browser",
 	"Mission Log",
 	"System Log",
-	"Hardware Viewer",
-	"Comms Client",
-	"Player Profile",
 ]
+# Pinned tools — have dedicated taskbar buttons; excluded from TOOLS menu and dynamic buttons.
+const _PINNED_TOOLS: Array = ["Hardware Viewer", "Comms Client", "Player Profile"]
 
 @onready var task_items: HBoxContainer = $TaskItems
 @onready var clock_label: Label = $ClockLabel
@@ -38,7 +37,9 @@ func _ready() -> void:
 	_apply_theme()
 	_update_clock()
 	_add_tools_button()
-	_add_pc_button()
+	_add_pinned_button("[ PC ]",      "Hardware Viewer", Color(0.0, 0.88, 1.0))
+	_add_pinned_button("[ COMMS ]",   "Comms Client",    Color(0.0, 0.88, 1.0))
+	_add_pinned_button("[ PROFILE ]", "Player Profile",  Color(0.0, 0.88, 1.0))
 
 
 func _add_tools_button() -> void:
@@ -104,11 +105,11 @@ func _style_button(btn: Button, color: Color) -> void:
 	btn.add_theme_stylebox_override("focus",   n)
 
 
-func _add_pc_button() -> void:
+func _add_pinned_button(label: String, tool_name: String, color: Color) -> void:
 	var btn := Button.new()
-	btn.text = "[ PC ]"
-	_style_button(btn, Color(0.0, 0.88, 1.0))
-	btn.pressed.connect(func(): EventBus.open_tool_requested.emit("Hardware Viewer"))
+	btn.text = label
+	_style_button(btn, color)
+	btn.pressed.connect(func(): EventBus.open_tool_requested.emit(tool_name))
 	task_items.add_child(btn)
 
 	var sep := VSeparator.new()
@@ -145,6 +146,8 @@ func _update_clock() -> void:
 
 
 func _on_tool_opened(p_tool_name: String) -> void:
+	if p_tool_name in _PINNED_TOOLS:
+		return
 	if _task_buttons.has(p_tool_name):
 		return
 

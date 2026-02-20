@@ -78,6 +78,14 @@ func _show_context_menu(at_position: Vector2) -> void:
 	context_menu.popup()
 
 
+func _toggle_tool(scene: PackedScene, tool_name: String) -> void:
+	if window_manager.open_windows.has(tool_name):
+		EventBus.tool_closed.emit(tool_name)
+		window_manager.open_windows[tool_name].queue_free()
+	else:
+		window_manager.spawn_tool_window(scene, tool_name)
+
+
 func _has_exe(tool_name: String) -> bool:
 	if tool_name not in TOOL_EXE_REQUIREMENTS:
 		return true  # ungated tool
@@ -113,11 +121,11 @@ func _on_open_tool_requested(tool_name: String) -> void:
 		"System Log":
 			window_manager.spawn_tool_window(SystemLogScene, "System Log")
 		"Hardware Viewer":
-			window_manager.spawn_tool_window(HardwareViewerScene, "Hardware Viewer")
+			_toggle_tool(HardwareViewerScene, "Hardware Viewer")
 		"Comms Client":
-			window_manager.spawn_tool_window(CommsClientScene, "Comms Client")
+			_toggle_tool(CommsClientScene, "Comms Client")
 		"Player Profile":
-			window_manager.spawn_tool_window(PlayerProfileScene, "Player Profile")
+			_toggle_tool(PlayerProfileScene, "Player Profile")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:
