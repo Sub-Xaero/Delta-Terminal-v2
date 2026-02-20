@@ -187,6 +187,4 @@ func _faction_contact_name(faction_id: String) -> String:
 		"ghost_collective": return "GHOST_OPS"
 		"nova_corp":        return "NC_RECRUITER"
 		"syn_underground":  return "SYN_BROKER"
-		"arctech":          return "ARC_HANDLER"
-		"arunmor":          return "ARUNMOR_CONTACT"
 		_:                  return "ANONYMOUS"
