@@ -25,6 +25,7 @@ HardwareManager="*res://scripts/autoloads/hardware_manager.gd"
 MissionManager="*res://scripts/autoloads/mission_manager.gd"
 SaveManager="*res://scripts/autoloads/save_manager.gd"
 SettingsManager="*res://scripts/autoloads/settings_manager.gd"
+CredentialManager="*res://scripts/autoloads/credential_manager.gd"
 
 [display]
 
