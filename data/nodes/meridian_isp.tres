@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "meridian_isp"
+ip = "81.14.22.2"
+name = "Meridian ISP"
+organisation = "Meridian Telecom"
+security = 1
+map_position = Vector2(500, 340)
+files = [{"id": "misp_f1", "name": "dns_cache.log", "type": "log", "size": 1024, "content": "[MERIDIAN ISP — DNS CACHE DUMP]\n\n84.23.119.41    novacorp-hq.meridian.net      TTL:3600\n84.23.119.50    bank.novacorp.meridian.net     TTL:3600\n193.62.18.10    records.gov.meridian.net       TTL:7200\n193.62.20.1     cyberdiv.gov.meridian.net      TTL:7200\n10.0.13.37      [UNRESOLVABLE]                 TTL:60\n\n[CACHE ENTRIES: 14,891]"}]
+services = ["relay", "dns"]
+connections = ["isp_gateway", "meridian_gov_records", "ghost_collective_darknet", "novacorp_bank"]
+users = [{"username": "netadmin", "password_hash": "$2b$12$T4uV5wX6yZ7aB8cD9eF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0a", "role": "admin"}]
+faction_id = ""

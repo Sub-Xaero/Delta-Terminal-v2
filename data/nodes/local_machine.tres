@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "local_machine"
+ip = "192.168.0.1"
+name = "Local Machine"
+organisation = "Player"
+security = 0
+map_position = Vector2(100, 360)
+files = ["system.log", "password_cracker.exe", "port_scanner.exe"]
+services = []
+connections = ["isp_gateway"]
+users = [{"username": "player", "password_hash": "", "role": "admin"}]
+faction_id = ""

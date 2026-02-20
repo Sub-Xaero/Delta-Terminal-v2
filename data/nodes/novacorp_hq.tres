@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "novacorp_hq"
+ip = "84.23.119.41"
+name = "NovaCorp HQ"
+organisation = "NovaCorp Industries"
+security = 4
+map_position = Vector2(680, 80)
+files = [{"id": "nchq_f1", "name": "employee_records.dat", "type": "data", "size": 14336, "content": "NOVACORP INDUSTRIES — EMPLOYEE RECORDS\n\nID     | NAME                  | DEPT         | CLEARANCE\n-------|----------------------|--------------|----------\n00041  | Vasquez, Elena        | R&D          | L3\n00042  | Okafor, James         | Security     | L4\n00043  | Tanaka, Yui           | Executive    | L5\n00044  | Mercer, Dorian        | Finance      | L2\n00045  | [REDACTED]            | Black Ops    | L6\n\n[RECORD ACCESS LOGGED]"}, {"id": "nchq_f2", "name": "project_hydra.doc", "type": "doc", "size": 8192, "content": "PROJECT HYDRA — STATUS REPORT\n\nPhase 1: Neural interface prototypes — COMPLETE\nPhase 2: Field trials (subjects 001-048) — IN PROGRESS\nPhase 3: Mass deployment — PENDING BOARD APPROVAL\n\nBudget: ¥890,000,000 (off-ledger)\nClassification: EYES ONLY — Board Level\n\nDo not distribute."}, {"id": "nchq_f3", "name": "security_audit.log", "type": "log", "size": 3072, "content": "[2057-10-31 09:00:00] AUDIT START  -- NovaCorp perimeter sweep\n[2057-10-31 09:14:32] Port 443 — TLS cert expiry warning (14 days)\n[2057-10-31 09:22:11] Firewall rule anomaly detected on DMZ-3\n[2057-10-31 09:22:45] ALERT: Unregistered MAC on internal VLAN 12\n[2057-10-31 09:23:01] Auto-quarantine triggered\n[2057-10-31 09:41:00] AUDIT END    -- 3 issues flagged"}]
+services = []
+connections = ["novacorp_bank", "isp_gateway", "synthgov_cyber_division"]
+users = [{"username": "root", "password_hash": "$2b$12$V3wX4yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9c", "role": "admin"}, {"username": "e.vasquez", "password_hash": "$2b$12$D0eF1gH2iJ3kL4mN5oP6qR7sT8uV9wX0yZ1aB2cD3eF4gH5iJ6k", "role": "researcher"}, {"username": "j.okafor", "password_hash": "$2b$12$L7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH8iJ9kL0mN1oP2qR3s", "role": "security"}]
+faction_id = "novacorp"

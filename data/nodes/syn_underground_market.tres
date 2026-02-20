@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "syn_underground_market"
+ip = "10.0.77.13"
+name = "SYN Underground Market"
+organisation = "SYN Syndicate"
+security = 2
+map_position = Vector2(280, 540)
+files = [{"id": "sum_f1", "name": "listings.dat", "type": "data", "size": 16384, "content": "SYN UNDERGROUND MARKET — CURRENT LISTINGS\n\nITEM                     | PRICE (¥) | SELLER     | STOCK\n------------------------|-----------|------------|------\nZero-Day Exploit (SMTP)  | 12,000    | v0idcraft  | 3\nStolen Credentials Pack  | 4,500     | dataminer  | 15\nProxy Chain Kit          | 8,000     | ghostlink  | 7\nForged ID Documents      | 25,000    | silkpress  | 1\nDDoS Botnet Rental (1hr) | 6,000     | swarmking  | ∞\n\n[ESCROW ACTIVE — ALL SALES FINAL]"}, {"id": "sum_f2", "name": "vendor_ratings.log", "type": "log", "size": 1024, "content": "[VENDOR REPUTATION BOARD]\n\nv0idcraft    ★★★★☆  (47 sales, 2 disputes)\ndataminer    ★★★★★  (112 sales, 0 disputes)\nghostlink    ★★★☆☆  (23 sales, 5 disputes)\nsilkpress    ★★★★★  (8 sales, 0 disputes)\nswarmking    ★★☆☆☆  (91 sales, 18 disputes)"}]
+services = ["marketplace"]
+connections = ["ghost_collective_darknet", "personal_machine_01"]
+users = [{"username": "market_admin", "password_hash": "$2b$12$N6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2u", "role": "admin"}]
+faction_id = "syn_syndicate"

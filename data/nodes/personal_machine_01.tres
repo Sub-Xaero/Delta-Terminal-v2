@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "personal_machine_01"
+ip = "192.168.1.47"
+name = "Personal Machine"
+organisation = ""
+security = 1
+map_position = Vector2(140, 540)
+files = [{"id": "pm01_f1", "name": "diary.txt", "type": "text", "size": 2048, "content": "2057-10-30\nSomething weird going on at work. Overheard Mercer talking about\n'Phase 2 subjects' in the break room. He shut up the second he\nsaw me. Looked scared.\n\n2057-11-01\nGot an anonymous message on my terminal: 'They know you heard.\nRun or comply.' I don't know what to do.\n\n2057-11-02\nI'm backing everything up. If something happens to me, this file\nis the only proof."}, {"id": "pm01_f2", "name": "browser_history.log", "type": "log", "size": 512, "content": "[BROWSER HISTORY — LAST 5 ENTRIES]\n\n2057-11-02 19:14  https://news.meridian.net/article/novacorp-expansion\n2057-11-02 19:22  https://forum.ghostcollective.onion/thread/7741\n2057-11-02 20:01  https://mail.meridian.net/inbox\n2057-11-02 20:15  https://bank.novacorp.meridian.net/login\n2057-11-02 21:30  https://syn-market.onion/listings"}]
+services = []
+connections = ["isp_gateway", "syn_underground_market"]
+users = [{"username": "d.mercer_home", "password_hash": "$2b$12$B1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1wX2yZ3aB4cD5eF6gH7i", "role": "user"}]
+faction_id = ""

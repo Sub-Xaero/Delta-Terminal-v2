@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "meridian_gov_records"
+ip = "193.62.18.10"
+name = "Meridian Gov Records"
+organisation = "Meridian City Government"
+security = 3
+map_position = Vector2(700, 280)
+files = [{"id": "mgr_f1", "name": "citizen_registry.dat", "type": "data", "size": 65536, "content": "MERIDIAN CITY — CITIZEN REGISTRY (EXCERPT)\n\nCID        | NAME                | STATUS    | FLAGS\n-----------|---------------------|-----------|-------\nMC-220041  | Chen, David         | ACTIVE    | NONE\nMC-220042  | Petrov, Anya        | ACTIVE    | SURVEIL\nMC-220043  | [EXPUNGED]          | DECEASED  | CLASS-5\nMC-220044  | Nakamura, Ren       | ACTIVE    | NONE\nMC-220045  | Oduya, Kemi         | MISSING   | APB\n\n[TOTAL RECORDS: 4,218,903]"}, {"id": "mgr_f2", "name": "warrant_queue.log", "type": "log", "size": 2048, "content": "[2057-11-03 08:00:01] WARRANT #WR-7741 ISSUED — Target: Unknown handle 'sp3ctr3'\n[2057-11-03 08:14:22] WARRANT #WR-7742 ISSUED — Target: IP 10.0.13.37\n[2057-11-03 09:01:55] WARRANT #WR-7741 ESCALATED — CyberDiv notified\n[2057-11-03 09:30:00] WARRANT #WR-7743 ISSUED — Target: ArcTech internal leak"}]
+services = ["database"]
+connections = ["synthgov_cyber_division", "novacorp_bank", "meridian_isp"]
+users = [{"username": "sys_admin", "password_hash": "$2b$12$Lm3nO4pQ5rS6tU7vW8xY9zA0bC1dE2fG3hI4jK5lM6nO7pQ8rS9t", "role": "admin"}, {"username": "clerk_04", "password_hash": "$2b$12$U0vW1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQ1rS2tU3vW4xY5zA6bC", "role": "clerk"}]
+faction_id = "meridian_gov"

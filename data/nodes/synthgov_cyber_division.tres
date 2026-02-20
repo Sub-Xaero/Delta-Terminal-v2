@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "synthgov_cyber_division"
+ip = "193.62.20.1"
+name = "SynthGov Cyber Division"
+organisation = "Meridian Synthetic Governance"
+security = 5
+map_position = Vector2(880, 180)
+files = [{"id": "sgcd_f1", "name": "active_cases.dat", "type": "data", "size": 8192, "content": "SYNTHGOV CYBER DIVISION — ACTIVE INVESTIGATIONS\n\nCASE       | CODENAME     | PRIORITY | STATUS\n-----------|-------------|----------|--------\nCD-0091    | GHOSTWIRE   | CRITICAL | ACTIVE\nCD-0092    | BLACKTIDE   | HIGH     | ACTIVE\nCD-0093    | SILKTHREAD  | MEDIUM   | PENDING\nCD-0094    | VOIDWALKER  | LOW      | ARCHIVED\n\n[CLASSIFIED — L5 CLEARANCE REQUIRED]"}, {"id": "sgcd_f2", "name": "trace_protocols.cfg", "type": "config", "size": 1024, "content": "# SynthGov Trace Protocol v3.2\ntrace_speed_base=1.0\ntrace_speed_priority_mult=2.5\nauto_disconnect_on_detect=true\nbacktrace_depth=8\ncooperation_agencies=[\"INTERPOL-NET\",\"NOVACORP-SEC\"]\nalert_threshold=0.75"}]
+services = ["law_enforcement"]
+connections = ["meridian_gov_records", "novacorp_hq"]
+users = [{"username": "cmdr_zhao", "password_hash": "$2b$12$7hI8jK9lM0nO1pQ2rS3tU4vW5xY6zA7bC8dE9fG0hI1jK2lM3nO4", "role": "commander"}, {"username": "agent_kline", "password_hash": "$2b$12$P5qR6sT7uV8wX9yZ0aB1cD2eF3gH4iJ5kL6mN7oP8qR9sT0uV1w", "role": "field_agent"}]
+faction_id = "meridian_gov"
