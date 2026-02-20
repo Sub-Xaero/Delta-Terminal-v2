@@ -12,6 +12,8 @@ var is_connected: bool = false
 var cracked_nodes: Array[String] = []
 var bypassed_nodes: Array[String] = []
 var encryption_broken_nodes: Array[String] = []
+var discovered_nodes: Array = ["local_machine", "isp_gateway"]
+var exploits_installed: Dictionary = {}   # node_id -> Array[String] of exploit types
 
 # ── Trace state ───────────────────────────────────────────────────────────────
 var trace_active: bool = false
@@ -21,7 +23,7 @@ var _trace_elapsed: float = 0.0
 
 
 func _ready() -> void:
-	_register_default_nodes()
+	_load_nodes_from_data()
 
 
 func _process(delta: float) -> void:
@@ -115,6 +117,18 @@ func break_encryption(node_id: String) -> void:
 	)
 
 
+# ── Discovery ────────────────────────────────────────────────────────────────
+
+func discover_node(node_id: String) -> void:
+	if node_id in discovered_nodes:
+		return
+	discovered_nodes.append(node_id)
+	EventBus.node_discovered.emit(node_id)
+	if nodes.has(node_id):
+		EventBus.log_message.emit(
+			"Node discovered: %s  [%s]" % [nodes[node_id]["ip"], nodes[node_id]["name"]], "info"
+		)
+
 
 # ── Node data ─────────────────────────────────────────────────────────────────
 
@@ -140,159 +154,30 @@ func delete_file_from_node(node_id: String, file_id: String) -> bool:
 	return false
 
 
-func _register_default_nodes() -> void:
-	# Starting network — replace with data-driven loading later.
-	# map_position: pixel coords on the NetworkMapCanvas, equirectangular projection.
-	#   x = (lon + 180) / 360 * canvas_w   (canvas_w ≈ 700)
-	#   y = (80 - lat)  / 135 * canvas_h   (canvas_h ≈ 510, lat range −55 to +80)
-	# connections: array of node IDs this node has a known route to
-
-	register_node({
-		"id": "local_01",
-		"ip": "127.0.0.1",
-		"name": "Local Machine",
-		"security": 0,
-		"map_position": Vector2(334, 102),  # Ireland / West UK  (53°N, 8°W)
-		"files": [],
-		"services": [],
-		"connections": ["isp_01", "isp_02"],
-		"public_interfaces": [],
-		"protections": [],
-	})
-	register_node({
-		"id": "isp_01",
-		"ip": "81.14.22.1",
-		"name": "Sentinel ISP",
-		"security": 1,
-		"map_position": Vector2(399, 68),   # Scandinavia / Sweden  (62°N, 25°E)
-		"files": [
-			{
-				"id": "isp01_f1",
-				"name": "routing.cfg",
-				"type": "config",
-				"size": 512,
-				"content": "# Sentinel ISP Routing Config\ngateway=81.14.22.254\ndns_primary=81.14.0.1\ndns_secondary=81.14.0.2\nmax_hops=16\nlog_level=warn",
-			},
-		],
-		"services": ["relay"],
-		"connections": ["univ_01", "corp_01"],
-		"public_interfaces": [
-			{"name": "ISP Customer Portal", "description": "Account management and service status"},
-		],
-		"protections": [
-			{"type": "firewall", "level": 1},
-		],
-	})
-	register_node({
-		"id": "isp_02",
-		"ip": "81.14.22.2",
-		"name": "Sentinel ISP (Asia-Pacific)",
-		"security": 1,
-		"map_position": Vector2(552, 297),  # Singapore  (1°N, 104°E)
-		"files": [],
-		"services": ["relay"],
-		"connections": ["corp_01", "darknet_01"],
-		"public_interfaces": [
-			{"name": "ISP Customer Portal", "description": "Account management and service status"},
-		],
-		"protections": [
-			{"type": "firewall", "level": 1},
-		],
-	})
-	register_node({
-		"id": "univ_01",
-		"ip": "193.62.18.5",
-		"name": "NeoTech University",
-		"security": 2,
-		"encrypted": true,
-		"map_position": Vector2(621, 167),  # Tokyo, Japan  (36°N, 140°E)
-		"files": [
-			{
-				"id": "univ01_f1",
-				"name": "research_data.dat",
-				"type": "data",
-				"size": 6144,
-				"content": "PROJECT: HELIX-7\nClassification: RESTRICTED\n\nSubject trials 001-048 complete. Cognitive augmentation index nominal.\nAnomaly detected in subject 023 — elevated neural binding ratio.\nRecommend further isolation and extended observation.\n\nData checksum: 0xAF3C91B2",
-			},
-			{
-				"id": "univ01_f2",
-				"name": "access.log",
-				"type": "log",
-				"size": 1024,
-				"content": "[2057-11-03 02:14:08] LOGIN  admin       193.62.18.1  OK\n[2057-11-03 03:41:22] LOGIN  r.nakamura   10.0.0.44    OK\n[2057-11-03 04:02:55] LOGIN  UNKNOWN      81.14.22.1   FAIL\n[2057-11-03 04:02:57] LOGIN  UNKNOWN      81.14.22.1   FAIL\n[2057-11-03 04:02:59] ALERT  Brute-force detected — IP flagged",
-			},
-		],
-		"services": [],
-		"connections": ["corp_01"],
-		"public_interfaces": [
-			{"name": "Student Portal", "description": "Course registration and academic records"},
-			{"name": "Research Database", "description": "Public research publications"},
-		],
-		"protections": [
-			{"type": "firewall", "level": 1},
-			{"type": "proxy",    "level": 1},
-		],
-	})
-	register_node({
-		"id": "corp_01",
-		"ip": "84.23.119.41",
-		"name": "ArcTech Systems",
-		"security": 3,
-		"encrypted": true,
-		"map_position": Vector2(206, 148),  # New York, USA  (41°N, 74°W)
-		"files": [
-			{
-				"id": "corp01_f1",
-				"name": "employee_records.dat",
-				"type": "data",
-				"size": 14336,
-				"content": "ID     | NAME                  | DEPT         | CLEARANCE\n-------|----------------------|--------------|----------\n00041  | Vasquez, Elena        | R&D          | L3\n00042  | Okafor, James         | Security     | L4\n00043  | Tanaka, Yui           | Executive    | L5\n00044  | Mercer, Dorian        | Finance      | L2\n00045  | [REDACTED]            | Black Ops    | L6\n\n[RECORD ACCESS LOGGED]",
-			},
-			{
-				"id": "corp01_f2",
-				"name": "Q3_financials.doc",
-				"type": "doc",
-				"size": 8192,
-				"content": "ARCTECH SYSTEMS — Q3 FINANCIAL SUMMARY\n\nRevenue:      ¥ 4,820,000,000\nOperating:    ¥ 3,110,000,000\nNet Margin:   35.5%\n\nNOTE: Project HYDRA budget allocation concealed under 'Infrastructure'.\nActual spend: ¥ 890,000,000  (off-ledger, Board-eyes-only)\n\nDo not distribute.",
-			},
-			{
-				"id": "corp01_f3",
-				"name": "security_audit.log",
-				"type": "log",
-				"size": 3072,
-				"content": "[2057-10-31 09:00:00] AUDIT START  -- ArcTech perimeter sweep\n[2057-10-31 09:14:32] Port 443 — TLS cert expiry warning (14 days)\n[2057-10-31 09:22:11] Firewall rule anomaly detected on DMZ-3\n[2057-10-31 09:22:45] ALERT: Unregistered MAC on internal VLAN 12\n[2057-10-31 09:23:01] Auto-quarantine triggered\n[2057-10-31 09:41:00] AUDIT END    -- 3 issues flagged",
-			},
-		],
-		"services": [],
-		"connections": [],
-		"public_interfaces": [],
-		"protections": [
-			{"type": "firewall",   "level": 2},
-			{"type": "proxy",      "level": 1},
-			{"type": "encryption", "level": 1},
-		],
-	})
-	register_node({
-		"id": "darknet_01",
-		"ip": "10.0.13.37",
-		"name": "Darknet Relay",
-		"security": 2,
-		"encrypted": true,
-		"map_position": Vector2(535, 83),   # Siberia, Russia  (58°N, 95°E)
-		"files": [
-			{
-				"id": "dark01_f1",
-				"name": "relay_log.log",
-				"type": "log",
-				"size": 2048,
-				"content": "[RELAY NODE — ENCRYPTED TRAFFIC LOG]\n\n2057-11-01 00:00:00  IN  84.23.119.41 -> [MASKED]   412 KB\n2057-11-01 00:00:03  IN  193.62.18.5  -> [MASKED]   88 KB\n2057-11-01 00:00:07  OUT [MASKED]     -> [MASKED]   500 KB\n\n[entries continue — 4,812 total this session]\n\n-- Operator: no-log policy enforced --",
-			},
-		],
-		"services": ["relay"],
-		"connections": ["corp_01"],
-		"public_interfaces": [],
-		"protections": [
-			{"type": "proxy",      "level": 2},
-			{"type": "encryption", "level": 1},
-		],
-	})
+func _load_nodes_from_data() -> void:
+	var dir := DirAccess.open("res://data/nodes")
+	if not dir:
+		push_warning("NetworkSim: Could not open res://data/nodes — no nodes loaded.")
+		return
+	dir.list_dir_begin()
+	var file_name := dir.get_next()
+	while file_name != "":
+		if not dir.current_is_dir() and file_name.ends_with(".tres"):
+			var res := load("res://data/nodes/" + file_name)
+			if res is NodeData:
+				var data: Dictionary = {
+					"id": res.id,
+					"ip": res.ip,
+					"name": res.name,
+					"organisation": res.organisation,
+					"security": res.security,
+					"map_position": res.map_position,
+					"files": res.files,
+					"services": res.services,
+					"connections": res.connections,
+					"users": res.users,
+					"faction_id": res.faction_id,
+				}
+				register_node(data)
+		file_name = dir.get_next()
+	dir.list_dir_end()

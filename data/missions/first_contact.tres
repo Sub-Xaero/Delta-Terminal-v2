@@ -7,20 +7,20 @@
 script = ExtResource("2_od")
 description = "Connect to Sentinel ISP"
 type = 0
-target = "isp_01"
+target = "isp_gateway"
 completed = false
 
 [sub_resource type="Resource" id="Obj_2"]
 script = ExtResource("2_od")
-description = "Crack NeoTech University server"
+description = "Crack the Meridian Gov Records server"
 type = 1
-target = "univ_01"
+target = "meridian_gov_records"
 completed = false
 
 [resource]
 script = ExtResource("1_md")
 id = "first_contact"
 title = "First Contact"
-description = "Route through the ISP and compromise an academic server to establish your reputation on the network."
+description = "Route through the ISP and compromise a government records server to establish your reputation on the network."
 reward_credits = 500
 objectives = [SubResource("Obj_1"), SubResource("Obj_2")]
