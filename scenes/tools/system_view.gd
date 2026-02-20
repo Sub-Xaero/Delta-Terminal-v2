@@ -137,25 +137,51 @@ func _clear_interfaces() -> void:
 # ── Attempt login / protections ────────────────────────────────────────────────
 
 func _on_attempt_login() -> void:
-	var data:  Dictionary = NetworkSim.get_node_data(NetworkSim.connected_node_id)
-	var prots: Array      = data.get("protections", [])
+	var node_id: String   = NetworkSim.connected_node_id
+	var data:    Dictionary = NetworkSim.get_node_data(node_id)
+	var prots:   Array    = _build_protections(data, node_id)
 
 	_attempt_btn.visible = false
-	_reveal_protections(prots)
-	EventBus.log_message.emit(
-		"[%s] Login attempted — access denied." % data.get("name", "?"), "warn"
-	)
+	_reveal_protections(prots, node_id)
+	var is_cracked: bool = node_id in NetworkSim.cracked_nodes
+	var log_msg: String = "[%s] Login attempted — %s." % [
+		data.get("name", "?"),
+		"access granted" if is_cracked else "access denied"
+	]
+	EventBus.log_message.emit(log_msg, "info" if is_cracked else "warn")
 
 
-func _reveal_protections(prots: Array) -> void:
+func _build_protections(data: Dictionary, node_id: String) -> Array:
+	var prots:    Array = []
+	var security: int   = data.get("security", 0)
+	var services: Array = data.get("services", [])
+
+	if data.get("has_firewall", false) or security >= 3:
+		var bypassed: bool = node_id in NetworkSim.bypassed_nodes
+		prots.append({ "type": "firewall", "level": security, "cleared": bypassed })
+	if "relay" in services:
+		prots.append({ "type": "proxy", "level": security, "cleared": false })
+	if data.get("encrypted", false):
+		var broken: bool = node_id in NetworkSim.encryption_broken_nodes
+		prots.append({ "type": "encryption", "level": security, "cleared": broken })
+
+	return prots
+
+
+func _reveal_protections(prots: Array, node_id: String) -> void:
 	_clear_protections()
 	_protections_panel.visible = true
 
-	var denied_lbl := Label.new()
-	denied_lbl.text = "── ACCESS DENIED ──"
-	denied_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	denied_lbl.add_theme_color_override("font_color", COL_PINK)
-	_protections_panel.add_child(denied_lbl)
+	var is_cracked: bool = node_id in NetworkSim.cracked_nodes
+	var header_lbl := Label.new()
+	if is_cracked:
+		header_lbl.text = "── ACCESS GRANTED ──"
+		header_lbl.add_theme_color_override("font_color", COL_CYAN)
+	else:
+		header_lbl.text = "── ACCESS DENIED ──"
+		header_lbl.add_theme_color_override("font_color", COL_PINK)
+	header_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_protections_panel.add_child(header_lbl)
 
 	var section_lbl := Label.new()
 	section_lbl.text = "SECURITY STATUS"
@@ -172,6 +198,7 @@ func _reveal_protections(prots: Array) -> void:
 	for prot: Dictionary in prots:
 		var prot_type:  String = prot.get("type",  "unknown")
 		var prot_level: int    = prot.get("level", 1)
+		var cleared:    bool   = prot.get("cleared", false)
 		var col: Color         = PROTECTION_COLOURS.get(prot_type, COL_LIGHT)
 
 		var row := HBoxContainer.new()
@@ -185,8 +212,17 @@ func _reveal_protections(prots: Array) -> void:
 		level_lbl.text = "LVL %d" % prot_level
 		level_lbl.add_theme_color_override("font_color", col)
 
+		var status_lbl := Label.new()
+		if cleared:
+			status_lbl.text = "  [CLEARED]"
+			status_lbl.add_theme_color_override("font_color", COL_MUTED)
+		else:
+			status_lbl.text = "  [ACTIVE]"
+			status_lbl.add_theme_color_override("font_color", col)
+
 		row.add_child(type_lbl)
 		row.add_child(level_lbl)
+		row.add_child(status_lbl)
 		_protections_panel.add_child(row)
 
 
