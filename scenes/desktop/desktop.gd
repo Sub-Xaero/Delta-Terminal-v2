@@ -13,6 +13,19 @@ const FileBrowserScene        := preload("res://scenes/tools/file_browser.tscn")
 const EncryptionBreakerScene  := preload("res://scenes/tools/encryption_breaker.tscn")
 const HardwareViewerScene     := preload("res://scenes/tools/hardware_viewer.tscn")
 
+# ── Tools-as-files gate ──────────────────────────────────────────────────────
+# Maps tool names to the executable file the player must possess in local_storage.
+# Tools NOT listed here are always available (ungated).
+const TOOL_EXE_REQUIREMENTS: Dictionary = {
+	"Password Cracker": "password_cracker.exe",
+	"Port Scanner": "port_scanner.exe",
+	"Firewall Bypasser": "firewall_bypass.exe",
+	"Encryption Breaker": "encryption_breaker.exe",
+	"Log Deleter": "log_deleter.exe",
+	"Exploit Installer": "exploit_installer.exe",
+	"Credential Manager": "credential_manager.exe",
+}
+
 @onready var window_manager: WindowManager = $WindowLayer
 @onready var context_menu: PopupMenu = $ContextMenu
 @onready var _crt_bg: ColorRect = $Background
@@ -73,6 +86,13 @@ func _show_context_menu(at_position: Vector2) -> void:
 	context_menu.popup()
 
 
+func _has_exe(tool_name: String) -> bool:
+	if tool_name not in TOOL_EXE_REQUIREMENTS:
+		return true  # ungated tool
+	var required := TOOL_EXE_REQUIREMENTS[tool_name]
+	return required in GameManager.player_data.get("local_storage", [])
+
+
 func _on_open_tool_requested(tool_name: String) -> void:
 	match tool_name:
 		"Network Map":
@@ -91,18 +111,30 @@ func _on_context_menu_id_pressed(id: int) -> void:
 		0:
 			window_manager.spawn_tool_window(NetworkMapScene, "Network Map")
 		1:
+			if not _has_exe("Password Cracker"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Password Cracker"], "error")
+				return
 			window_manager.spawn_tool_window(PasswordCrackerScene, "Password Cracker")
 		3:
 			window_manager.spawn_tool_window(SystemLogScene, "System Log")
 		5:
+			if not _has_exe("Port Scanner"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Port Scanner"], "error")
+				return
 			window_manager.spawn_tool_window(PortScannerScene, "Port Scanner")
 		6:
 			window_manager.spawn_tool_window(MissionLogScene, "Mission Log")
 		7:
 			window_manager.spawn_tool_window(FileBrowserScene, "File Browser")
 		9:
+			if not _has_exe("Firewall Bypasser"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Firewall Bypasser"], "error")
+				return
 			window_manager.spawn_tool_window(FirewallBypasserScene, "Firewall Bypasser")
 		10:
+			if not _has_exe("Encryption Breaker"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Encryption Breaker"], "error")
+				return
 			window_manager.spawn_tool_window(EncryptionBreakerScene, "Encryption Breaker")
 		11:
 			window_manager.spawn_tool_window(HardwareViewerScene, "Hardware Viewer")
