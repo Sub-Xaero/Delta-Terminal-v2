@@ -10,6 +10,7 @@ var connected_node_id: String = ""
 var bounce_chain: Array[String] = []   # ordered list of node ids routed through
 var is_connected: bool = false
 var cracked_nodes: Array[String] = []
+var bypassed_nodes: Array[String] = []
 
 # ── Trace state ───────────────────────────────────────────────────────────────
 var trace_active: bool = false
@@ -87,6 +88,21 @@ func crack_node(node_id: String) -> void:
 	EventBus.log_message.emit(
 		"Access granted: %s  [%s]" % [nodes[node_id]["ip"], nodes[node_id]["name"]], "info"
 	)
+
+
+func bypass_node(node_id: String) -> void:
+	if node_id in bypassed_nodes:
+		return
+	bypassed_nodes.append(node_id)
+	EventBus.firewall_bypassed.emit(node_id)
+	EventBus.log_message.emit(
+		"Firewall bypassed: %s  [%s]" % [nodes[node_id]["ip"], nodes[node_id]["name"]], "warn"
+	)
+
+
+func node_requires_bypass(node_id: String) -> bool:
+	var data: Dictionary = get_node_data(node_id)
+	return data.get("security", 0) >= 3 or data.get("has_firewall", false)
 
 
 # ── Node data ─────────────────────────────────────────────────────────────────

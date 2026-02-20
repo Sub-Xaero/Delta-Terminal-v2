@@ -5,7 +5,8 @@ extends Control
 
 const SystemLogScene       := preload("res://scenes/tools/system_log.tscn")
 const NetworkMapScene      := preload("res://scenes/tools/network_map.tscn")
-const PasswordCrackerScene := preload("res://scenes/tools/password_cracker.tscn")
+const PasswordCrackerScene  := preload("res://scenes/tools/password_cracker.tscn")
+const FirewallBypasserScene := preload("res://scenes/tools/firewall_bypasser.tscn")
 const PortScannerScene     := preload("res://scenes/tools/port_scanner.tscn")
 const TraceTrackerScene    := preload("res://scenes/tools/trace_tracker.tscn")
 const MissionLogScene      := preload("res://scenes/tools/mission_log.tscn")
@@ -40,6 +41,7 @@ func _setup_context_menu() -> void:
 	context_menu.add_separator()
 	context_menu.add_item("Port Scanner", 5)
 	context_menu.add_item("Password Cracker", 1)
+	context_menu.add_item("Firewall Bypasser", 9)
 	context_menu.add_item("File Browser", 7)
 	context_menu.add_item("Trace Tracker", 2)
 	context_menu.add_separator()
@@ -91,6 +93,8 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			window_manager.spawn_tool_window(MissionLogScene, "Mission Log")
 		7:
 			window_manager.spawn_tool_window(FileBrowserScene, "File Browser")
+		9:
+			window_manager.spawn_tool_window(FirewallBypasserScene, "Firewall Bypasser")
 		4:
 			var handle: String = GameManager.player_data.get("handle", "ghost")
 			EventBus.log_message.emit(

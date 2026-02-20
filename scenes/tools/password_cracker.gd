@@ -4,7 +4,7 @@ extends ToolWindow
 ## by the Trace Tracker tool. Starts a trace via NetworkSim when cracking begins
 ## and reacts to trace_completed to detect failure.
 
-enum State { IDLE, READY, CRACKING, SUCCESS, FAILED }
+enum State { IDLE, FIREWALL_LOCKED, READY, CRACKING, SUCCESS, FAILED }
 
 const HEX_CHARS := "0123456789ABCDEF"
 const GRID_COLS := 8
@@ -29,6 +29,7 @@ func _ready() -> void:
 	EventBus.network_connected.connect(_on_network_connected)
 	EventBus.network_disconnected.connect(_on_network_disconnected)
 	EventBus.trace_completed.connect(_on_trace_completed)
+	EventBus.firewall_bypassed.connect(_on_firewall_bypassed)
 	action_btn.pressed.connect(_on_action_pressed)
 	_setup_theme()
 	if NetworkSim.is_connected:
@@ -112,10 +113,24 @@ func _on_crack_complete() -> void:
 # ── EventBus handlers ──────────────────────────────────────────────────────────
 
 func _on_network_connected(node_id: String) -> void:
-	_state          = State.SUCCESS if node_id in NetworkSim.cracked_nodes else State.READY
 	_crack_progress = 0.0
 	_crack_elapsed  = 0.0
 	crack_bar.value = 0.0
+	if node_id in NetworkSim.cracked_nodes:
+		_state = State.SUCCESS
+	elif NetworkSim.node_requires_bypass(node_id) and node_id not in NetworkSim.bypassed_nodes:
+		_state = State.FIREWALL_LOCKED
+	else:
+		_state = State.READY
+	_update_ui()
+
+
+func _on_firewall_bypassed(node_id: String) -> void:
+	if _state != State.FIREWALL_LOCKED:
+		return
+	if node_id != NetworkSim.connected_node_id:
+		return
+	_state = State.READY
 	_update_ui()
 
 
@@ -145,6 +160,12 @@ func _update_ui() -> void:
 			status_label.text = "NO ACTIVE CONNECTION"
 			status_label.add_theme_color_override("font_color", Color(0.35, 0.35, 0.45))
 			action_btn.text     = "INITIATE CRACK"
+			action_btn.disabled = true
+		State.FIREWALL_LOCKED:
+			var data: Dictionary = NetworkSim.get_node_data(NetworkSim.connected_node_id)
+			status_label.text = "FIREWALL ACTIVE:  %s  —  bypass required" % data.get("ip", "?")
+			status_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.0))
+			action_btn.text     = "FIREWALL LOCKED"
 			action_btn.disabled = true
 		State.READY:
 			var data: Dictionary = NetworkSim.get_node_data(NetworkSim.connected_node_id)
