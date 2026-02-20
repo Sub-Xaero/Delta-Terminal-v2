@@ -12,7 +12,7 @@ var is_connected: bool = false
 var cracked_nodes: Array[String] = []
 var bypassed_nodes: Array[String] = []
 var encryption_broken_nodes: Array[String] = []
-var discovered_nodes: Array = ["local_machine", "isp_gateway"]
+var discovered_nodes: Array = ["local_machine", "isp_gateway", "ghost_collective_darknet", "novacorp_bank"]
 var exploits_installed: Dictionary = {}   # node_id -> Array[String] of exploit types
 
 # ── Trace state ───────────────────────────────────────────────────────────────

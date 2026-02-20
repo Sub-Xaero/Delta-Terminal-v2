@@ -13,6 +13,10 @@ var player_data: Dictionary = {
 	"heat": 0,
 	"faction_rep": {},
 	"local_storage": ["password_cracker.exe", "port_scanner.exe"],
+	"player_accounts": {
+		"ghost_collective_darknet": { "username": "g_h0st", "role": "user" },
+		"novacorp_bank":            { "username": "g_h0st", "role": "customer" }
+	},
 }
 
 # Stolen/discovered credentials per node: node_id → Array of credential dicts

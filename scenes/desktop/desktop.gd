@@ -18,6 +18,7 @@ const CommsClientScene        := preload("res://scenes/tools/comms_client.tscn")
 const PlayerProfileScene      := preload("res://scenes/tools/player_profile.tscn")
 const SoftwareShopScene       := preload("res://scenes/tools/software_shop.tscn")
 const BankTerminalScene       := preload("res://scenes/tools/bank_terminal.tscn")
+const FactionJobBoardScene    := preload("res://scenes/tools/faction_job_board.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -132,6 +133,10 @@ func _on_open_tool_requested(tool_name: String) -> void:
 			_toggle_tool(CommsClientScene, "Comms Client")
 		"Player Profile":
 			_toggle_tool(PlayerProfileScene, "Player Profile")
+		"Bank Terminal":
+			window_manager.spawn_tool_window(BankTerminalScene, "Bank Terminal")
+		"Faction Job Board":
+			window_manager.spawn_tool_window(FactionJobBoardScene, "Faction Job Board")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:

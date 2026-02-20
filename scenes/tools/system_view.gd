@@ -137,18 +137,66 @@ func _clear_interfaces() -> void:
 # ── Attempt login / protections ────────────────────────────────────────────────
 
 func _on_attempt_login() -> void:
-	var node_id: String   = NetworkSim.connected_node_id
+	var node_id: String     = NetworkSim.connected_node_id
 	var data:    Dictionary = NetworkSim.get_node_data(node_id)
-	var prots:   Array    = _build_protections(data, node_id)
 
 	_attempt_btn.visible = false
-	_reveal_protections(prots, node_id)
-	var is_cracked: bool = node_id in NetworkSim.cracked_nodes
-	var log_msg: String = "[%s] Login attempted — %s." % [
-		data.get("name", "?"),
-		"access granted" if is_cracked else "access denied"
-	]
-	EventBus.log_message.emit(log_msg, "info" if is_cracked else "warn")
+
+	var player_accounts: Dictionary = GameManager.player_data.get("player_accounts", {})
+	if node_id in NetworkSim.cracked_nodes:
+		var prots: Array = _build_protections(data, node_id)
+		_reveal_protections(prots, node_id)
+		EventBus.log_message.emit(
+			"[%s] Login attempted — access granted." % data.get("name", "?"), "info"
+		)
+	elif player_accounts.has(node_id):
+		var account: Dictionary = player_accounts[node_id]
+		_show_post_login(data, node_id, account)
+	else:
+		var prots: Array = _build_protections(data, node_id)
+		_reveal_protections(prots, node_id)
+		EventBus.log_message.emit(
+			"[%s] Login attempted — access denied." % data.get("name", "?"), "warn"
+		)
+
+
+func _show_post_login(data: Dictionary, _node_id: String, account: Dictionary) -> void:
+	_clear_protections()
+	_protections_panel.visible = true
+
+	var username: String = account.get("username", "unknown")
+	var role:     String = account.get("role",     "user")
+
+	var header_lbl := Label.new()
+	header_lbl.text = "── ACCESS GRANTED ──"
+	header_lbl.add_theme_color_override("font_color", COL_CYAN)
+	header_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_protections_panel.add_child(header_lbl)
+
+	var identity_lbl := Label.new()
+	identity_lbl.text = "LOGGED IN AS: %s [%s]" % [username.to_upper(), role.to_upper()]
+	identity_lbl.add_theme_color_override("font_color", COL_MUTED)
+	identity_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_protections_panel.add_child(identity_lbl)
+
+	_protections_panel.add_child(HSeparator.new())
+
+	var services: Array = data.get("services", [])
+	if "job_board" in services:
+		_protections_panel.add_child(_make_service_button(
+			"JOB BOARD", "[JOB BOARD]",
+			func() -> void: EventBus.open_tool_requested.emit("Faction Job Board")
+		))
+	if "banking" in services:
+		_protections_panel.add_child(_make_service_button(
+			"BANK TERMINAL", "[BANK TERMINAL]",
+			func() -> void: EventBus.open_tool_requested.emit("Bank Terminal")
+		))
+
+	EventBus.log_message.emit(
+		"[%s] Logged in as %s [%s]" % [data.get("name", "?"), username, role.to_upper()],
+		"info"
+	)
 
 
 func _build_protections(data: Dictionary, node_id: String) -> Array:
@@ -224,6 +272,24 @@ func _reveal_protections(prots: Array, node_id: String) -> void:
 		row.add_child(level_lbl)
 		row.add_child(status_lbl)
 		_protections_panel.add_child(row)
+
+
+func _make_service_button(label_text: String, btn_text: String, callback: Callable) -> HBoxContainer:
+	var row := HBoxContainer.new()
+
+	var svc_lbl := Label.new()
+	svc_lbl.text = label_text
+	svc_lbl.add_theme_color_override("font_color", COL_MUTED)
+	svc_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(svc_lbl)
+
+	var btn := Button.new()
+	btn.text = btn_text
+	btn.flat = true
+	btn.add_theme_color_override("font_color", COL_AMBER)
+	btn.pressed.connect(callback)
+	row.add_child(btn)
+	return row
 
 
 func _clear_protections() -> void:
