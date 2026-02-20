@@ -29,6 +29,15 @@ func _ready() -> void:
 	_apply_info_panel_theme()
 	_populate_map()
 	_clear_info_panel()
+	# Fullscreen: disable drag and anchor to fill the WindowLayer next frame
+	# (deferred so it runs after WindowManager sets the initial position)
+	title_bar.gui_input.disconnect(_on_title_bar_input)
+	call_deferred("_enforce_fullscreen")
+
+
+func _enforce_fullscreen() -> void:
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	custom_minimum_size = Vector2.ZERO
 
 
 # ── Map population ─────────────────────────────────────────────────────────────

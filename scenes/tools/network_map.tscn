@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://scenes/tools/network_map_canvas.gd" id="3_nmc"]
 
 [node name="NetworkMap" instance=ExtResource("1_tw")]
-custom_minimum_size = Vector2(700, 460)
+custom_minimum_size = Vector2(0, 0)
 script = ExtResource("2_nm")
 
 [node name="HSplit" type="HSplitContainer" parent="ContentArea"]
