@@ -36,3 +36,18 @@ signal pause_requested()
 # ── Hardware ───────────────────────────────────────────────────────────────────
 signal hardware_changed()          # any install/uninstall or hack count change
 signal system_nuke_triggered()     # fired after full state reset; desktop reacts
+
+# ── Discovery & Intrusion ────────────────────────────────────────────────────
+signal node_discovered(node_id: String)
+signal intrusion_logged(node_id: String)
+signal credentials_stolen(node_id: String, count: int)
+signal exploit_installed(node_id: String, exploit_type: String)
+
+# ── Factions & Heat ──────────────────────────────────────────────────────────
+signal faction_rep_changed(faction_id: String, new_rep: int)
+signal player_heat_changed(new_heat: int)
+
+# ── Comms ────────────────────────────────────────────────────────────────────
+signal comms_message_received(message_id: String)
+signal news_headline_added(text: String)
+signal voip_call_made(target_number: String, connected: bool)
