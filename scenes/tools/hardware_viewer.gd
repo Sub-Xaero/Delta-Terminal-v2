@@ -255,7 +255,7 @@ func _setup_theme() -> void:
 	header_label.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
 	credits_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.0))
 	ram_label.add_theme_color_override("font_color", Color(0.45, 0.6, 0.65))
-	cpu_usage_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.0))
+	stack_usage_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.0))
 	shop_header.add_theme_color_override("font_color", Color(0.45, 0.6, 0.65))
 
 	detonate_btn.add_theme_color_override("font_color", Color(1.0, 0.08, 0.55))
