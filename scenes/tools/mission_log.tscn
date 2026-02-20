@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/mission_log.gd" id="2_ml"]
+
+[node name="MissionLog" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(440, 340)
+script = ExtResource("2_ml")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ActiveHeader" type="Label" parent="ContentArea/Margin/VBox"]
+text = "ACTIVE MISSIONS"
+
+[node name="ActiveScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ActiveList" type="VBoxContainer" parent="ContentArea/Margin/VBox/ActiveScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="EmptyActive" type="Label" parent="ContentArea/Margin/VBox/ActiveScroll/ActiveList"]
+text = "No active missions."
+
+[node name="Sep" type="HSeparator" parent="ContentArea/Margin/VBox"]
+
+[node name="AvailHeader" type="Label" parent="ContentArea/Margin/VBox"]
+text = "AVAILABLE"
+
+[node name="AvailScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 80)
+
+[node name="AvailList" type="VBoxContainer" parent="ContentArea/Margin/VBox/AvailScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="EmptyAvail" type="Label" parent="ContentArea/Margin/VBox/AvailScroll/AvailList"]
+text = "No missions available."

@@ -8,6 +8,7 @@ const NetworkMapScene      := preload("res://scenes/tools/network_map.tscn")
 const PasswordCrackerScene := preload("res://scenes/tools/password_cracker.tscn")
 const PortScannerScene     := preload("res://scenes/tools/port_scanner.tscn")
 const TraceTrackerScene    := preload("res://scenes/tools/trace_tracker.tscn")
+const MissionLogScene      := preload("res://scenes/tools/mission_log.tscn")
 
 @onready var window_manager: WindowManager = $WindowLayer
 @onready var context_menu: PopupMenu = $ContextMenu
@@ -29,6 +30,8 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("Port Scanner", 5)
 	context_menu.add_item("Password Cracker", 1)
 	context_menu.add_item("Trace Tracker", 2)
+	context_menu.add_separator()
+	context_menu.add_item("Mission Log", 6)
 	context_menu.add_separator()
 	context_menu.add_item("System Log", 3)
 	context_menu.add_item("System Info", 4)
@@ -59,6 +62,8 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			window_manager.spawn_tool_window(SystemLogScene, "System Log")
 		5:
 			window_manager.spawn_tool_window(PortScannerScene, "Port Scanner")
+		6:
+			window_manager.spawn_tool_window(MissionLogScene, "Mission Log")
 		4:
 			var handle: String = GameManager.player_data.get("handle", "ghost")
 			EventBus.log_message.emit(
