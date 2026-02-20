@@ -111,7 +111,7 @@ const _STARTING_NETWORK_ID: String = "net_56k"
 const _STARTING_CREDITS:    int    = 1000
 
 # Tools that never consume RAM — always open, never gated.
-const PASSIVE_TOOLS: Array[String] = ["System Log", "Trace Tracker"]
+const PASSIVE_TOOLS: Array[String] = ["System Log", "Trace Tracker", "Network Map"]
 
 
 # ── Installed hardware state ────────────────────────────────────────────────────
