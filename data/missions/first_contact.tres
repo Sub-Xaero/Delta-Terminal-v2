@@ -1,4 +1,4 @@
-[gd_resource type="MissionData" load_steps=5 format=3]
+[gd_resource type="Resource" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
 [ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]

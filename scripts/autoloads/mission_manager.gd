@@ -2,6 +2,10 @@ extends Node
 ## Loads mission definitions from data/missions/, tracks active missions,
 ## and drives objective completion via EventBus signals.
 
+# Preload data classes to ensure they are registered in ClassDB before use.
+const _MissionDataScript = preload("res://scripts/data/mission_data.gd")
+const _ObjectiveDataScript = preload("res://scripts/data/objective_data.gd")
+
 # All missions loaded from disk (templates — never mutated directly).
 var available_missions: Dictionary = {}  # id -> MissionData
 
@@ -26,7 +30,7 @@ func _load_missions() -> void:
 	var file := dir.get_next()
 	while file != "":
 		if file.ends_with(".tres") or file.ends_with(".res"):
-			var mission: MissionData = load("res://data/missions/" + file)
+			var mission := load("res://data/missions/" + file) as MissionData
 			if mission and not mission.id.is_empty():
 				available_missions[mission.id] = mission
 		file = dir.get_next()
