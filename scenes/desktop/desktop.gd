@@ -217,33 +217,40 @@ func _refresh_desktop_icons() -> void:
 	var node: Dictionary = NetworkSim.get_node_data(NetworkSim.connected_node_id)
 	var services: Array  = node.get("services", [])
 	var container := HBoxContainer.new()
-	container.position = Vector2(12, 12)
+	container.position = Vector2(12, 62)
 	container.add_theme_constant_override("separation", 8)
 	if "marketplace" in services:
 		container.add_child(_create_desktop_icon(
-			"[SHOP]", "SOFTWARE\nSHOP",
+			"SOFTWARE\nSHOP",
 			func() -> void: window_manager.spawn_tool_window(SoftwareShopScene, "Software Shop")
 		))
 	if "banking" in services:
 		container.add_child(_create_desktop_icon(
-			"[BANK]", "BANK\nTERMINAL",
+			"BANK\nTERMINAL",
 			func() -> void: window_manager.spawn_tool_window(BankTerminalScene, "Bank Terminal")
+		))
+	if "job_board" in services:
+		container.add_child(_create_desktop_icon(
+			"JOB\nBOARD",
+			func() -> void: window_manager.spawn_tool_window(FactionJobBoardScene, "Faction Job Board")
 		))
 	if container.get_child_count() > 0:
 		_desktop_icons_layer.add_child(container)
 
 
-func _create_desktop_icon(icon_text: String, label: String, callback: Callable) -> Button:
+func _create_desktop_icon(label: String, callback: Callable) -> Button:
 	var btn := Button.new()
 	btn.custom_minimum_size = Vector2(84, 72)
-	btn.text = icon_text + "\n" + label
+	btn.text = label
 	btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 	var sn := StyleBoxFlat.new()
 	sn.bg_color = Color(0.04, 0.03, 0.12, 0.88)
 	sn.border_color = Color(0.0, 0.88, 1.0, 0.55)
 	sn.set_border_width_all(1)
-	sn.set_corner_radius_all(2)
+	sn.corner_radius_top_right   = 8
+	sn.corner_radius_bottom_left = 8
+	sn.corner_detail = 1
 	sn.content_margin_top    = 8
 	sn.content_margin_bottom = 8
 	sn.content_margin_left   = 6
