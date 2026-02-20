@@ -96,8 +96,6 @@ func _on_tool_task_completed(tool_name: String, task_id: String, success: bool) 
 			_satisfy_objectives(ObjectiveData.Type.MODIFY_RECORD, task_id)
 		"dictionary_hacker":
 			_satisfy_objectives(ObjectiveData.Type.CRACK_NODE, task_id)
-		"virus_compiler":
-			_satisfy_objectives(ObjectiveData.Type.DEPLOY_VIRUS, task_id)
 
 
 # ── Objective tracking ─────────────────────────────────────────────────────────

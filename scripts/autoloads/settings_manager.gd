@@ -52,17 +52,19 @@ func load_settings() -> void:
 
 func set_master_volume(val: float) -> void:
 	master_volume = val
-	_apply_audio()
+	settings_changed.emit()
 	save_settings()
 
 
 func set_sfx_volume(val: float) -> void:
 	sfx_volume = val
+	settings_changed.emit()
 	save_settings()
 
 
 func set_ambient_volume(val: float) -> void:
 	ambient_volume = val
+	settings_changed.emit()
 	save_settings()
 
 
@@ -90,12 +92,6 @@ func set_autosave(val: bool) -> void:
 
 
 # ── Internal apply helpers ────────────────────────────────────────────────────
-
-func _apply_audio() -> void:
-	var idx := AudioServer.get_bus_index("Master")
-	if idx >= 0:
-		AudioServer.set_bus_volume_linear(idx, master_volume)
-
 
 func _apply_display() -> void:
 	if fullscreen:

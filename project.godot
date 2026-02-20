@@ -30,13 +30,15 @@ FactionManager="*res://scripts/autoloads/faction_manager.gd"
 CommsManager="*res://scripts/autoloads/comms_manager.gd"
 MarketManager="*res://scripts/autoloads/market_manager.gd"
 VoiceManager="*res://scripts/autoloads/voice_manager.gd"
+AudioManager="*res://scripts/autoloads/audio_manager.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/size/window_width_override=1280
-window/size/window_height_override=720
+window/size/mode=2
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [physics]
 

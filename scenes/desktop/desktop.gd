@@ -27,7 +27,6 @@ const LanConsoleScene         := preload("res://scenes/tools/lan_console.tscn")
 const DictionaryHackerScene   := preload("res://scenes/tools/dictionary_hacker.tscn")
 const VoiceAnalyserScene      := preload("res://scenes/tools/voice_analyser.tscn")
 const VoiceCommsScene         := preload("res://scenes/tools/voice_comms.tscn")
-const VirusCompilerScene      := preload("res://scenes/tools/virus_compiler.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -45,7 +44,6 @@ const TOOL_EXE_REQUIREMENTS: Dictionary = {
 	"Dictionary Hacker": "dictionary_hacker.exe",
 	"Voice Analyser": "voice_analyser.exe",
 	"Voice Comms": "voice_comms.exe",
-	"Virus Compiler": "virus_compiler.exe",
 }
 
 @onready var window_manager: WindowManager = $WindowLayer
@@ -82,12 +80,16 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("Dictionary Hacker", 17)
 	context_menu.add_item("Voice Analyser", 18)
 	context_menu.add_item("Voice Comms", 19)
-	context_menu.add_item("Virus Compiler", 20)
 	if not context_menu.id_pressed.is_connected(_on_context_menu_id_pressed):
 		context_menu.id_pressed.connect(_on_context_menu_id_pressed)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_M:
+			AudioManager.toggle_mute()
+			get_viewport().set_input_as_handled()
+			return
 	if event is InputEventKey and event.is_action_pressed("ui_cancel"):
 		_pause_menu.toggle()
 		get_viewport().set_input_as_handled()
@@ -188,11 +190,6 @@ func _on_open_tool_requested(tool_name: String) -> void:
 				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Voice Comms"], "error")
 				return
 			window_manager.spawn_tool_window(VoiceCommsScene, "Voice Comms")
-		"Virus Compiler":
-			if not _has_exe("Virus Compiler"):
-				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Virus Compiler"], "error")
-				return
-			window_manager.spawn_tool_window(VirusCompilerScene, "Virus Compiler")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:
@@ -268,11 +265,6 @@ func _on_context_menu_id_pressed(id: int) -> void:
 				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Voice Comms"], "error")
 				return
 			window_manager.spawn_tool_window(VoiceCommsScene, "Voice Comms")
-		20:
-			if not _has_exe("Virus Compiler"):
-				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Virus Compiler"], "error")
-				return
-			window_manager.spawn_tool_window(VirusCompilerScene, "Virus Compiler")
 
 
 # ── Desktop service icons ─────────────────────────────────────────────────────
