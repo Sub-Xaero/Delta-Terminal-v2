@@ -19,6 +19,7 @@ func _ready() -> void:
 	GameManager.transition_to(GameManager.State.DESKTOP)
 	_setup_context_menu()
 	EventBus.context_menu_requested.connect(_show_context_menu)
+	EventBus.open_tool_requested.connect(_on_open_tool_requested)
 	window_manager.spawn_tool_window(SystemLogScene, "System Log")
 	window_manager.spawn_tool_window(TraceTrackerScene, "Trace Tracker")
 
@@ -50,6 +51,12 @@ func _unhandled_input(event: InputEvent) -> void:
 func _show_context_menu(at_position: Vector2) -> void:
 	context_menu.position = Vector2i(at_position)
 	context_menu.popup()
+
+
+func _on_open_tool_requested(tool_name: String) -> void:
+	match tool_name:
+		"Network Map":
+			window_manager.spawn_tool_window(NetworkMapScene, "Network Map")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:

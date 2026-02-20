@@ -36,6 +36,8 @@ func _apply_theme() -> void:
 	window_style.bg_color = Color(0.04, 0.03, 0.10, 0.95)
 	window_style.border_color = Color(0.0, 0.88, 1.0)
 	window_style.set_border_width_all(1)
+	window_style.shadow_color = Color(0.0, 0.88, 1.0, 0.18)
+	window_style.shadow_size = 4
 	add_theme_stylebox_override("panel", window_style)
 
 	title_label.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0))

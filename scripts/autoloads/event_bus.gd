@@ -13,6 +13,7 @@ signal trace_progress(progress: float)   # 0.0 – 1.0
 signal trace_completed()
 
 # ── Tools ─────────────────────────────────────────────────────────────────────
+signal open_tool_requested(tool_name: String)
 signal tool_opened(tool_name: String)
 signal tool_closed(tool_name: String)
 signal tool_focus_requested(tool_name: String)

@@ -28,8 +28,9 @@ func spawn_tool_window(tool_scene: PackedScene, p_tool_name: String) -> ToolWind
 	window.set_tool_name(p_tool_name)
 	add_child(window)
 
-	# Cascade position so multiple windows don't stack exactly
-	var screen_size := get_viewport_rect().size
+	# Cascade position so multiple windows don't stack exactly.
+	# Use own size (respects sidebar offset) rather than full viewport.
+	var screen_size := size
 	var cascade := Vector2(30.0, 30.0) * float(open_windows.size() % 8)
 	window.position = (screen_size / 2.0 - window.custom_minimum_size / 2.0) + cascade
 

@@ -40,6 +40,8 @@ func _apply_theme() -> void:
 	style.bg_color = Color(0.04, 0.03, 0.10)
 	style.border_color = Color(0.0, 0.88, 1.0)
 	style.border_width_top = 1
+	style.shadow_color = Color(0.0, 0.88, 1.0, 0.18)
+	style.shadow_size = 4
 	add_theme_stylebox_override("panel", style)
 
 	clock_label.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))

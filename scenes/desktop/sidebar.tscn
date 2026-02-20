@@ -1,0 +1,77 @@
+[gd_scene format=3 uid="uid://ct2jvkb2t0vuh"]
+
+[ext_resource type="Script" uid="uid://bsidebargd1234" path="res://scenes/desktop/sidebar.gd" id="1_sb"]
+[ext_resource type="Script" uid="uid://bminimapgd5678" path="res://scenes/desktop/sidebar_minimap.gd" id="2_mm"]
+
+[node name="Sidebar" type="Panel"]
+script = ExtResource("1_sb")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SectionLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "NETWORK"
+uppercase = true
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0, 0.88, 1, 1)
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MinimapContainer" type="Panel" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+clip_contents = true
+custom_minimum_size = Vector2(0, 164)
+
+[node name="NetworkMinimap" type="Control" parent="MarginContainer/VBoxContainer/MinimapContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_minimum_size = Vector2(196, 160)
+script = ExtResource("2_mm")
+
+[node name="ExpandHint" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "[ TAP TO EXPAND ]"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.35, 0.35, 0.45, 1)
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "CONNECTED TO"
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.35, 0.35, 0.45, 1)
+
+[node name="ConnLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "OFFLINE"
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.35, 0.35, 0.45, 1)
+
+[node name="DisconnectBtn" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "[ CONNECT ]"
+theme_override_font_sizes/font_size = 9
+
+[node name="HSeparator3" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="WidgetSlots" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
