@@ -1,0 +1,88 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/tools/system_view.gd" id="1_sv"]
+
+[node name="SystemView" type="Control"]
+script = ExtResource("1_sv")
+visible = false
+mouse_filter = 2
+
+[node name="Header" type="Panel" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+offset_bottom = 50.0
+
+[node name="HBox" type="HBoxContainer" parent="Header"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_right = -16.0
+theme_override_constants/separation = 12
+
+[node name="SysNameLabel" type="Label" parent="Header/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+vertical_alignment = 1
+
+[node name="IPLabel" type="Label" parent="Header/HBox"]
+layout_mode = 2
+vertical_alignment = 1
+
+[node name="PublicSection" type="CenterContainer" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 50.0
+visible = false
+mouse_filter = 2
+
+[node name="InterfaceFlow" type="HFlowContainer" parent="PublicSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
+
+[node name="PrivateSection" type="CenterContainer" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 50.0
+visible = false
+
+[node name="LoginBox" type="PanelContainer" parent="PrivateSection"]
+custom_minimum_size = Vector2(300, 0)
+
+[node name="Margin" type="MarginContainer" parent="PrivateSection/LoginBox"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="PrivateSection/LoginBox/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PrivateLabel" type="Label" parent="PrivateSection/LoginBox/Margin/VBox"]
+layout_mode = 2
+text = "[##]  PRIVATE SYSTEM"
+horizontal_alignment = 1
+
+[node name="AuthLabel" type="Label" parent="PrivateSection/LoginBox/Margin/VBox"]
+layout_mode = 2
+text = "Authentication required"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="LoginSep" type="HSeparator" parent="PrivateSection/LoginBox/Margin/VBox"]
+layout_mode = 2
+
+[node name="AttemptBtn" type="Button" parent="PrivateSection/LoginBox/Margin/VBox"]
+layout_mode = 2
+text = "ATTEMPT LOGIN"
+
+[node name="ProtectionsPanel" type="VBoxContainer" parent="PrivateSection/LoginBox/Margin/VBox"]
+layout_mode = 2
+visible = false
+theme_override_constants/separation = 6

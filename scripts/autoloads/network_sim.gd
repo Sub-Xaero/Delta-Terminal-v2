@@ -2,7 +2,7 @@ extends Node
 ## Simulates the in-game network. Tracks nodes, active connection, and bounce chain.
 
 # ── Node registry ─────────────────────────────────────────────────────────────
-# Each node: { id, ip, name, security, files: [], services: [] }
+# Each node: { id, ip, name, security, files: [], services: [], public_interfaces: [], protections: [] }
 var nodes: Dictionary = {}
 
 # ── Active session ─────────────────────────────────────────────────────────────
@@ -156,6 +156,8 @@ func _register_default_nodes() -> void:
 		"files": [],
 		"services": [],
 		"connections": ["isp_01", "isp_02"],
+		"public_interfaces": [],
+		"protections": [],
 	})
 	register_node({
 		"id": "isp_01",
@@ -174,6 +176,12 @@ func _register_default_nodes() -> void:
 		],
 		"services": ["relay"],
 		"connections": ["univ_01", "corp_01"],
+		"public_interfaces": [
+			{"name": "ISP Customer Portal", "description": "Account management and service status"},
+		],
+		"protections": [
+			{"type": "firewall", "level": 1},
+		],
 	})
 	register_node({
 		"id": "isp_02",
@@ -184,6 +192,12 @@ func _register_default_nodes() -> void:
 		"files": [],
 		"services": ["relay"],
 		"connections": ["corp_01", "darknet_01"],
+		"public_interfaces": [
+			{"name": "ISP Customer Portal", "description": "Account management and service status"},
+		],
+		"protections": [
+			{"type": "firewall", "level": 1},
+		],
 	})
 	register_node({
 		"id": "univ_01",
@@ -210,6 +224,14 @@ func _register_default_nodes() -> void:
 		],
 		"services": [],
 		"connections": ["corp_01"],
+		"public_interfaces": [
+			{"name": "Student Portal", "description": "Course registration and academic records"},
+			{"name": "Research Database", "description": "Public research publications"},
+		],
+		"protections": [
+			{"type": "firewall", "level": 1},
+			{"type": "proxy",    "level": 1},
+		],
 	})
 	register_node({
 		"id": "corp_01",
@@ -243,6 +265,12 @@ func _register_default_nodes() -> void:
 		],
 		"services": [],
 		"connections": [],
+		"public_interfaces": [],
+		"protections": [
+			{"type": "firewall",   "level": 2},
+			{"type": "proxy",      "level": 1},
+			{"type": "encryption", "level": 1},
+		],
 	})
 	register_node({
 		"id": "darknet_01",
@@ -262,4 +290,9 @@ func _register_default_nodes() -> void:
 		],
 		"services": ["relay"],
 		"connections": ["corp_01"],
+		"public_interfaces": [],
+		"protections": [
+			{"type": "proxy",      "level": 2},
+			{"type": "encryption", "level": 1},
+		],
 	})
