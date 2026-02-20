@@ -14,6 +14,8 @@ const EncryptionBreakerScene  := preload("res://scenes/tools/encryption_breaker.
 const HardwareViewerScene     := preload("res://scenes/tools/hardware_viewer.tscn")
 const CredentialManagerScene  := preload("res://scenes/tools/credential_manager.tscn")
 const LogDeleterScene         := preload("res://scenes/tools/log_deleter.tscn")
+const CommsClientScene        := preload("res://scenes/tools/comms_client.tscn")
+const PlayerProfileScene      := preload("res://scenes/tools/player_profile.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -69,6 +71,8 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("System Log", 3)
 	context_menu.add_item("System Info", 4)
 	context_menu.add_item("Hardware Viewer", 11)
+	context_menu.add_item("Comms Client", 15)
+	context_menu.add_item("Player Profile", 16)
 	context_menu.add_separator()
 	context_menu.add_item("Save Game", 12)
 	context_menu.id_pressed.connect(_on_context_menu_id_pressed)
@@ -152,6 +156,10 @@ func _on_context_menu_id_pressed(id: int) -> void:
 				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Log Deleter"], "error")
 				return
 			window_manager.spawn_tool_window(LogDeleterScene, "Log Deleter")
+		15:
+			window_manager.spawn_tool_window(CommsClientScene, "Comms Client")
+		16:
+			window_manager.spawn_tool_window(PlayerProfileScene, "Player Profile")
 		4:
 			var handle: String = GameManager.player_data.get("handle", "ghost")
 			EventBus.log_message.emit(
