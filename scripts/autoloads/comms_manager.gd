@@ -1,4 +1,3 @@
-class_name CommsManager
 extends Node
 ## Manages the player's in-game message inbox.
 ## Messages arrive from factions, mission contacts, and system notifications.

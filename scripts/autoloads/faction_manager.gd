@@ -1,4 +1,3 @@
-class_name FactionManager
 extends Node
 ## Manages faction data and player reputation with each faction.
 ## Loaded from data/factions/*.tres at startup.

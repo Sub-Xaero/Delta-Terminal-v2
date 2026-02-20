@@ -1,4 +1,3 @@
-class_name CredentialManager
 extends Node
 ## Manages stolen/discovered credentials per network node.
 ## Stored as node_id → Array of credential dicts.
