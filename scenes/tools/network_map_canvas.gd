@@ -15,7 +15,7 @@ const _COL_GRID              := Color(0.0, 0.88, 1.0, 0.06)
 const _COL_EQUATOR           := Color(0.0, 0.88, 1.0, 0.12)
 
 # ── Continent outlines (each point is Vector2(longitude, latitude)) ───────────
-var _continent_outlines: Array = [
+const _continent_outlines: Array = [
 	# North America
 	[
 		Vector2(-168, 71), Vector2(-141, 60), Vector2(-124, 49),
@@ -76,6 +76,10 @@ var _continent_outlines: Array = [
 
 var _edges: Array = []  # Array of { from:Vector2, to:Vector2, color:Color, width:float }
 
+# ── Continent polygon cache ───────────────────────────────────────────────────
+var _cached_continent_polys: Array[PackedVector2Array] = []
+var _cached_size: Vector2 = Vector2.ZERO
+
 
 func update_edges(edges: Array) -> void:
 	_edges = edges
@@ -89,9 +93,21 @@ func _geo_to_canvas(lon: float, lat: float) -> Vector2:
 	)
 
 
+func _rebuild_continent_cache() -> void:
+	_cached_size = size
+	_cached_continent_polys.clear()
+	for outline: Array in _continent_outlines:
+		var pts := PackedVector2Array()
+		for p: Vector2 in outline:
+			pts.append(_geo_to_canvas(p.x, p.y))
+		_cached_continent_polys.append(pts)
+
+
 func _draw() -> void:
 	if size.x < 1.0 or size.y < 1.0:
 		return
+	if size != _cached_size:
+		_rebuild_continent_cache()
 	_draw_grid()
 	_draw_continents()
 	for edge in _edges:
@@ -107,9 +123,6 @@ func _draw_grid() -> void:
 
 
 func _draw_continents() -> void:
-	for outline: Array in _continent_outlines:
-		var pts := PackedVector2Array()
-		for p: Vector2 in outline:
-			pts.append(_geo_to_canvas(p.x, p.y))
+	for pts: PackedVector2Array in _cached_continent_polys:
 		draw_colored_polygon(pts, _COL_CONTINENT_FILL)
 		draw_polyline(pts, _COL_CONTINENT_OUTLINE, 1.0)
