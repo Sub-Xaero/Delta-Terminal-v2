@@ -39,6 +39,11 @@ func save_game() -> void:
 		"cracked_nodes":      NetworkSim.cracked_nodes.duplicate(),
 		"node_state":         _collect_node_state(),
 		"hardware":           HardwareManager.get_save_data(),
+		"credentials":        GameManager.credentials.duplicate(),
+		"comms_inbox":        [],
+		"exploits_installed": {},
+		"discovered_nodes":   NetworkSim.cracked_nodes.duplicate(),
+		"tutorial_flags":     {},
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -62,10 +67,18 @@ func load_game() -> bool:
 	if not _check_version(data):
 		return false
 	GameManager.player_data = data.get("player_data", GameManager.player_data.duplicate())
+	# Ensure new player_data keys exist when loading old saves
+	if not GameManager.player_data.has("heat"):
+		GameManager.player_data["heat"] = 0
+	if not GameManager.player_data.has("faction_rep"):
+		GameManager.player_data["faction_rep"] = {}
+	if not GameManager.player_data.has("local_storage"):
+		GameManager.player_data["local_storage"] = ["password_cracker.exe", "port_scanner.exe"]
 	GameManager.active_missions.assign(data.get("active_missions", []))
 	GameManager.completed_missions.assign(data.get("completed_missions", []))
 	GameManager.local_storage = _deserialize_local_storage(data.get("local_storage", []))
 	NetworkSim.cracked_nodes.assign(data.get("cracked_nodes", []))
+	GameManager.credentials = data.get("credentials", {})
 	_restore_node_state(data.get("node_state", {}))
 	if data.has("hardware"):
 		HardwareManager.load_save_data(data["hardware"])
