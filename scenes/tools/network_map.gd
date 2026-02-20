@@ -1,7 +1,9 @@
 class_name NetworkMap
 extends ToolWindow
 ## Network map tool — shows all known nodes, edges, and the active connection.
-## Single-click a node to inspect it; double-click (or press CONNECT) to connect.
+## Single-click a node to inspect it; shift-click to add/remove from bounce chain;
+## double-click (or press CONNECT) to connect through the current chain.
+## Chain lines are drawn in amber while building; they turn cyan once connected.
 
 const NetworkMapNodeScene := preload("res://scenes/tools/network_map_node.tscn")
 
@@ -59,40 +61,49 @@ func _spawn_node_widget(data: Dictionary) -> void:
 									   NetworkMapNode.ICON_SIZE * 0.5)
 	widget.node_clicked.connect(_on_node_clicked)
 	widget.node_double_clicked.connect(_on_node_double_clicked)
+	widget.node_shift_clicked.connect(_on_node_shift_clicked)
 	_node_widgets[data["id"]] = widget
 
 
 func _rebuild_edges() -> void:
 	var edges: Array = []
-	var in_chain := NetworkSim.bounce_chain
-	var discovered := NetworkSim.discovered_nodes
+	var local_id := _find_local_node_id()
+	var chain    := NetworkSim.bounce_chain
+	var active   := NetworkSim.is_connected
 
-	for node_id in NetworkSim.nodes:
-		# Skip edges originating from undiscovered nodes
-		if node_id not in discovered:
+	# Build the route path: local → chain hops → target (if connected)
+	var path: Array[String] = []
+	if local_id != "":
+		path.append(local_id)
+	path.append_array(chain)
+	if active:
+		path.append(NetworkSim.connected_node_id)
+
+	# Draw edges between consecutive path nodes.
+	# Amber while planning the chain, cyan once the connection is live.
+	var col := Color(0.0, 0.88, 1.0, 0.75) if active else Color(1.0, 0.75, 0.0, 0.55)
+	var w   := 2.0 if active else 1.5
+
+	for i in range(path.size() - 1):
+		var from_id: String = path[i]
+		var to_id:   String = path[i + 1]
+		if not (NetworkSim.nodes.has(from_id) and NetworkSim.nodes.has(to_id)):
 			continue
-		var data: Dictionary = NetworkSim.nodes[node_id]
-		var from: Vector2 = data.get("map_position", Vector2.ZERO)
-
-		for target_id in data.get("connections", []):
-			if not NetworkSim.nodes.has(target_id):
-				continue
-			# Skip edges to undiscovered nodes
-			if target_id not in discovered:
-				continue
-			var to: Vector2 = NetworkSim.nodes[target_id].get("map_position", Vector2.ZERO)
-			var chained: bool = node_id in in_chain and target_id in in_chain
-			var active:  bool = node_id == NetworkSim.connected_node_id \
-						or target_id == NetworkSim.connected_node_id
-
-			edges.append({
-				"from":  from,
-				"to":    to,
-				"color": Color(0.0, 0.88, 1.0, 0.7 if (chained or active) else 0.18),
-				"width": 2.0 if (chained or active) else 1.0,
-			})
+		edges.append({
+			"from":  NetworkSim.nodes[from_id].get("map_position", Vector2.ZERO),
+			"to":    NetworkSim.nodes[to_id].get("map_position", Vector2.ZERO),
+			"color": col,
+			"width": w,
+		})
 
 	map_canvas.update_edges(edges)
+
+
+func _find_local_node_id() -> String:
+	for id in NetworkSim.nodes:
+		if NetworkSim.nodes[id].get("security", -1) == 0:
+			return id
+	return ""
 
 
 # ── Node interaction ───────────────────────────────────────────────────────────
@@ -109,6 +120,13 @@ func _on_node_double_clicked(node_id: String) -> void:
 	_on_node_clicked(node_id)
 	if node_id != NetworkSim.connected_node_id:
 		NetworkSim.connect_to_node(node_id)
+
+
+func _on_node_shift_clicked(node_id: String) -> void:
+	if node_id in NetworkSim.bounce_chain:
+		NetworkSim.remove_from_bounce_chain(node_id)
+	else:
+		NetworkSim.add_to_bounce_chain(node_id)
 
 
 func _on_connect_pressed() -> void:
@@ -167,12 +185,15 @@ func _on_network_connected(node_id: String) -> void:
 func _on_network_disconnected() -> void:
 	for id in _node_widgets:
 		_node_widgets[id].set_connected(false)
+		_node_widgets[id].set_chain_position(-1)
 	_rebuild_edges()
 	if _selected_id != "":
 		_update_info_panel(_selected_id)
 
 
-func _on_bounce_chain_updated(_chain: Array) -> void:
+func _on_bounce_chain_updated(chain: Array) -> void:
+	for id in _node_widgets:
+		_node_widgets[id].set_chain_position(chain.find(id))
 	_rebuild_edges()
 
 

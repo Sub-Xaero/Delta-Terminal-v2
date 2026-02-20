@@ -437,7 +437,7 @@ func _on_conn_btn_pressed() -> void:
 func _on_network_connected(node_id: String) -> void:
 	_connected_id = node_id
 	var data := NetworkSim.get_node_data(node_id)
-	conn_label.text = data.get("ip", node_id)
+	conn_label.text = data.get("name", node_id)
 	conn_label.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
 	disconnect_btn.text = "[ DISCONNECT ]"
 	disconnect_btn.add_theme_color_override("font_color", Color(1.0, 0.08, 0.55))
@@ -469,5 +469,10 @@ func _on_bounce_chain_updated(chain: Array) -> void:
 	minimap.bounce_chain = chain
 	minimap.queue_redraw()
 	if _trace_route_lbl != null:
-		_trace_route_lbl.text = "ROUTE:  —" if chain.is_empty() \
-				else "ROUTE:  " + "  →  ".join(chain)
+		if chain.is_empty():
+			_trace_route_lbl.text = "ROUTE:  —"
+		else:
+			var names: Array[String] = []
+			for id: String in chain:
+				names.append(NetworkSim.get_node_data(id).get("name", id))
+			_trace_route_lbl.text = "ROUTE:  " + "  →  ".join(names)
