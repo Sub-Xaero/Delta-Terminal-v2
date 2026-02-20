@@ -42,7 +42,7 @@ func _process(delta: float) -> void:
 	_update_char_grid()
 	if _state != State.CRACKING:
 		return
-	_crack_elapsed  += delta * HardwareManager.effective_cpu_speed
+	_crack_elapsed  += delta * HardwareManager.effective_stack_speed
 	_crack_progress  = minf(_crack_elapsed / _crack_duration, 1.0)
 	crack_bar.value  = _crack_progress * 100.0
 	crack_pct.text   = "CRACK:  %d%%" % roundi(_crack_progress * 100.0)

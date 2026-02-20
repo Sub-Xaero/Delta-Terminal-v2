@@ -84,7 +84,7 @@ func _build_hardware_section() -> void:
 	_widget_slots.add_child(sep)
 
 	_widget_slots.add_child(_build_monitor_row("MEM"))
-	_widget_slots.add_child(_build_monitor_row("CPU"))
+	_widget_slots.add_child(_build_monitor_row("STK"))
 	_update_monitors()
 
 
@@ -132,7 +132,7 @@ func _build_monitor_row(tag: String) -> HBoxContainer:
 		_ram_bar        = bar
 		_ram_val_label  = val_lbl
 		_ram_fill_style = fill_style
-	else:
+	else:  # STK
 		_cpu_bar        = bar
 		_cpu_val_label  = val_lbl
 		_cpu_fill_style = fill_style
@@ -153,12 +153,12 @@ func _update_monitors() -> void:
 	_ram_val_label.text      = "%d/%d" % [ram_used, ram_cap]
 
 	# ── CPU ───────────────────────────────────────────────────────────────────
-	var cpu_speed:  float = HardwareManager.installed_cpu.get("cpu_speed", 1.0)
+	var stk_speed:  float = HardwareManager.installed_stack.get("cpu_speed", 1.0)
 	var hack_count: int   = HardwareManager.active_hack_count
-	var cpu_load: float   = minf(1.0, float(hack_count) / maxf(1.0, cpu_speed))
-	_cpu_fill_style.bg_color = _monitor_color(cpu_load)
-	_cpu_bar.value           = cpu_load
-	_cpu_val_label.text      = "%.1fx" % HardwareManager.effective_cpu_speed
+	var stk_load: float   = minf(1.0, float(hack_count) / maxf(1.0, stk_speed))
+	_cpu_fill_style.bg_color = _monitor_color(stk_load)
+	_cpu_bar.value           = stk_load
+	_cpu_val_label.text      = "%.1fx" % HardwareManager.effective_stack_speed
 
 
 func _monitor_color(pct: float) -> Color:

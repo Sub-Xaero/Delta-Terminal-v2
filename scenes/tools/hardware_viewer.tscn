@@ -63,19 +63,19 @@ text = "MOTHERBOARD"
 layout_mode = 2
 text = "..."
 
-[node name="CpuSection" type="VBoxContainer" parent="ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox"]
+[node name="StackSection" type="VBoxContainer" parent="ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox"]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="CpuLabel" type="Label" parent="ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/CpuSection"]
+[node name="StackLabel" type="Label" parent="ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/StackSection"]
 layout_mode = 2
-text = "CPU"
+text = "COMPUTE STACK"
 
-[node name="CpuSlot" type="Button" parent="ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/CpuSection"]
+[node name="StackSlot" type="Button" parent="ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/StackSection"]
 layout_mode = 2
 text = "..."
 
-[node name="CpuUsageLabel" type="Label" parent="ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/CpuSection"]
+[node name="StackUsageLabel" type="Label" parent="ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/StackSection"]
 layout_mode = 2
 visible = false
 text = ""

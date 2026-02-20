@@ -49,10 +49,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _state != State.SCANNING:
 		return
-	var cpu_speed: float = HardwareManager.effective_cpu_speed
-	_scan_elapsed += delta * cpu_speed
+	var stk_speed: float = HardwareManager.effective_stack_speed
+	_scan_elapsed += delta * stk_speed
 	scan_bar.value  = minf(_scan_elapsed / _scan_duration, 1.0) * 100.0
-	_line_timer    -= delta * cpu_speed
+	_line_timer    -= delta * stk_speed
 	if _line_timer <= 0.0 and not _pending_lines.is_empty():
 		_reveal_next_line()
 		_line_timer = _line_interval

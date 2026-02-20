@@ -7,8 +7,8 @@ extends ToolWindow
 @onready var header_label:    Label         = $ContentArea/Margin/VBox/TopRow/HeaderLabel
 @onready var credits_label:   Label         = $ContentArea/Margin/VBox/TopRow/CreditsLabel
 @onready var mobo_slot:       Button        = $ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/MoboSection/MoboSlot
-@onready var cpu_slot:        Button        = $ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/CpuSection/CpuSlot
-@onready var cpu_usage_label: Label         = $ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/CpuSection/CpuUsageLabel
+@onready var stack_slot:        Button        = $ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/StackSection/StackSlot
+@onready var stack_usage_label: Label         = $ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/StackSection/StackUsageLabel
 @onready var network_slot:    Button        = $ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/NetworkSection/NetworkSlot
 @onready var ram_label:       Label         = $ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/RamSection/RamLabel
 @onready var ram_slots_vbox:  VBoxContainer = $ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/RamSection/RamSlots
@@ -31,7 +31,7 @@ func _ready() -> void:
 	EventBus.player_stats_changed.connect(_on_player_stats_changed)
 
 	mobo_slot.pressed.connect(func():    _show_shop_for("mobo", -1))
-	cpu_slot.pressed.connect(func():     _show_shop_for("cpu", -1))
+	stack_slot.pressed.connect(func():   _show_shop_for("stack", -1))
 	network_slot.pressed.connect(func(): _show_shop_for("network", -1))
 	security_slot.pressed.connect(func(): _show_shop_for("security", -1))
 	detonate_btn.pressed.connect(_on_detonate_pressed)
@@ -51,17 +51,17 @@ func _refresh() -> void:
 	var mobo: Dictionary = HardwareManager.installed_mobo
 	mobo_slot.text = "%s  [%d slots]" % [mobo.get("name", "?"), mobo.get("ram_slots", 0)]
 
-	# CPU
-	var cpu: Dictionary = HardwareManager.installed_cpu
-	cpu_slot.text = "%s  [%.1fx]" % [cpu.get("name", "?"), cpu.get("cpu_speed", 1.0)]
+	# Stack
+	var stk: Dictionary = HardwareManager.installed_stack
+	stack_slot.text = "%s  [%.1fx]" % [stk.get("name", "?"), stk.get("cpu_speed", 1.0)]
 	var hack_count: int = HardwareManager.active_hack_count
 	if hack_count > 0:
-		cpu_usage_label.visible = true
-		cpu_usage_label.text = "%d hack(s) active  →  %.2fx effective" % [
-			hack_count, HardwareManager.effective_cpu_speed
+		stack_usage_label.visible = true
+		stack_usage_label.text = "%d hack(s) active  →  %.2fx effective" % [
+			hack_count, HardwareManager.effective_stack_speed
 		]
 	else:
-		cpu_usage_label.visible = false
+		stack_usage_label.visible = false
 
 	# Network
 	var net: Dictionary = HardwareManager.installed_network
@@ -121,7 +121,7 @@ func _show_shop_for(slot_type: String, ram_index: int) -> void:
 	var type_labels: Dictionary = {
 		"mobo":     "MOTHERBOARD",
 		"ram":      "RAM MODULE",
-		"cpu":      "CPU",
+		"stack":    "COMPUTE STACK",
 		"network":  "NETWORK CARD",
 		"security": "SECURITY CHIP",
 	}
@@ -190,7 +190,7 @@ func _is_item_installed(item: Dictionary) -> bool:
 	var id: String = item.get("id", "")
 	match item.get("type", ""):
 		"mobo":     return HardwareManager.installed_mobo.get("id", "") == id
-		"cpu":      return HardwareManager.installed_cpu.get("id", "") == id
+		"stack":    return HardwareManager.installed_stack.get("id", "") == id
 		"network":  return HardwareManager.installed_network.get("id", "") == id
 		"security": return HardwareManager.installed_security.get("id", "") == id
 		"ram":
@@ -262,7 +262,7 @@ func _setup_theme() -> void:
 
 	# Section header labels — slot buttons colour overrides set in _refresh
 	_style_section_label($ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/MoboSection/MoboLabel as Label)
-	_style_section_label($ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/CpuSection/CpuLabel as Label)
+	_style_section_label($ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/StackSection/StackLabel as Label)
 	_style_section_label($ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/NetworkSection/NetworkLabel as Label)
 	_style_section_label($ContentArea/Margin/VBox/HSplit/BoardPanel/BoardMargin/BoardVBox/SecuritySection/SecurityLabel as Label)
 	# RamLabel styled above via @onready reference

@@ -1,15 +1,15 @@
 extends Node
 ## Tracks installed hardware and exposes derived stats used by other systems.
 ## RAM capacity limits how many tools can be open simultaneously.
-## CPU speed (shared across active hacks) determines how fast operations complete.
+## Stack speed (shared across active hacks) determines how fast operations complete.
 ## Modem speed multiplier slows trace accumulation.
 ## Security chips can nuke the entire system to avoid a trace completion penalty.
 
 # ── Catalog ────────────────────────────────────────────────────────────────────
-# type: "mobo" | "ram" | "cpu" | "network" | "security"
+# type: "mobo" | "ram" | "stack" | "network" | "security"
 # Motherboard: ram_slots (int)
 # RAM:         ram_capacity (int) — number of concurrent tools this stick supports
-# CPU:         cpu_speed (float)  — base speed multiplier; shared across active hacks
+# Stack:       cpu_speed (float)  — base speed multiplier; shared across active hacks
 # Network:     trace_mult (float) — higher = trace accumulates slower
 # Security:    nuke_mode (String) — "auto" triggers on trace_completed; "manual" is player-activated
 const CATALOG: Array[Dictionary] = [
@@ -47,25 +47,25 @@ const CATALOG: Array[Dictionary] = [
 		"ram_capacity": 4, "cost": 3000,
 	},
 
-	# ── CPU ───────────────────────────────────────────────────────────────────
+	# ── Stacks ────────────────────────────────────────────────────────────────
 	{
-		"id": "cpu_z80", "type": "cpu", "name": "Z80 Chip",
-		"desc": "Single-core. Baseline speed.",
+		"id": "cpu_z80", "type": "stack", "name": "Solo Stack",
+		"desc": "Single processing node. Baseline throughput.",
 		"cpu_speed": 1.0, "cost": 0,
 	},
 	{
-		"id": "cpu_dual", "type": "cpu", "name": "Dual-Core",
-		"desc": "2x base speed. Split across simultaneous hacks.",
+		"id": "cpu_dual", "type": "stack", "name": "Dual Stack",
+		"desc": "Two parallel nodes. 2x speed, distributed across active hacks.",
 		"cpu_speed": 2.0, "cost": 3000,
 	},
 	{
-		"id": "cpu_quad", "type": "cpu", "name": "Quad-Core",
-		"desc": "4x base speed.",
+		"id": "cpu_quad", "type": "stack", "name": "Quad Stack",
+		"desc": "Four-node array. 4x base throughput.",
 		"cpu_speed": 4.0, "cost": 8000,
 	},
 	{
-		"id": "cpu_quantum", "type": "cpu", "name": "Quantum CPU",
-		"desc": "8x base speed. Ludicrous mode.",
+		"id": "cpu_quantum", "type": "stack", "name": "Quantum Stack",
+		"desc": "Eight entangled nodes. 8x throughput. Experimental.",
 		"cpu_speed": 8.0, "cost": 20000,
 	},
 
@@ -106,7 +106,7 @@ const CATALOG: Array[Dictionary] = [
 
 const _STARTING_MOBO_ID:    String = "mobo_basic"
 const _STARTING_RAM_IDS:    Array  = ["ram_256", "ram_256"]
-const _STARTING_CPU_ID:     String = "cpu_z80"
+const _STARTING_STACK_ID:   String = "cpu_z80"
 const _STARTING_NETWORK_ID: String = "net_56k"
 const _STARTING_CREDITS:    int    = 1000
 
@@ -117,7 +117,7 @@ const PASSIVE_TOOLS: Array[String] = ["System Log", "Trace Tracker"]
 # ── Installed hardware state ────────────────────────────────────────────────────
 var installed_mobo:     Dictionary = {}
 var installed_ram:      Array[Dictionary] = []
-var installed_cpu:      Dictionary = {}
+var installed_stack:    Dictionary = {}
 var installed_network:  Dictionary = {}
 var installed_security: Dictionary = {}
 
@@ -127,11 +127,11 @@ var ram_capacity:           int   = 0
 var ram_used:               int   = 0
 var modem_trace_multiplier: float = 1.0
 
-# ── CPU ────────────────────────────────────────────────────────────────────────
+# ── Stack ──────────────────────────────────────────────────────────────────────
 var active_hack_count: int = 0
 
-var effective_cpu_speed: float:
-	get: return installed_cpu.get("cpu_speed", 1.0) / max(1, active_hack_count)
+var effective_stack_speed: float:
+	get: return installed_stack.get("cpu_speed", 1.0) / max(1, active_hack_count)
 
 
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
@@ -182,7 +182,7 @@ func get_save_data() -> Dictionary:
 	return {
 		"mobo_id":     installed_mobo.get("id", _STARTING_MOBO_ID),
 		"ram_ids":     installed_ram.map(func(r: Dictionary) -> String: return r.get("id", "")),
-		"cpu_id":      installed_cpu.get("id", _STARTING_CPU_ID),
+		"cpu_id":      installed_stack.get("id", _STARTING_STACK_ID),
 		"network_id":  installed_network.get("id", _STARTING_NETWORK_ID),
 		"security_id": installed_security.get("id", ""),
 	}
@@ -195,7 +195,7 @@ func load_save_data(data: Dictionary) -> void:
 		var r: Dictionary = _find_catalog_item(rid)
 		if not r.is_empty():
 			installed_ram.append(r)
-	installed_cpu     = _find_catalog_item(data.get("cpu_id", _STARTING_CPU_ID))
+	installed_stack   = _find_catalog_item(data.get("cpu_id", _STARTING_STACK_ID))
 	installed_network = _find_catalog_item(data.get("network_id", _STARTING_NETWORK_ID))
 	var sec_id: String = data.get("security_id", "")
 	installed_security = {} if sec_id.is_empty() else _find_catalog_item(sec_id)
@@ -267,8 +267,8 @@ func _install_item(item: Dictionary) -> void:
 				)
 				GameManager.add_credits(item.get("cost", 0))
 				return
-		"cpu":
-			installed_cpu = item
+		"stack":
+			installed_stack = item
 		"network":
 			installed_network = item
 		"security":
@@ -289,7 +289,7 @@ func _reset_to_starting_config() -> void:
 	installed_ram.clear()
 	for rid: String in _STARTING_RAM_IDS:
 		installed_ram.append(_find_catalog_item(rid))
-	installed_cpu      = _find_catalog_item(_STARTING_CPU_ID)
+	installed_stack    = _find_catalog_item(_STARTING_STACK_ID)
 	installed_network  = _find_catalog_item(_STARTING_NETWORK_ID)
 	installed_security = {}
 	active_hack_count  = 0
