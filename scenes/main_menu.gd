@@ -43,6 +43,7 @@ const _LOG_LINES: Array[String] = [
 ]
 
 # ── Node refs ──────────────────────────────────────────────────────────────────
+var _crt_rect:       ColorRect
 var _log_label:      RichTextLabel
 var _menu_box:       VBoxContainer
 var _handle_box:     VBoxContainer
@@ -60,17 +61,24 @@ func _ready() -> void:
 	_build_menu()
 	_continue_btn.disabled = not SaveManager.has_save()
 	_start_log()
+	SettingsManager.settings_changed.connect(_apply_crt_settings)
+	_apply_crt_settings()
 
 
 # ── Build ──────────────────────────────────────────────────────────────────────
 
 func _build_background() -> void:
-	var crt := ColorRect.new()
-	crt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_crt_rect = ColorRect.new()
+	_crt_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var mat := ShaderMaterial.new()
 	mat.shader = load("res://scenes/desktop/crt_background.gdshader")
-	crt.material = mat
-	add_child(crt)
+	_crt_rect.material = mat
+	add_child(_crt_rect)
+
+
+func _apply_crt_settings() -> void:
+	_crt_rect.visible  = SettingsManager.crt_enabled
+	_crt_rect.modulate = Color(1.0, 1.0, 1.0, SettingsManager.crt_intensity)
 
 
 func _build_scrolling_log() -> void:

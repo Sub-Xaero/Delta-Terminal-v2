@@ -14,6 +14,7 @@ const SettingsScene        := preload("res://scenes/ui/settings.tscn")
 
 @onready var window_manager: WindowManager = $WindowLayer
 @onready var context_menu: PopupMenu = $ContextMenu
+@onready var _crt_bg: ColorRect = $Background
 
 
 func _ready() -> void:
@@ -21,8 +22,15 @@ func _ready() -> void:
 	_setup_context_menu()
 	EventBus.context_menu_requested.connect(_show_context_menu)
 	EventBus.open_tool_requested.connect(_on_open_tool_requested)
+	SettingsManager.settings_changed.connect(_apply_crt_settings)
+	_apply_crt_settings()
 	window_manager.spawn_tool_window(SystemLogScene, "System Log")
 	window_manager.spawn_tool_window(TraceTrackerScene, "Trace Tracker")
+
+
+func _apply_crt_settings() -> void:
+	_crt_bg.visible  = SettingsManager.crt_enabled
+	_crt_bg.modulate = Color(1.0, 1.0, 1.0, SettingsManager.crt_intensity)
 
 
 func _setup_context_menu() -> void:
