@@ -1,0 +1,97 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/player_profile.gd" id="2_pp"]
+
+[node name="PlayerProfile" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(360, 420)
+script = ExtResource("2_pp")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HandleLabel" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = "GHOST"
+horizontal_alignment = 1
+
+[node name="Sep1" type="HSeparator" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+
+[node name="StatsGrid" type="GridContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 4
+
+[node name="CreditsTag" type="Label" parent="ContentArea/Margin/VBox/StatsGrid"]
+layout_mode = 2
+text = "CREDITS"
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.35, 0.35, 0.45, 1)
+
+[node name="CreditsValue" type="Label" parent="ContentArea/Margin/VBox/StatsGrid"]
+layout_mode = 2
+text = "0 CR"
+
+[node name="RatingTag" type="Label" parent="ContentArea/Margin/VBox/StatsGrid"]
+layout_mode = 2
+text = "RATING"
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.35, 0.35, 0.45, 1)
+
+[node name="RatingValue" type="Label" parent="ContentArea/Margin/VBox/StatsGrid"]
+layout_mode = 2
+text = "1"
+
+[node name="Sep2" type="HSeparator" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+
+[node name="HeatHeader" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = "HEAT"
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.35, 0.35, 0.45, 1)
+
+[node name="HeatRow" type="HBoxContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+
+[node name="HeatValue" type="Label" parent="ContentArea/Margin/VBox/HeatRow"]
+layout_mode = 2
+text = "0"
+size_flags_horizontal = 3
+
+[node name="HeatBar" type="ProgressBar" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 10)
+max_value = 100.0
+show_percentage = false
+
+[node name="Sep3" type="HSeparator" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+
+[node name="FactionHeader" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = "FACTION REPUTATION"
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.35, 0.35, 0.45, 1)
+
+[node name="FactionScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 80)
+
+[node name="FactionList" type="VBoxContainer" parent="ContentArea/Margin/VBox/FactionScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
