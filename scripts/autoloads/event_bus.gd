@@ -6,6 +6,7 @@ extends Node
 signal network_connected(node_id: String)
 signal network_disconnected()
 signal bounce_chain_updated(chain: Array)
+signal firewall_bypassed(node_id: String)
 
 # ── Trace ─────────────────────────────────────────────────────────────────────
 signal trace_started(duration: float)

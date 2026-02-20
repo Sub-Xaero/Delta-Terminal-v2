@@ -1,0 +1,57 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/firewall_bypasser.gd" id="2_fb"]
+
+[node name="FirewallBypasser" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(400, 310)
+script = ExtResource("2_fb")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StatusLabel" type="Label" parent="ContentArea/Margin/VBox"]
+text = "NO ACTIVE CONNECTION"
+horizontal_alignment = 1
+
+[node name="Sep1" type="HSeparator" parent="ContentArea/Margin/VBox"]
+
+[node name="ProbePanel" type="PanelContainer" parent="ContentArea/Margin/VBox"]
+
+[node name="ProbeMargin" type="MarginContainer" parent="ContentArea/Margin/VBox/ProbePanel"]
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RuleGrid" type="RichTextLabel" parent="ContentArea/Margin/VBox/ProbePanel/ProbeMargin"]
+layout_mode = 2
+bbcode_enabled = true
+scroll_active = false
+fit_content = true
+text = ""
+
+[node name="BypassPct" type="Label" parent="ContentArea/Margin/VBox"]
+text = "BYPASS:  0%"
+
+[node name="BypassBar" type="ProgressBar" parent="ContentArea/Margin/VBox"]
+show_percentage = false
+value = 0
+
+[node name="Spacer" type="Control" parent="ContentArea/Margin/VBox"]
+custom_minimum_size = Vector2(0, 4)
+size_flags_vertical = 3
+
+[node name="ActionBtn" type="Button" parent="ContentArea/Margin/VBox"]
+text = "INITIATE BYPASS"
+disabled = true
