@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://dt_settings_v2"]
+
+[ext_resource type="PackedScene" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/ui/settings.gd" id="2_st"]
+
+[node name="Settings" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(440, 320)
+script = ExtResource("2_st")
