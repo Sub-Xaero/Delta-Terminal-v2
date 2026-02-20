@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://cpausemenuv1"]
+
+[ext_resource type="Script" path="res://scenes/ui/pause_menu.gd" id="1_pm"]
+
+[node name="PauseMenu" type="Control"]
+process_mode = 3
+script = ExtResource("1_pm")

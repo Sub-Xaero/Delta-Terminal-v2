@@ -12,11 +12,11 @@ const MissionLogScene         := preload("res://scenes/tools/mission_log.tscn")
 const FileBrowserScene        := preload("res://scenes/tools/file_browser.tscn")
 const EncryptionBreakerScene  := preload("res://scenes/tools/encryption_breaker.tscn")
 const HardwareViewerScene     := preload("res://scenes/tools/hardware_viewer.tscn")
-const SettingsScene           := preload("res://scenes/ui/settings.tscn")
 
 @onready var window_manager: WindowManager = $WindowLayer
 @onready var context_menu: PopupMenu = $ContextMenu
 @onready var _crt_bg: ColorRect = $Background
+@onready var _pause_menu: PauseMenu = $PauseMenu
 
 
 func _ready() -> void:
@@ -25,6 +25,7 @@ func _ready() -> void:
 	EventBus.context_menu_requested.connect(_show_context_menu)
 	EventBus.open_tool_requested.connect(_on_open_tool_requested)
 	EventBus.system_nuke_triggered.connect(_on_system_nuke)
+	EventBus.pause_requested.connect(_pause_menu.toggle)
 	SettingsManager.settings_changed.connect(_apply_crt_settings)
 	_apply_crt_settings()
 	window_manager.spawn_tool_window(SystemLogScene, "System Log")
@@ -52,13 +53,15 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("System Info", 4)
 	context_menu.add_item("Hardware Viewer", 11)
 	context_menu.add_separator()
-	context_menu.add_item("Settings", 8)
-	context_menu.add_separator()
 	context_menu.add_item("Save Game", 12)
 	context_menu.id_pressed.connect(_on_context_menu_id_pressed)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.is_action_pressed("ui_cancel"):
+		_pause_menu.toggle()
+		get_viewport().set_input_as_handled()
+		return
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			_show_context_menu(get_global_mouse_position())
@@ -113,8 +116,6 @@ func _on_context_menu_id_pressed(id: int) -> void:
 				],
 				"info"
 			)
-		8:
-			window_manager.spawn_tool_window(SettingsScene, "Settings")
 		12:
 			SaveManager.save_game()
 

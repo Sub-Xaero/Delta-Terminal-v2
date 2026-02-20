@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://btgvnars7safb"]
 
 [ext_resource type="Script" uid="uid://drbpe4t7ta1wi" path="res://scenes/desktop/desktop.gd" id="1_desk"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="7_pm"]
 [ext_resource type="Script" uid="uid://byvw0ae1r6jbc" path="res://scenes/desktop/window_manager.gd" id="2_wm"]
 [ext_resource type="Script" uid="uid://ogabhcn6r2p" path="res://scenes/desktop/taskbar.gd" id="3_tb"]
 [ext_resource type="Shader" uid="uid://b0bc2h4d8a5fo" path="res://scenes/desktop/crt_background.gdshader" id="4_crt"]
@@ -90,3 +91,6 @@ offset_bottom = -36.0
 
 [node name="ContextMenu" type="PopupMenu" parent="." unique_id=2063644530]
 oversampling_override = 1.0
+
+[node name="PauseMenu" parent="." instance=ExtResource("7_pm")]
+layout_mode = 1

@@ -73,6 +73,14 @@ func _apply_theme() -> void:
 	add_theme_stylebox_override("panel", style)
 
 	clock_label.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	clock_label.mouse_filter = Control.MOUSE_FILTER_STOP
+	clock_label.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	clock_label.gui_input.connect(_on_clock_gui_input)
+
+
+func _on_clock_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		EventBus.pause_requested.emit()
 
 
 func _update_clock() -> void:
