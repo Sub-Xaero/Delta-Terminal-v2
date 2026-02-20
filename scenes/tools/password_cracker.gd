@@ -31,7 +31,10 @@ func _ready() -> void:
 	EventBus.trace_completed.connect(_on_trace_completed)
 	action_btn.pressed.connect(_on_action_pressed)
 	_setup_theme()
-	_update_ui()
+	if NetworkSim.is_connected:
+		_on_network_connected(NetworkSim.connected_node_id)
+	else:
+		_update_ui()
 
 
 func _process(delta: float) -> void:

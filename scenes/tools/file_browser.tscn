@@ -1,0 +1,92 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/file_browser.gd" id="2_fb"]
+
+[node name="FileBrowser" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(560, 400)
+script = ExtResource("2_fb")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HeaderLabel" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = "FILE BROWSER"
+
+[node name="HSplit" type="HSplitContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 190
+
+[node name="FileListPanel" type="PanelContainer" parent="ContentArea/Margin/VBox/HSplit"]
+layout_mode = 2
+
+[node name="FileListMargin" type="MarginContainer" parent="ContentArea/Margin/VBox/HSplit/FileListPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="FileListScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox/HSplit/FileListPanel/FileListMargin"]
+layout_mode = 2
+
+[node name="FileList" type="VBoxContainer" parent="ContentArea/Margin/VBox/HSplit/FileListPanel/FileListMargin/FileListScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="DetailVBox" type="VBoxContainer" parent="ContentArea/Margin/VBox/HSplit"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FilenameLabel" type="Label" parent="ContentArea/Margin/VBox/HSplit/DetailVBox"]
+layout_mode = 2
+text = "—"
+
+[node name="FileInfoLabel" type="Label" parent="ContentArea/Margin/VBox/HSplit/DetailVBox"]
+layout_mode = 2
+text = ""
+
+[node name="ActionRow" type="HBoxContainer" parent="ContentArea/Margin/VBox/HSplit/DetailVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ViewBtn" type="Button" parent="ContentArea/Margin/VBox/HSplit/DetailVBox/ActionRow"]
+text = "VIEW"
+disabled = true
+
+[node name="CopyBtn" type="Button" parent="ContentArea/Margin/VBox/HSplit/DetailVBox/ActionRow"]
+text = "COPY"
+disabled = true
+
+[node name="DeleteBtn" type="Button" parent="ContentArea/Margin/VBox/HSplit/DetailVBox/ActionRow"]
+text = "DELETE"
+disabled = true
+
+[node name="ContentScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox/HSplit/DetailVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+visible = false
+
+[node name="ContentLabel" type="RichTextLabel" parent="ContentArea/Margin/VBox/HSplit/DetailVBox/ContentScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+bbcode_enabled = true
+fit_content = true
+
+[node name="StatusLabel" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+visible = false
+horizontal_alignment = 1

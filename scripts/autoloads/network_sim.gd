@@ -99,6 +99,20 @@ func get_node_data(node_id: String) -> Dictionary:
 	return nodes.get(node_id, {})
 
 
+func delete_file_from_node(node_id: String, file_id: String) -> bool:
+	if not nodes.has(node_id):
+		return false
+	var files: Array = nodes[node_id].get("files", [])
+	for i: int in files.size():
+		if files[i].get("id", "") == file_id:
+			files.remove_at(i)
+			EventBus.log_message.emit(
+				"File deleted from %s." % nodes[node_id]["ip"], "warn"
+			)
+			return true
+	return false
+
+
 func _register_default_nodes() -> void:
 	# Starting network — replace with data-driven loading later.
 	# map_position: pixel coords on the NetworkMapCanvas (~490 × 420 visible area)
@@ -120,7 +134,15 @@ func _register_default_nodes() -> void:
 		"name": "Sentinel ISP",
 		"security": 1,
 		"map_position": Vector2(210, 110),
-		"files": [],
+		"files": [
+			{
+				"id": "isp01_f1",
+				"name": "routing.cfg",
+				"type": "config",
+				"size": 512,
+				"content": "# Sentinel ISP Routing Config\ngateway=81.14.22.254\ndns_primary=81.14.0.1\ndns_secondary=81.14.0.2\nmax_hops=16\nlog_level=warn",
+			},
+		],
 		"services": ["relay"],
 		"connections": ["univ_01", "corp_01"],
 	})
@@ -140,7 +162,22 @@ func _register_default_nodes() -> void:
 		"name": "NeoTech University",
 		"security": 2,
 		"map_position": Vector2(370, 60),
-		"files": [],
+		"files": [
+			{
+				"id": "univ01_f1",
+				"name": "research_data.dat",
+				"type": "data",
+				"size": 6144,
+				"content": "PROJECT: HELIX-7\nClassification: RESTRICTED\n\nSubject trials 001-048 complete. Cognitive augmentation index nominal.\nAnomaly detected in subject 023 — elevated neural binding ratio.\nRecommend further isolation and extended observation.\n\nData checksum: 0xAF3C91B2",
+			},
+			{
+				"id": "univ01_f2",
+				"name": "access.log",
+				"type": "log",
+				"size": 1024,
+				"content": "[2057-11-03 02:14:08] LOGIN  admin       193.62.18.1  OK\n[2057-11-03 03:41:22] LOGIN  r.nakamura   10.0.0.44    OK\n[2057-11-03 04:02:55] LOGIN  UNKNOWN      81.14.22.1   FAIL\n[2057-11-03 04:02:57] LOGIN  UNKNOWN      81.14.22.1   FAIL\n[2057-11-03 04:02:59] ALERT  Brute-force detected — IP flagged",
+			},
+		],
 		"services": [],
 		"connections": ["corp_01"],
 	})
@@ -150,7 +187,29 @@ func _register_default_nodes() -> void:
 		"name": "ArcTech Systems",
 		"security": 3,
 		"map_position": Vector2(370, 200),
-		"files": [],
+		"files": [
+			{
+				"id": "corp01_f1",
+				"name": "employee_records.dat",
+				"type": "data",
+				"size": 14336,
+				"content": "ID     | NAME                  | DEPT         | CLEARANCE\n-------|----------------------|--------------|----------\n00041  | Vasquez, Elena        | R&D          | L3\n00042  | Okafor, James         | Security     | L4\n00043  | Tanaka, Yui           | Executive    | L5\n00044  | Mercer, Dorian        | Finance      | L2\n00045  | [REDACTED]            | Black Ops    | L6\n\n[RECORD ACCESS LOGGED]",
+			},
+			{
+				"id": "corp01_f2",
+				"name": "Q3_financials.doc",
+				"type": "doc",
+				"size": 8192,
+				"content": "ARCTECH SYSTEMS — Q3 FINANCIAL SUMMARY\n\nRevenue:      ¥ 4,820,000,000\nOperating:    ¥ 3,110,000,000\nNet Margin:   35.5%\n\nNOTE: Project HYDRA budget allocation concealed under 'Infrastructure'.\nActual spend: ¥ 890,000,000  (off-ledger, Board-eyes-only)\n\nDo not distribute.",
+			},
+			{
+				"id": "corp01_f3",
+				"name": "security_audit.log",
+				"type": "log",
+				"size": 3072,
+				"content": "[2057-10-31 09:00:00] AUDIT START  -- ArcTech perimeter sweep\n[2057-10-31 09:14:32] Port 443 — TLS cert expiry warning (14 days)\n[2057-10-31 09:22:11] Firewall rule anomaly detected on DMZ-3\n[2057-10-31 09:22:45] ALERT: Unregistered MAC on internal VLAN 12\n[2057-10-31 09:23:01] Auto-quarantine triggered\n[2057-10-31 09:41:00] AUDIT END    -- 3 issues flagged",
+			},
+		],
 		"services": [],
 		"connections": [],
 	})
@@ -160,7 +219,15 @@ func _register_default_nodes() -> void:
 		"name": "Darknet Relay",
 		"security": 2,
 		"map_position": Vector2(370, 350),
-		"files": [],
+		"files": [
+			{
+				"id": "dark01_f1",
+				"name": "relay_log.log",
+				"type": "log",
+				"size": 2048,
+				"content": "[RELAY NODE — ENCRYPTED TRAFFIC LOG]\n\n2057-11-01 00:00:00  IN  84.23.119.41 -> [MASKED]   412 KB\n2057-11-01 00:00:03  IN  193.62.18.5  -> [MASKED]   88 KB\n2057-11-01 00:00:07  OUT [MASKED]     -> [MASKED]   500 KB\n\n[entries continue — 4,812 total this session]\n\n-- Operator: no-log policy enforced --",
+			},
+		],
 		"services": ["relay"],
 		"connections": ["corp_01"],
 	})

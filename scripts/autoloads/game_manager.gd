@@ -14,6 +14,7 @@ var player_data: Dictionary = {
 
 var active_missions: Array[String] = []
 var completed_missions: Array[String] = []
+var local_storage: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -35,6 +36,15 @@ func accept_mission(mission_id: String) -> void:
 func add_credits(amount: int) -> void:
 	player_data["credits"] += amount
 	EventBus.player_stats_changed.emit()
+
+
+func copy_file_to_local(file: Dictionary) -> void:
+	for f: Dictionary in local_storage:
+		if f.get("id", "") == file.get("id", ""):
+			EventBus.log_message.emit("File '%s' already in local storage." % file["name"], "warn")
+			return
+	local_storage.append(file.duplicate())
+	EventBus.log_message.emit("File '%s' saved to local storage." % file["name"], "info")
 
 
 func _on_mission_completed(mission_id: String) -> void:
