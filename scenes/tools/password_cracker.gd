@@ -42,7 +42,7 @@ func _process(delta: float) -> void:
 	_update_char_grid()
 	if _state != State.CRACKING:
 		return
-	_crack_elapsed  += delta
+	_crack_elapsed  += delta * HardwareManager.effective_stack_speed
 	_crack_progress  = minf(_crack_elapsed / _crack_duration, 1.0)
 	crack_bar.value  = _crack_progress * 100.0
 	crack_pct.text   = "CRACK:  %d%%" % roundi(_crack_progress * 100.0)
@@ -86,6 +86,7 @@ func _start_crack() -> void:
 	_crack_progress = 0.0
 	_state = State.CRACKING
 	NetworkSim.start_trace(_trace_time(security))
+	EventBus.tool_task_started.emit("password_cracker", NetworkSim.connected_node_id)
 	EventBus.log_message.emit(
 		"Password cracker initiated on %s" % data.get("ip", "?"), "info"
 	)
@@ -98,6 +99,7 @@ func _abort_crack() -> void:
 	_crack_elapsed  = 0.0
 	crack_bar.value = 0.0
 	crack_pct.text  = "CRACK:  0%"
+	EventBus.tool_task_completed.emit("password_cracker", NetworkSim.connected_node_id, false)
 	EventBus.log_message.emit("Crack aborted.", "warn")
 	_update_ui()
 
@@ -147,6 +149,7 @@ func _on_trace_completed() -> void:
 	if _state != State.CRACKING:
 		return
 	_state = State.FAILED
+	EventBus.tool_task_completed.emit("password_cracker", NetworkSim.connected_node_id, false)
 	EventBus.log_message.emit("Trace complete — connection terminated.", "error")
 	NetworkSim.disconnect_from_node()
 	_update_ui()

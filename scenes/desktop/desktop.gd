@@ -3,15 +3,16 @@ extends Control
 ## Root desktop scene — the in-game OS shell.
 ## Hosts the WindowManager, Taskbar, and right-click context menu.
 
-const SystemLogScene       := preload("res://scenes/tools/system_log.tscn")
-const NetworkMapScene      := preload("res://scenes/tools/network_map.tscn")
-const PasswordCrackerScene  := preload("res://scenes/tools/password_cracker.tscn")
-const FirewallBypasserScene := preload("res://scenes/tools/firewall_bypasser.tscn")
-const PortScannerScene     := preload("res://scenes/tools/port_scanner.tscn")
-const TraceTrackerScene    := preload("res://scenes/tools/trace_tracker.tscn")
-const MissionLogScene      := preload("res://scenes/tools/mission_log.tscn")
+const SystemLogScene          := preload("res://scenes/tools/system_log.tscn")
+const NetworkMapScene         := preload("res://scenes/tools/network_map.tscn")
+const PasswordCrackerScene    := preload("res://scenes/tools/password_cracker.tscn")
+const FirewallBypasserScene   := preload("res://scenes/tools/firewall_bypasser.tscn")
+const PortScannerScene        := preload("res://scenes/tools/port_scanner.tscn")
+const TraceTrackerScene       := preload("res://scenes/tools/trace_tracker.tscn")
+const MissionLogScene         := preload("res://scenes/tools/mission_log.tscn")
 const FileBrowserScene        := preload("res://scenes/tools/file_browser.tscn")
 const EncryptionBreakerScene  := preload("res://scenes/tools/encryption_breaker.tscn")
+const HardwareViewerScene     := preload("res://scenes/tools/hardware_viewer.tscn")
 const SettingsScene           := preload("res://scenes/ui/settings.tscn")
 
 @onready var window_manager: WindowManager = $WindowLayer
@@ -24,6 +25,7 @@ func _ready() -> void:
 	_setup_context_menu()
 	EventBus.context_menu_requested.connect(_show_context_menu)
 	EventBus.open_tool_requested.connect(_on_open_tool_requested)
+	EventBus.system_nuke_triggered.connect(_on_system_nuke)
 	SettingsManager.settings_changed.connect(_apply_crt_settings)
 	_apply_crt_settings()
 	window_manager.spawn_tool_window(SystemLogScene, "System Log")
@@ -51,6 +53,7 @@ func _setup_context_menu() -> void:
 	context_menu.add_separator()
 	context_menu.add_item("System Log", 3)
 	context_menu.add_item("System Info", 4)
+	context_menu.add_item("Hardware Viewer", 11)
 	context_menu.add_separator()
 	context_menu.add_item("Settings", 8)
 	context_menu.id_pressed.connect(_on_context_menu_id_pressed)
@@ -77,6 +80,8 @@ func _on_open_tool_requested(tool_name: String) -> void:
 				w.queue_free()
 			else:
 				window_manager.spawn_tool_window(NetworkMapScene, "Network Map")
+		"Hardware Viewer":
+			window_manager.spawn_tool_window(HardwareViewerScene, "Hardware Viewer")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:
@@ -99,6 +104,8 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			window_manager.spawn_tool_window(FirewallBypasserScene, "Firewall Bypasser")
 		10:
 			window_manager.spawn_tool_window(EncryptionBreakerScene, "Encryption Breaker")
+		11:
+			window_manager.spawn_tool_window(HardwareViewerScene, "Hardware Viewer")
 		4:
 			var handle: String = GameManager.player_data.get("handle", "ghost")
 			EventBus.log_message.emit(
@@ -111,3 +118,13 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			)
 		8:
 			window_manager.spawn_tool_window(SettingsScene, "Settings")
+
+
+func _on_system_nuke() -> void:
+	var to_close: Array = window_manager.open_windows.keys().duplicate()
+	for tool_name: String in to_close:
+		if tool_name in ["System Log", "Trace Tracker"]:
+			continue
+		EventBus.tool_closed.emit(tool_name)
+		if window_manager.open_windows.has(tool_name):
+			window_manager.open_windows[tool_name].queue_free()

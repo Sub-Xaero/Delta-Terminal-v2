@@ -16,6 +16,7 @@ func save_game() -> void:
 		"active_missions":   GameManager.active_missions.duplicate(),
 		"completed_missions":GameManager.completed_missions.duplicate(),
 		"cracked_nodes":     NetworkSim.cracked_nodes.duplicate(),
+		"hardware":          HardwareManager.get_save_data(),
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -40,6 +41,8 @@ func load_game() -> bool:
 	GameManager.active_missions.assign(data.get("active_missions", []))
 	GameManager.completed_missions.assign(data.get("completed_missions", []))
 	NetworkSim.cracked_nodes.assign(data.get("cracked_nodes", []))
+	if data.has("hardware"):
+		HardwareManager.load_save_data(data["hardware"])
 	return true
 
 

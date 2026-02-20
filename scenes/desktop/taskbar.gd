@@ -1,7 +1,7 @@
 class_name Taskbar
 extends Panel
 ## Taskbar / dock showing open tool buttons and a system clock.
-## Reacts to EventBus.tool_opened / tool_closed / hardware_changed.
+## Reacts to EventBus.tool_opened / tool_closed.
 
 @onready var task_items: HBoxContainer = $TaskItems
 @onready var clock_label: Label = $ClockLabel
@@ -16,6 +16,7 @@ func _ready() -> void:
 	_apply_theme()
 	_update_clock()
 	_add_launch_button()
+	_add_pc_button()
 
 
 func _add_launch_button() -> void:
@@ -45,6 +46,17 @@ func _style_button(btn: Button, color: Color) -> void:
 	btn.add_theme_stylebox_override("hover",   h)
 	btn.add_theme_stylebox_override("pressed", h)
 	btn.add_theme_stylebox_override("focus",   n)
+
+
+func _add_pc_button() -> void:
+	var btn := Button.new()
+	btn.text = "[ PC ]"
+	_style_button(btn, Color(0.0, 0.88, 1.0))
+	btn.pressed.connect(func(): EventBus.open_tool_requested.emit("Hardware Viewer"))
+	task_items.add_child(btn)
+
+	var sep := VSeparator.new()
+	task_items.add_child(sep)
 
 
 func _process(_delta: float) -> void:

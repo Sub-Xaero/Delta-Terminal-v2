@@ -26,7 +26,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if trace_active:
-		_trace_elapsed += delta
+		_trace_elapsed += delta / HardwareManager.modem_trace_multiplier
 		trace_progress = clampf(_trace_elapsed / _trace_duration, 0.0, 1.0)
 		EventBus.trace_progress.emit(trace_progress)
 		if trace_progress >= 1.0:

@@ -18,11 +18,14 @@ func focus_tool_window(p_tool_name: String) -> void:
 
 
 ## Spawns a new tool window from a PackedScene, or focuses it if already open.
-## Emits EventBus.tool_opened on success.
+## Emits EventBus.tool_opened on success. Returns null if RAM is at capacity.
 func spawn_tool_window(tool_scene: PackedScene, p_tool_name: String) -> ToolWindow:
 	if open_windows.has(p_tool_name):
 		_focus_window(open_windows[p_tool_name])
 		return open_windows[p_tool_name]
+
+	if not HardwareManager.can_open_tool(p_tool_name):
+		return null
 
 	var window: ToolWindow = tool_scene.instantiate()
 	window.set_tool_name(p_tool_name)

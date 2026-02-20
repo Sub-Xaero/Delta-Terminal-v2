@@ -31,3 +31,7 @@ signal mission_failed(mission_id: String, reason: String)
 signal log_message(text: String, level: String)   # level: "info" | "warn" | "error"
 signal player_stats_changed()
 signal context_menu_requested(at_position: Vector2)
+
+# ── Hardware ───────────────────────────────────────────────────────────────────
+signal hardware_changed()          # any install/uninstall or hack count change
+signal system_nuke_triggered()     # fired after full state reset; desktop reacts

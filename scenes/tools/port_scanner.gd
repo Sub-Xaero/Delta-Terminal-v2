@@ -49,9 +49,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _state != State.SCANNING:
 		return
-	_scan_elapsed += delta
+	var stk_speed: float = HardwareManager.effective_stack_speed
+	_scan_elapsed += delta * stk_speed
 	scan_bar.value  = minf(_scan_elapsed / _scan_duration, 1.0) * 100.0
-	_line_timer    -= delta
+	_line_timer    -= delta * stk_speed
 	if _line_timer <= 0.0 and not _pending_lines.is_empty():
 		_reveal_next_line()
 		_line_timer = _line_interval
@@ -119,6 +120,7 @@ func _start_scan(node_id: String) -> void:
 	_line_interval = (_scan_duration * 0.85) / maxf(float(_pending_lines.size()), 1.0)
 	_line_timer    = 0.1  # Short delay before first line appears
 
+	EventBus.tool_task_started.emit("port_scanner", node_id)
 	EventBus.log_message.emit("Port scan initiated on %s" % ip, "info")
 
 
@@ -135,6 +137,7 @@ func _finish_scan() -> void:
 	scan_bar.visible  = false
 	scan_btn.disabled = false
 
+	EventBus.tool_task_completed.emit("port_scanner", _target_node_id, true)
 	EventBus.log_message.emit(
 		"Scan complete: %d open port(s) found on %s" % [port_cnt, ip], "info"
 	)
