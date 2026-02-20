@@ -32,6 +32,7 @@ signal log_message(text: String, level: String)   # level: "info" | "warn" | "er
 signal player_stats_changed()
 signal context_menu_requested(at_position: Vector2)
 signal pause_requested()
+signal ui_button_pressed()   # any taskbar / UI button click
 
 # ── Hardware ───────────────────────────────────────────────────────────────────
 signal hardware_changed()          # any install/uninstall or hack count change
