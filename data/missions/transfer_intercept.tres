@@ -1,0 +1,36 @@
+[gd_resource type="Resource" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]
+
+[sub_resource type="Resource" id="Obj_1"]
+script = ExtResource("2_od")
+description = "Connect to Sentinel ISP"
+type = 0
+target = "isp_gateway"
+completed = false
+
+[sub_resource type="Resource" id="Obj_2"]
+script = ExtResource("2_od")
+description = "Crack the ISP gateway"
+type = 1
+target = "isp_gateway"
+completed = false
+
+[sub_resource type="Resource" id="Obj_3"]
+script = ExtResource("2_od")
+description = "Steal ISP admin credentials"
+type = 6
+target = "isp_gateway"
+completed = false
+
+[resource]
+script = ExtResource("1_md")
+id = "transfer_intercept"
+title = "Transfer Intercept"
+faction_id = "nova_corp"
+min_rep = 0
+reward_credits = 550
+reward_rating = 0
+description = "Access the ISP gateway and steal admin credentials for our records."
+objectives = [SubResource("Obj_1"), SubResource("Obj_2"), SubResource("Obj_3")]

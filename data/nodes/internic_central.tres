@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "internic_central"
+ip = "198.41.0.1"
+name = "InterNIC Central"
+organisation = "InterNIC"
+security = 3
+map_position = Vector2(320, 80)
+files = [{"id": "ic_f1", "name": "domain_registry.dat", "type": "data", "size": 2048, "content": "INTERNIC DOMAIN REGISTRY\n\narctech.corp  -> 10.20.1.1\nmeridian.gov  -> 10.50.1.1\nnova-corp.com -> 10.30.0.1\nsyn.net       -> 10.14.66.1"}]
+services = ["relay", "node_directory"]
+connections = ["isp_gateway", "globenet_isp", "euro_relay"]
+users = []
+faction_id = ""
+shop_catalogue = []
+public_interfaces = []
+node_type = "isp"
+lan_nodes = []

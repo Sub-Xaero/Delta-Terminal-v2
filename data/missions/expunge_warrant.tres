@@ -1,0 +1,43 @@
+[gd_resource type="Resource" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]
+
+[sub_resource type="Resource" id="Obj_1"]
+script = ExtResource("2_od")
+description = "Connect to Meridian Gov Records"
+type = 0
+target = "meridian_gov_records"
+completed = false
+
+[sub_resource type="Resource" id="Obj_2"]
+script = ExtResource("2_od")
+description = "Crack the database server"
+type = 1
+target = "meridian_gov_records"
+completed = false
+
+[sub_resource type="Resource" id="Obj_3"]
+script = ExtResource("2_od")
+description = "Alter the warrant record"
+type = 7
+target = "meridian_gov_records"
+completed = false
+
+[sub_resource type="Resource" id="Obj_4"]
+script = ExtResource("2_od")
+description = "Erase access logs"
+type = 5
+target = "meridian_gov_records"
+completed = false
+
+[resource]
+script = ExtResource("1_md")
+id = "expunge_warrant"
+title = "Expunge Warrant"
+faction_id = "syn_underground"
+min_rep = 0
+reward_credits = 900
+reward_rating = 1
+description = "Find and alter the warrant record on the gov database, then clean up."
+objectives = [SubResource("Obj_1"), SubResource("Obj_2"), SubResource("Obj_3"), SubResource("Obj_4")]

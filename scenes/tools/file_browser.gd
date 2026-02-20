@@ -139,7 +139,7 @@ func _on_copy_pressed() -> void:
 	if _selected_file.is_empty():
 		return
 	GameManager.copy_file_to_local(_selected_file)
-	EventBus.tool_task_completed.emit("file_browser", _selected_file.get("id", ""), true)
+	EventBus.tool_task_completed.emit("file_browser", _selected_file.get("name", ""), true)
 
 
 func _on_delete_pressed() -> void:

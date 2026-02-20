@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "mercenary_board"
+ip = "10.14.77.1"
+name = "Mercenary Board"
+organisation = "Syn Underground"
+security = 2
+map_position = Vector2(240, 440)
+files = []
+services = ["job_board"]
+connections = ["syn_underground_market", "darkweb_hub"]
+users = []
+faction_id = "syn_underground"
+shop_catalogue = []
+public_interfaces = []
+node_type = "story"
+lan_nodes = []

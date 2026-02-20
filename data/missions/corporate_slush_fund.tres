@@ -1,0 +1,43 @@
+[gd_resource type="Resource" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]
+
+[sub_resource type="Resource" id="Obj_1"]
+script = ExtResource("2_od")
+description = "Connect to NovaCorp Bank"
+type = 0
+target = "novacorp_bank"
+completed = false
+
+[sub_resource type="Resource" id="Obj_2"]
+script = ExtResource("2_od")
+description = "Crack the bank server"
+type = 1
+target = "novacorp_bank"
+completed = false
+
+[sub_resource type="Resource" id="Obj_3"]
+script = ExtResource("2_od")
+description = "Drain the slush fund"
+type = 8
+target = "novacorp_bank"
+completed = false
+
+[sub_resource type="Resource" id="Obj_4"]
+script = ExtResource("2_od")
+description = "Delete the transfer log"
+type = 5
+target = "novacorp_bank"
+completed = false
+
+[resource]
+script = ExtResource("1_md")
+id = "corporate_slush_fund"
+title = "Corporate Slush Fund"
+description = "NovaCorp has a hidden slush fund buried in their central bank. Drain it and delete the transfer logs to cover your tracks."
+faction_id = "nova_corp"
+min_rep = 1
+reward_credits = 2500
+reward_rating = 1
+objectives = [SubResource("Obj_1"), SubResource("Obj_2"), SubResource("Obj_3"), SubResource("Obj_4")]

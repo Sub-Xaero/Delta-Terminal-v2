@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "offshore_relay"
+ip = "192.168.99.1"
+name = "Offshore Relay Node"
+organisation = "Anonymous"
+security = 2
+map_position = Vector2(180, 420)
+files = [{"id": "ofr_f1", "name": "transfer_log.log", "type": "log", "size": 512, "content": "[2057-10-28 11:00:00] RELAY INITIALISED\n[2057-10-29 06:12:44] RELAY HOP: 10.14.66.201 -> 192.168.88.5  ¥300,000\n[2057-10-30 22:33:11] RELAY HOP: [ANON] -> [ANON]  ¥15,000"}]
+services = ["relay", "banking"]
+connections = ["isp_gateway", "syn_underground_bank"]
+users = [{"username": "operator", "password_hash": "$2b$12$Yz1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT1uV2wX3yZ4aB5cD6eF7gH", "role": "admin"}]
+faction_id = ""
+shop_catalogue = []
+public_interfaces = []

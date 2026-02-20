@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="FactionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/faction_data.gd" id="1_fd"]
+
+[resource]
+script = ExtResource("1_fd")
+id = "arctech"
+name = "ArcTech Industries"
+description = "Cutting-edge neural interface corporation. Publicly traded, privately run. Something is very wrong inside ArcTech."
+color = Color(0.2, 0.8, 1, 1)
+starting_rep = -5

@@ -3,7 +3,7 @@ extends ToolWindow
 ## Bank terminal. Provides access to banking services on the connected node.
 ## Spawned via desktop service icon when connected to a banking node.
 
-enum State { DISCONNECTED, NO_BANK, NO_ACCESS, LOGIN, USER, ADMIN }
+enum State { DISCONNECTED, NO_BANK, NO_ACCESS, LOGIN, USER, ADMIN, TRANSFERRING }
 
 # ── Node refs ──────────────────────────────────────────────────────────────────
 @onready var node_header:   Label         = $ContentArea/Margin/VBox/NodeHeader
@@ -20,6 +20,9 @@ enum State { DISCONNECTED, NO_BANK, NO_ACCESS, LOGIN, USER, ADMIN }
 # ── State ──────────────────────────────────────────────────────────────────────
 var _state: State = State.DISCONNECTED
 var _logged_in_role: String = ""
+var _transfer_elapsed: float = 0.0
+var _transfer_duration: float = 0.0
+var _transfer_amount: int = 0
 
 
 func _ready() -> void:
@@ -91,19 +94,55 @@ func _on_login_pressed() -> void:
 
 
 func _on_execute_steal() -> void:
-	var amount: int     = int(amount_spin.value)
+	if _state != State.ADMIN:
+		return
+	_transfer_amount = int(amount_spin.value)
+	if _transfer_amount <= 0:
+		return
 	var node_id: String = NetworkSim.connected_node_id
-	GameManager.add_credits(amount)
-	# Append to transfer_log.log so the mutation persists via SaveManager
+	var sec: int = NetworkSim.get_node_data(node_id).get("security", 1)
+	_transfer_duration = maxf(8.0, _transfer_amount / 2000.0 * 10.0)
+	_transfer_elapsed = 0.0
+	_state = State.TRANSFERRING
+	execute_btn.disabled = true
+	_set_status("INITIATING TRANSFER...", Color(1.0, 0.75, 0.0))
+	if not NetworkSim.trace_active:
+		NetworkSim.start_trace(maxf(30.0, float(sec) * 20.0))
+	EventBus.tool_task_started.emit("bank_terminal", node_id)
+	EventBus.log_message.emit(
+		"Bank transfer initiated — ¥%d from %s" % [_transfer_amount, NetworkSim.get_node_data(node_id).get("name", node_id)],
+		"warn"
+	)
+
+
+func _process(delta: float) -> void:
+	if _state != State.TRANSFERRING:
+		return
+	_transfer_elapsed += delta * HardwareManager.effective_stack_speed
+	var prog := minf(_transfer_elapsed / _transfer_duration, 1.0)
+	_set_status("TRANSFERRING:  %d%%  —  ¥%d" % [roundi(prog * 100.0), _transfer_amount],
+		Color(1.0, 0.75, 0.0))
+	if prog >= 1.0:
+		_on_transfer_complete()
+
+
+func _on_transfer_complete() -> void:
+	var node_id: String = NetworkSim.connected_node_id
+	GameManager.add_credits(_transfer_amount)
+	# Append to transfer_log if it exists
 	for file: Dictionary in NetworkSim.nodes[node_id].get("files", []):
 		if file.get("name", "") == "transfer_log.log":
 			var ts: String = Time.get_datetime_string_from_system()
 			file["content"] = file.get("content", "") \
-				+ "\n[%s] TRANSFER -> ANON  ¥%d  STATUS:OK" % [ts, amount]
+				+ "\n[%s] TRANSFER -> ANON  ¥%d  STATUS:OK" % [ts, _transfer_amount]
 			break
-	EventBus.log_message.emit("Transferred ¥%d from bank terminal." % amount, "warn")
+	_state = State.ADMIN
+	execute_btn.disabled = false
+	EventBus.tool_task_completed.emit("bank_terminal", node_id, true)
+	EventBus.bank_transfer_completed.emit(node_id, _transfer_amount)
+	EventBus.log_message.emit("Transfer complete:  +¥%d" % _transfer_amount, "info")
+	_set_status("TRANSFER COMPLETE:  +¥%d" % _transfer_amount, Color(0.0, 0.88, 1.0))
 	_refresh_account_list()
-	_set_status("TRANSFER COMPLETE:  +¥%d" % amount, Color(0.0, 0.88, 1.0))
 
 
 # ── UI update ──────────────────────────────────────────────────────────────────
@@ -140,6 +179,9 @@ func _update_ui() -> void:
 			steal_panel.visible   = true
 			_refresh_account_list()
 			_set_status("ADMIN ACCESS GRANTED", Color(1.0, 0.75, 0.0))
+		State.TRANSFERRING:
+			account_panel.visible = true
+			steal_panel.visible = true
 
 
 func _populate_login_dropdown() -> void:

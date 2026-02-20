@@ -21,6 +21,13 @@ const BankTerminalScene       := preload("res://scenes/tools/bank_terminal.tscn"
 const FactionJobBoardScene    := preload("res://scenes/tools/faction_job_board.tscn")
 const NodeDirectoryScene      := preload("res://scenes/tools/node_directory.tscn")
 const SystemLinksScene        := preload("res://scenes/tools/system_links.tscn")
+const RecordEditorScene       := preload("res://scenes/tools/record_editor.tscn")
+const StockTerminalScene      := preload("res://scenes/tools/stock_terminal.tscn")
+const LanConsoleScene         := preload("res://scenes/tools/lan_console.tscn")
+const DictionaryHackerScene   := preload("res://scenes/tools/dictionary_hacker.tscn")
+const VoiceAnalyserScene      := preload("res://scenes/tools/voice_analyser.tscn")
+const VoiceCommsScene         := preload("res://scenes/tools/voice_comms.tscn")
+const VirusCompilerScene      := preload("res://scenes/tools/virus_compiler.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -33,6 +40,12 @@ const TOOL_EXE_REQUIREMENTS: Dictionary = {
 	"Log Deleter": "log_deleter.exe",
 	"Exploit Installer": "exploit_installer.exe",
 	"Credential Manager": "credential_manager.exe",
+	"Record Editor": "record_editor.exe",
+	"Stock Terminal": "stock_terminal.exe",
+	"Dictionary Hacker": "dictionary_hacker.exe",
+	"Voice Analyser": "voice_analyser.exe",
+	"Voice Comms": "voice_comms.exe",
+	"Virus Compiler": "virus_compiler.exe",
 }
 
 @onready var window_manager: WindowManager = $WindowLayer
@@ -65,6 +78,11 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("System Info", 4)
 	context_menu.add_separator()
 	context_menu.add_item("Save Game", 12)
+	context_menu.add_separator()
+	context_menu.add_item("Dictionary Hacker", 17)
+	context_menu.add_item("Voice Analyser", 18)
+	context_menu.add_item("Voice Comms", 19)
+	context_menu.add_item("Virus Compiler", 20)
 	if not context_menu.id_pressed.is_connected(_on_context_menu_id_pressed):
 		context_menu.id_pressed.connect(_on_context_menu_id_pressed)
 
@@ -143,6 +161,38 @@ func _on_open_tool_requested(tool_name: String) -> void:
 			window_manager.spawn_tool_window(NodeDirectoryScene, "Node Directory")
 		"System Links":
 			window_manager.spawn_tool_window(SystemLinksScene, "System Links")
+		"Record Editor":
+			if not _has_exe("Record Editor"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Record Editor"], "error")
+				return
+			window_manager.spawn_tool_window(RecordEditorScene, "Record Editor")
+		"Stock Terminal":
+			if not _has_exe("Stock Terminal"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Stock Terminal"], "error")
+				return
+			window_manager.spawn_tool_window(StockTerminalScene, "Stock Terminal")
+		"LAN Console":
+			window_manager.spawn_tool_window(LanConsoleScene, "LAN Console")
+		"Dictionary Hacker":
+			if not _has_exe("Dictionary Hacker"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Dictionary Hacker"], "error")
+				return
+			window_manager.spawn_tool_window(DictionaryHackerScene, "Dictionary Hacker")
+		"Voice Analyser":
+			if not _has_exe("Voice Analyser"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Voice Analyser"], "error")
+				return
+			window_manager.spawn_tool_window(VoiceAnalyserScene, "Voice Analyser")
+		"Voice Comms":
+			if not _has_exe("Voice Comms"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Voice Comms"], "error")
+				return
+			window_manager.spawn_tool_window(VoiceCommsScene, "Voice Comms")
+		"Virus Compiler":
+			if not _has_exe("Virus Compiler"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Virus Compiler"], "error")
+				return
+			window_manager.spawn_tool_window(VirusCompilerScene, "Virus Compiler")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:
@@ -203,6 +253,26 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			)
 		12:
 			SaveManager.save_game()
+		17:
+			if not _has_exe("Dictionary Hacker"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Dictionary Hacker"], "error")
+				return
+			window_manager.spawn_tool_window(DictionaryHackerScene, "Dictionary Hacker")
+		18:
+			if not _has_exe("Voice Analyser"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Voice Analyser"], "error")
+				return
+			window_manager.spawn_tool_window(VoiceAnalyserScene, "Voice Analyser")
+		19:
+			if not _has_exe("Voice Comms"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Voice Comms"], "error")
+				return
+			window_manager.spawn_tool_window(VoiceCommsScene, "Voice Comms")
+		20:
+			if not _has_exe("Virus Compiler"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Virus Compiler"], "error")
+				return
+			window_manager.spawn_tool_window(VirusCompilerScene, "Virus Compiler")
 
 
 # ── Desktop service icons ─────────────────────────────────────────────────────
@@ -244,6 +314,17 @@ func _refresh_desktop_icons() -> void:
 		container.add_child(_create_desktop_icon(
 			"NODE\nDIRECTORY",
 			func() -> void: window_manager.spawn_tool_window(NodeDirectoryScene, "Node Directory")
+		))
+	if "database" in services and NetworkSim.connected_node_id in NetworkSim.cracked_nodes:
+		container.add_child(_create_desktop_icon(
+			"RECORD\nEDITOR",
+			func() -> void: window_manager.spawn_tool_window(RecordEditorScene, "Record Editor")
+		))
+	var lan_nodes_data: Array = node.get("lan_nodes", [])
+	if not lan_nodes_data.is_empty() and NetworkSim.connected_node_id in NetworkSim.cracked_nodes:
+		container.add_child(_create_desktop_icon(
+			"LAN\nCONSOLE",
+			func() -> void: window_manager.spawn_tool_window(LanConsoleScene, "LAN Console")
 		))
 	if container.get_child_count() > 0:
 		_desktop_icons_layer.add_child(container)

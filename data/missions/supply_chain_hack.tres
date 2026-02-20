@@ -1,0 +1,36 @@
+[gd_resource type="Resource" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]
+
+[sub_resource type="Resource" id="Obj_1"]
+script = ExtResource("2_od")
+description = "Connect to NovaCorp HQ"
+type = 0
+target = "novacorp_hq"
+completed = false
+
+[sub_resource type="Resource" id="Obj_2"]
+script = ExtResource("2_od")
+description = "Crack the NovaCorp HQ server"
+type = 1
+target = "novacorp_hq"
+completed = false
+
+[sub_resource type="Resource" id="Obj_3"]
+script = ExtResource("2_od")
+description = "Steal project_hydra.doc"
+type = 2
+target = "project_hydra.doc"
+completed = false
+
+[resource]
+script = ExtResource("1_md")
+id = "supply_chain_hack"
+title = "Supply Chain Hack"
+faction_id = "syn_underground"
+min_rep = 0
+reward_credits = 700
+reward_rating = 0
+description = "Extract sensitive project data from NovaCorp's main systems."
+objectives = [SubResource("Obj_1"), SubResource("Obj_2"), SubResource("Obj_3")]

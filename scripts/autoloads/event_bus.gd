@@ -43,6 +43,7 @@ signal node_removed(node_id: String)
 signal intrusion_logged(node_id: String)
 signal credentials_stolen(node_id: String, count: int)
 signal exploit_installed(node_id: String, exploit_type: String)
+signal bank_transfer_completed(node_id: String, amount: int)
 
 # ── Factions & Heat ──────────────────────────────────────────────────────────
 signal faction_rep_changed(faction_id: String, new_rep: int)
@@ -52,3 +53,12 @@ signal player_heat_changed(new_heat: int)
 signal comms_message_received(message_id: String)
 signal news_headline_added(text: String)
 signal voip_call_made(target_number: String, connected: bool)
+signal voip_authentication_granted(node_id: String)
+
+# ── Market ────────────────────────────────────────────────────────────────────
+signal stock_price_changed(symbol: String, new_price: int)
+
+# ── Passive Trace / Nuke Escape ───────────────────────────────────────────────
+signal passive_trace_started(origin_node_id: String)
+signal nuke_escape_success()
+signal nuke_too_late()

@@ -48,6 +48,16 @@ func add_credits(amount: int) -> void:
 	EventBus.player_stats_changed.emit()
 
 
+func add_rating(amount: int) -> void:
+	player_data["rating"] = maxi(1, player_data.get("rating", 1) + amount)
+	EventBus.player_stats_changed.emit()
+
+
+func add_heat(delta: int) -> void:
+	player_data["heat"] = clampi(player_data.get("heat", 0) + delta, 0, 100)
+	EventBus.player_heat_changed.emit(player_data["heat"])
+
+
 func copy_file_to_local(file: Dictionary) -> void:
 	for f: Dictionary in local_storage:
 		if f.get("id", "") == file.get("id", ""):

@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/virus_compiler.gd" id="2_vc"]
+
+[node name="VirusCompiler" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(480, 380)
+script = ExtResource("2_vc")
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+theme_override_constants/separation = 6
+
+[node name="StatusLabel" type="Label" parent="ContentArea/VBox"]
+layout_mode = 2
+text = "Insufficient components. Need 2+ .vc files."
+
+[node name="ComponentList" type="ItemList" parent="ContentArea/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 100)
+
+[node name="TypeOption" type="OptionButton" parent="ContentArea/VBox"]
+layout_mode = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="ContentArea/VBox"]
+layout_mode = 2
+max_value = 1.0
+value = 0.0
+show_percentage = false
+
+[node name="CompileBtn" type="Button" parent="ContentArea/VBox"]
+layout_mode = 2
+text = "COMPILE VIRUS"
+
+[node name="DeployBtn" type="Button" parent="ContentArea/VBox"]
+layout_mode = 2
+disabled = true
+text = "DEPLOY"

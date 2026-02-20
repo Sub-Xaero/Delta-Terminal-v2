@@ -57,9 +57,10 @@ func _spawn_node_widget(data: Dictionary) -> void:
 	map_canvas.add_child(widget)
 	widget.setup(data)
 	# Position the widget so its icon centre lands on map_position
-	var centre: Vector2 = data.get("map_position", Vector2(100.0, 100.0))
-	widget.position = centre - Vector2(NetworkMapNode.ICON_SIZE * 0.5,
-									   NetworkMapNode.ICON_SIZE * 0.5)
+	var map_pos: Vector2 = data.get("map_position", Vector2(100.0, 100.0))
+	var canvas_pos: Vector2 = map_canvas.map_to_canvas(map_pos)
+	widget.position = canvas_pos - Vector2(NetworkMapNode.ICON_SIZE * 0.5,
+										   NetworkMapNode.ICON_SIZE * 0.5)
 	widget.node_clicked.connect(_on_node_clicked)
 	widget.node_double_clicked.connect(_on_node_double_clicked)
 	widget.node_shift_clicked.connect(_on_node_shift_clicked)
@@ -98,6 +99,17 @@ func _rebuild_edges() -> void:
 		})
 
 	map_canvas.update_edges(edges)
+
+
+func _reposition_node_widgets() -> void:
+	for node_id: String in _node_widgets:
+		var widget: NetworkMapNode = _node_widgets[node_id]
+		var data: Dictionary = NetworkSim.get_node_data(node_id)
+		var map_pos: Vector2 = data.get("map_position", Vector2.ZERO)
+		var canvas_pos: Vector2 = map_canvas.map_to_canvas(map_pos)
+		widget.position = canvas_pos - Vector2(NetworkMapNode.ICON_SIZE * 0.5,
+											   NetworkMapNode.ICON_SIZE * 0.5)
+	_rebuild_edges()
 
 
 func _find_local_node_id() -> String:

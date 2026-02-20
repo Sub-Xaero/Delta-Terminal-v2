@@ -11,6 +11,8 @@ enum Type {
 	DELETE_LOG,        # Delete a log entry on a node       (target = node_id)
 	STEAL_CREDENTIALS, # Steal credentials from a node      (target = node_id)
 	MODIFY_RECORD,     # Modify a record on a node          (target = node_id)
+	TRANSFER_FUNDS,    # Steal funds via bank terminal      (target = node_id)
+	DEPLOY_VIRUS,      # Deploy a compiled virus on a node  (target = node_id)
 }
 
 @export var description: String = ""

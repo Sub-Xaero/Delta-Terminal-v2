@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "global_criminal_db"
+ip = "195.1.0.1"
+name = "Global Criminal DB"
+organisation = "International Law Enforcement"
+security = 5
+map_position = Vector2(500, 320)
+files = [{"id": "gc_f1", "name": "criminal_records.dat", "type": "data", "size": 8192, "content": "GLOBAL CRIMINAL DATABASE\n\nID: GCR-001  NAME: [ALIAS: GHOST]      STATUS: WANTED  CHARGES: PENDING\nID: GCR-002  NAME: [ALIAS: NULL_OPS]  STATUS: CLEAR   CHARGES: NONE\nID: GCR-003  NAME: Lawson, C.        STATUS: CLEAR   CHARGES: NONE\nID: GCR-004  NAME: [ALIAS: BROKER_7] STATUS: WANTED  CHARGES: MULTIPLE"}, {"id": "gc_f2", "name": "access_log.log", "type": "log", "size": 1024, "content": "[2057-11-01] Interpol query: GCR-003\n[2057-11-02] NovaCorp query: GCR-001\n[2057-11-03] External breach attempt: BLOCKED"}, {"id": "gc_vc1", "name": "exploit_wrapper.vc", "type": "component", "size": 4096, "content": "VIRUS COMPONENT: EXPLOIT_WRAPPER\nClassification: Execution module\nCompatibility: DESTROY_DATA, WORM"}]
+services = ["database"]
+connections = ["isp_gateway", "meridian_gov_records", "interpol_gateway"]
+users = [{"username": "db_admin", "password_hash": "$2b$12$Kl7Mn8Op9Qr0St1Uv2Wx3Yz4Ab5Cd6Ef7Gh8Ij9KlMn0Op1Qr2St3", "role": "admin"}]
+faction_id = ""
+shop_catalogue = []
+public_interfaces = []
+node_type = "criminal_db"
+lan_nodes = []

@@ -11,6 +11,7 @@ extends ToolWindow
 @onready var _empty_label: Label = $ContentArea/Margin/HSplit/RightPanel/DetailScroll/DetailVBox/EmptyLabel
 
 var _selected_id: String = ""
+var _attachment_container: VBoxContainer = null
 
 
 func _ready() -> void:
@@ -104,6 +105,24 @@ func _update_detail() -> void:
 	_detail_subject.text = msg.get("subject", "(no subject)")
 	_detail_time.text = _format_timestamp(msg.get("timestamp", 0.0))
 	_detail_body.text = msg.get("body", "")
+	# Clear previous attachment UI
+	if _attachment_container and is_instance_valid(_attachment_container):
+		_attachment_container.queue_free()
+		_attachment_container = null
+	# Render mission_offer attachments
+	var attachments: Array = msg.get("attachments", [])
+	for att: Dictionary in attachments:
+		if att.get("type", "") == "mission_offer":
+			var mission_id: String = att.get("mission_id", "")
+			if not MissionManager.active_missions.has(mission_id) \
+					and not GameManager.completed_missions.has(mission_id):
+				if _attachment_container == null:
+					_attachment_container = VBoxContainer.new()
+					_attachment_container.add_theme_constant_override("separation", 4)
+					_detail_body.get_parent().add_child(_attachment_container)
+				var sep := HSeparator.new()
+				_attachment_container.add_child(sep)
+				_attachment_container.add_child(_make_accept_button(mission_id))
 
 
 func _find_message(msg_id: String) -> Dictionary:
@@ -145,3 +164,28 @@ func _on_delete_pressed() -> void:
 
 func _on_message_received(_msg_id: String) -> void:
 	_refresh_inbox()
+
+
+func _make_accept_button(mission_id: String) -> Button:
+	var btn := Button.new()
+	var mission: MissionData = MissionManager.available_missions.get(mission_id)
+	btn.text = "[ ACCEPT MISSION: %s ]" % (mission.title if mission else mission_id)
+	btn.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	btn.add_theme_font_size_override("font_size", 11)
+	var sn := StyleBoxFlat.new()
+	sn.bg_color = Color(0.0, 0.88, 1.0, 0.08)
+	sn.border_color = Color(0.0, 0.88, 1.0, 0.5)
+	sn.set_border_width_all(1)
+	sn.content_margin_top    = 6
+	sn.content_margin_bottom = 6
+	sn.content_margin_left   = 10
+	sn.content_margin_right  = 10
+	btn.add_theme_stylebox_override("normal", sn)
+	var sh := sn.duplicate() as StyleBoxFlat
+	sh.bg_color = Color(0.0, 0.88, 1.0, 0.2)
+	btn.add_theme_stylebox_override("hover", sh)
+	btn.pressed.connect(func() -> void:
+		MissionManager.accept_mission(mission_id)
+		_update_detail()
+	)
+	return btn

@@ -2,7 +2,7 @@ extends Node
 ## Handles serialising and restoring game state to/from user://save.json.
 
 const SAVE_PATH    := "user://save.json"
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
 
 
 func _ready() -> void:
@@ -44,6 +44,7 @@ func save_game() -> void:
 		"exploits_installed": {},
 		"discovered_nodes":   NetworkSim.cracked_nodes.duplicate(),
 		"tutorial_flags":     {},
+		"market":             MarketManager.get_save_data(),
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -83,6 +84,8 @@ func load_game() -> bool:
 	if data.has("hardware"):
 		HardwareManager.load_save_data(data["hardware"])
 	CommsManager.inbox = data.get("comms_inbox", [])
+	if data.has("market"):
+		MarketManager.load_save_data(data["market"])
 	MissionManager.restore_active_missions(GameManager.active_missions)
 	return true
 

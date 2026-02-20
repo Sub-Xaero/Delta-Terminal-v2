@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "arc_relay_node"
+ip = "172.31.254.1"
+name = "ARC Relay Node"
+organisation = "ArcTech Industries"
+security = 3
+map_position = Vector2(600, 90)
+files = [{"id": "arc_rf1", "name": "anomaly_data.dat", "type": "data", "size": 4096, "content": "ANOMALY CLASSIFICATION: ULTRA\nSOURCE: 172.31.254.1\nDETECTED: 2057-11-03 04:12:07\n\n[ENCRYPTED PAYLOAD — 4096 bytes]\nRoute fingerprint indicates origin: ARC Internal Lab Network\nPacket signature matches PROJECT_HYDRA protocol\nUNKNOWN DESTINATION — routing to darknet exit nodes\n\nWARNING: This data must not leave ARC infrastructure."}, {"id": "arc_rf2", "name": "relay_log.log", "type": "log", "size": 512, "content": "[2057-11-01] Relay online\n[2057-11-03] ANOMALOUS TRAFFIC DETECTED\n[2057-11-03] Auto-routing engaged"}]
+services = ["relay"]
+connections = ["isp_gateway", "pacific_relay", "arctech_research"]
+users = [{"username": "arc_relay_admin", "password_hash": "$2b$12$Ab1Cd2Ef3Gh4Ij5Kl6Mn7Op8Qr9St0Uv1Wx2Yz3Ab4Cd5Ef6Gh7Ij", "role": "admin"}]
+faction_id = "arctech"
+shop_catalogue = []
+public_interfaces = []
+node_type = "story"
+lan_nodes = []

@@ -15,3 +15,5 @@ extends Resource
 @export var faction_id: String = ""
 @export var shop_catalogue: Array = []
 @export var public_interfaces: Array = []  # [{name, description, tool?}]
+@export var node_type: String = "standard"
+@export var lan_nodes: Array = []

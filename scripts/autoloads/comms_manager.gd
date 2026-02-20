@@ -11,6 +11,7 @@ func _ready() -> void:
 	_load_inbox()
 	if inbox.is_empty():
 		_seed_welcome_message()
+	EventBus.news_headline_added.connect(_on_news_headline)
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
@@ -84,6 +85,16 @@ func _seed_welcome_message() -> void:
 		"attachments": [],
 	}
 	inbox.append(msg)
+
+
+func _on_news_headline(text: String) -> void:
+	send_message({
+		"from_handle": "MERIDIAN NET NEWS",
+		"faction_id": "",
+		"subject": text,
+		"body": "[AUTOMATED BULLETIN]\n\n" + text + "\n\n— Meridian Net News Feed",
+		"attachments": [],
+	})
 
 
 func _generate_id() -> String:

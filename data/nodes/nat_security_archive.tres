@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "nat_security_archive"
+ip = "10.100.0.1"
+name = "National Security Archive"
+organisation = "Ministry of Security"
+security = 5
+map_position = Vector2(480, 440)
+files = [{"id": "ns_f1", "name": "classified_ops.dat", "type": "data", "size": 8192, "content": "CLASSIFIED OPERATIONS — LEVEL 5\n\nOP BLACKWATCH: Surveillance of known hackers — ACTIVE\nOP IRONWALL: Critical infrastructure defence — ACTIVE\nOP HYDRA_WATCH: ArcTech monitoring — STATUS UNKNOWN"}, {"id": "ns_f2", "name": "audit.log", "type": "log", "size": 512, "content": "[2057-11-01] Annual audit complete\n[2057-11-03] LEVEL 5 access: classified"}, {"id": "ns_vc1", "name": "payload_framework.vc", "type": "component", "size": 4096, "content": "VIRUS COMPONENT: PAYLOAD_FRAMEWORK\nClassification: Delivery module\nCompatibility: ALL"}]
+services = ["database"]
+connections = ["isp_gateway", "interpol_gateway"]
+users = []
+faction_id = ""
+shop_catalogue = []
+public_interfaces = []
+node_type = "government"
+lan_nodes = []

@@ -121,6 +121,8 @@ func _rebuild_available() -> void:
 			continue
 		if mission.min_rep > rating:
 			continue
+		if mission.min_rating > rating:
+			continue
 		if MissionManager.active_missions.has(mission_id):
 			continue
 		if GameManager.completed_missions.has(mission_id):
@@ -156,7 +158,18 @@ func _add_available_entry(mission: MissionData) -> void:
 	desc.autowrap_mode        = TextServer.AUTOWRAP_WORD_SMART
 	desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.add_child(desc)
-	info.add_child(_make_label("+%d credits" % mission.reward_credits, COL_AMBER))
+	if mission.reward_per_rating_point > 0:
+		var rating: int = GameManager.player_data.get("rating", 1)
+		var min_reward: int = mission.reward_credits + mission.reward_per_rating_point
+		var shown_reward: int = mission.reward_credits + mission.reward_per_rating_point * rating
+		info.add_child(_make_label(
+			"+¥%d  (¥%d/rating level)" % [shown_reward, mission.reward_per_rating_point],
+			COL_AMBER
+		))
+	else:
+		info.add_child(_make_label("+%d credits" % mission.reward_credits, COL_AMBER))
+	if mission.reward_rating > 0:
+		info.add_child(_make_label("+%d rating" % mission.reward_rating, COL_CYAN))
 	row.add_child(info)
 
 	var btn := Button.new()

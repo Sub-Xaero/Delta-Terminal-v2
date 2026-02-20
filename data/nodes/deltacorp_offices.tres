@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "deltacorp_offices"
+ip = "192.168.50.10"
+name = "DeltaCorp Offices"
+organisation = "DeltaCorp"
+security = 3
+map_position = Vector2(700, 420)
+files = [{"id": "dc_f1", "name": "financial_data.dat", "type": "data", "size": 2048, "content": "DELTACORP FINANCIAL RECORDS\n\nRevenue: ¥340M\nContracts: Meridian Gov, NovaCorp\nOwnership: [REDACTED — shell corp chain]"}, {"id": "dc_f2", "name": "access.log", "type": "log", "size": 256, "content": "[2057-11-02] Quarterly audit\n[2057-11-03] Remote login: unknown"}]
+services = ["database"]
+connections = ["isp_gateway"]
+users = []
+faction_id = ""
+shop_catalogue = []
+public_interfaces = []
+node_type = "corporate"
+lan_nodes = []

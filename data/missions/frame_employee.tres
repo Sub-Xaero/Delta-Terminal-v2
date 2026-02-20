@@ -1,0 +1,44 @@
+[gd_resource type="Resource" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]
+
+[sub_resource type="Resource" id="Obj_1"]
+script = ExtResource("2_od")
+description = "Connect to Meridian Gov Records"
+type = 0
+target = "meridian_gov_records"
+completed = false
+
+[sub_resource type="Resource" id="Obj_2"]
+script = ExtResource("2_od")
+description = "Crack the server"
+type = 1
+target = "meridian_gov_records"
+completed = false
+
+[sub_resource type="Resource" id="Obj_3"]
+script = ExtResource("2_od")
+description = "Modify a criminal record"
+type = 7
+target = "meridian_gov_records"
+completed = false
+
+[sub_resource type="Resource" id="Obj_4"]
+script = ExtResource("2_od")
+description = "Delete the access log"
+type = 5
+target = "meridian_gov_records"
+completed = false
+
+[resource]
+script = ExtResource("1_md")
+id = "frame_employee"
+title = "Frame an Employee"
+faction_id = "nova_corp"
+min_rep = 1
+reward_credits = 1200
+reward_rating = 1
+reward_per_rating_point = 75
+description = "Modify the government records to implicate a target. Leave no trace."
+objectives = [SubResource("Obj_1"), SubResource("Obj_2"), SubResource("Obj_3"), SubResource("Obj_4")]

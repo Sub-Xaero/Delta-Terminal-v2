@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "arctech_mainframe"
+ip = "10.20.1.1"
+name = "ArcTech Mainframe"
+organisation = "ArcTech Industries"
+security = 6
+map_position = Vector2(880, 300)
+files = [{"id": "am_f1", "name": "mainframe_db.dat", "type": "data", "size": 16384, "content": "ARCTECH MAINFRAME DATABASE\n\nPROJECT HYDRA: ACTIVE\nSTATUS: Phase 3 imminent\nVICTIM COUNT: 2,347,891\nPROFIT MARGIN: ¥847,000,000\n\nEXECUTIVE OVERRIDE: Lawson, C. — authorized\nBOARD APPROVAL: [FORGED]\nREGULATORY FILING: [OMITTED]\n\n[FULL EVIDENCE PACKAGE — 16384 bytes encrypted]"}, {"id": "am_f2", "name": "admin_access.log", "type": "log", "size": 2048, "content": "[2057-11-01] CEO login: lawson_c\n[2057-11-02] Project Hydra status updated\n[2057-11-03] INTRUSION DETECTED — lockdown initiated"}, {"id": "am_vc1", "name": "hydra_core.vc", "type": "component", "size": 8192, "content": "VIRUS COMPONENT: HYDRA_CORE\nClassification: Payload framework\nCompatibility: WORM, BACKDOOR"}]
+services = ["database", "shell"]
+connections = ["arctech_research"]
+users = [{"username": "lawson_c", "password_hash": "$2b$12$Qr9St0Uv1Wx2Yz3Ab4Cd5Ef6Gh7Ij8Kl9Mn0Op1Qr2St3Uv4Wx5Yz", "role": "admin"}]
+faction_id = "arctech"
+shop_catalogue = []
+public_interfaces = []
+node_type = "story"
+lan_nodes = [{"id": "arc_admin_console", "ip": "192.168.1.2", "name": "Admin Console", "commands": ["ls", "disable_trace", "logout"]}, {"id": "arc_data_vault", "ip": "192.168.1.3", "name": "Data Vault", "commands": ["ls", "logout"]}]

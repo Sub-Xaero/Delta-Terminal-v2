@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "pacific_relay"
+ip = "210.44.17.3"
+name = "Pacific Relay"
+organisation = "Pacific Routing Co."
+security = 2
+map_position = Vector2(750, 70)
+files = [{"id": "pr_f1", "name": "traffic_log.log", "type": "log", "size": 256, "content": "[2057-11-02] Traffic nominal\n[2057-11-03] Spike detected from 172.31.x.x"}]
+services = ["relay"]
+connections = ["isp_gateway", "arc_relay_node"]
+users = []
+faction_id = ""
+shop_catalogue = []
+public_interfaces = []
+node_type = "isp"
+lan_nodes = []

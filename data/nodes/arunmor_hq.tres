@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "arunmor_hq"
+ip = "195.88.14.5"
+name = "Arunmor HQ"
+organisation = "Arunmor"
+security = 4
+map_position = Vector2(760, 350)
+files = [{"id": "ah_f1", "name": "briefing.dat", "type": "data", "size": 4096, "content": "ARUNMOR INTERNAL BRIEFING\n\nSUBJECT: ArcTech Industries — Project Hydra\n\nOur intelligence confirms ArcTech is running a mass neural exploitation program. 2.3M citizens are at risk.\n\nThe Ghost Collective has been monitoring the relay traffic. We need an operator inside their network.\n\nOUR GOAL: Expose and destroy Project Hydra.\n\n[EYES ONLY — DO NOT DISTRIBUTE]"}, {"id": "ah_f2", "name": "personnel.log", "type": "log", "size": 512, "content": "[2057-10-30] Agent SIGMA deployed\n[2057-11-01] Ghost Collective contact established\n[2057-11-03] Operator contact initiated"}]
+services = ["database"]
+connections = ["isp_gateway", "arctech_research"]
+users = [{"username": "arunmor_admin", "password_hash": "$2b$12$Wx3Yz4Ab5Cd6Ef7Gh8Ij9KlMn0Op1Qr2St3Uv4Wx5Yz6Ab7Cd8Ef9", "role": "admin"}]
+faction_id = "arunmor"
+shop_catalogue = []
+public_interfaces = []
+node_type = "corporate"
+lan_nodes = []

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "hacker_den"
+ip = "10.77.0.1"
+name = "Hacker Den"
+organisation = "Unknown"
+security = 2
+map_position = Vector2(160, 340)
+files = [{"id": "hd_f1", "name": "tools_archive.dat", "type": "data", "size": 4096, "content": "TOOL ARCHIVE — UNDERGROUND\n\npassword_cracker.exe v2.1 — CRACKED\nport_scanner.exe v1.8\nlog_deleter.exe v3.0\nrecord_editor.exe v1.2\nNote: Handle with care. Origin unknown."}]
+services = ["marketplace"]
+connections = ["ghost_collective_darknet", "darkweb_hub"]
+users = []
+faction_id = ""
+shop_catalogue = []
+public_interfaces = []
+node_type = "personal"
+lan_nodes = []

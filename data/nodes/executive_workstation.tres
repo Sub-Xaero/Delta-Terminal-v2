@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "executive_workstation"
+ip = "10.50.2.10"
+name = "Executive Workstation"
+organisation = "Meridian"
+security = 2
+map_position = Vector2(600, 300)
+files = [{"id": "ew_f1", "name": "strategy_doc.dat", "type": "data", "size": 2048, "content": "MERIDIAN Q4 STRATEGY — CONFIDENTIAL\n\n1. Expand ArcTech partnership\n2. Reduce Arunmor contract exposure\n3. Lobby for neural interface deregulation"}, {"id": "ew_f2", "name": "email_cache.log", "type": "log", "size": 256, "content": "[2057-11-02] FROM: lawson_c@arctech — Re: Phase 3 timeline\n[2057-11-03] TO: board@meridian — Re: Q4 projections"}, {"id": "ew_audio1", "name": "exec_voice_memo.wav", "type": "audio", "size": 256, "content": "Executive voice memo — Q4 strategy briefing — recorded 2057-11-02"}]
+services = []
+connections = ["isp_gateway", "meridian_corp_hq"]
+users = []
+faction_id = "meridian_gov"
+shop_catalogue = []
+public_interfaces = []
+node_type = "personal"
+lan_nodes = []

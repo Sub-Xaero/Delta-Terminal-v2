@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "meridian_corp_hq"
+ip = "10.50.1.1"
+name = "Meridian Corp HQ"
+organisation = "Meridian"
+security = 4
+map_position = Vector2(680, 250)
+files = [{"id": "mc_f1", "name": "corp_secrets.dat", "type": "data", "size": 4096, "content": "MERIDIAN CORPORATE SECRETS\n\nQ4 projections: ¥2.1B\nCovert contracts: 14 active\nShadow accounts: meridian_city_bank SU-MC-001"}, {"id": "mc_f2", "name": "network_log.log", "type": "log", "size": 512, "content": "[2057-11-01] System audit complete\n[2057-11-03] External probe detected"}, {"id": "mc_audio1", "name": "ceo_voicemail.wav", "type": "audio", "size": 512, "content": "CEO voice sample — board meeting 2057-11-01 — Project Hydra status discussion"}]
+services = ["database", "shell", "voice_auth"]
+connections = ["isp_gateway", "meridian_gov_records"]
+users = [{"username": "meridian_admin", "password_hash": "$2b$12$Yz4Ab5Cd6Ef7Gh8Ij9KlOp1Qr2St3Uv4Wx5Yz6Ab7Cd8Ef9Gh0Ij1", "role": "admin"}]
+faction_id = "meridian_gov"
+shop_catalogue = []
+public_interfaces = []
+node_type = "corporate"
+lan_nodes = []

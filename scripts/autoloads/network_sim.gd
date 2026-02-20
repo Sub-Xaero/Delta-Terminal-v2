@@ -14,6 +14,7 @@ var bypassed_nodes: Array[String] = []
 var encryption_broken_nodes: Array[String] = []
 var discovered_nodes: Array = ["local_machine", "isp_gateway", "ghost_collective_darknet", "novacorp_bank"]
 var exploits_installed: Dictionary = {}   # node_id -> Array[String] of exploit types
+var _nodes_with_intrusion_logs: Dictionary = {}
 
 # ── Trace state ───────────────────────────────────────────────────────────────
 var trace_active: bool = false
@@ -41,6 +42,11 @@ func connect_to_node(node_id: String) -> bool:
 	if not nodes.has(node_id):
 		EventBus.log_message.emit("Unknown host: %s" % node_id, "error")
 		return false
+	var heat: int = GameManager.player_data.get("heat", 0)
+	var node_faction: String = nodes[node_id].get("faction_id", "")
+	if heat >= 80 and not node_faction.is_empty() and node_id != "local_machine":
+		EventBus.log_message.emit("Connection refused — heat level too high.", "error")
+		return false
 	connected_node_id = node_id
 	is_connected = true
 	EventBus.network_connected.emit(node_id)
@@ -51,12 +57,29 @@ func connect_to_node(node_id: String) -> bool:
 func disconnect_from_node() -> void:
 	if not is_connected:
 		return
+	var prev_node_id := connected_node_id
 	EventBus.log_message.emit("Disconnected from %s" % nodes[connected_node_id]["ip"], "info")
 	is_connected = false
 	connected_node_id = ""
 	bounce_chain.clear()
-	if trace_active:
+
+	# Check for dirty nodes (cracked with intrusion logs not cleaned)
+	var dirty_nodes := cracked_nodes.filter(
+		func(nid: String) -> bool: return _nodes_with_intrusion_logs.get(nid, false)
+	)
+	if not dirty_nodes.is_empty():
+		var worst: int = dirty_nodes.map(
+			func(n: String) -> int: return nodes.get(n, {}).get("security", 1)
+		).max()
+		start_trace(90.0 + float(worst) * 30.0)
+		EventBus.passive_trace_started.emit(dirty_nodes[0])
+		EventBus.log_message.emit(
+			"WARNING: Passive trace initiated from %s — intrusion logs not deleted!" % nodes.get(dirty_nodes[0], {}).get("ip", dirty_nodes[0]),
+			"warn"
+		)
+	elif trace_active:
 		trace_active = false
+
 	EventBus.network_disconnected.emit()
 	EventBus.bounce_chain_updated.emit(bounce_chain)
 
@@ -86,6 +109,7 @@ func start_trace(duration: float) -> void:
 
 func _complete_trace() -> void:
 	trace_active = false
+	GameManager.add_heat(20)
 	EventBus.trace_completed.emit()
 
 
@@ -95,9 +119,14 @@ func crack_node(node_id: String) -> void:
 	if node_id in cracked_nodes:
 		return
 	cracked_nodes.append(node_id)
+	_nodes_with_intrusion_logs[node_id] = true
+	GameManager.add_heat(nodes[node_id].get("security", 1) * 2)
 	EventBus.log_message.emit(
 		"Access granted: %s  [%s]" % [nodes[node_id]["ip"], nodes[node_id]["name"]], "info"
 	)
+	if nodes[node_id].get("security", 0) >= 4:
+		var org: String = nodes[node_id].get("organisation", "unknown")
+		EventBus.news_headline_added.emit("Unauthorised access detected on %s network." % org)
 
 
 func bypass_node(node_id: String) -> void:
@@ -160,6 +189,10 @@ func get_node_data(node_id: String) -> Dictionary:
 	return nodes.get(node_id, {})
 
 
+func clear_intrusion_log(node_id: String) -> void:
+	_nodes_with_intrusion_logs.erase(node_id)
+
+
 func delete_file_from_node(node_id: String, file_id: String) -> bool:
 	if not nodes.has(node_id):
 		return false
@@ -199,6 +232,8 @@ func _load_nodes_from_data() -> void:
 					"faction_id": res.faction_id,
 					"shop_catalogue": res.shop_catalogue,
 					"public_interfaces": res.public_interfaces,
+					"node_type": res.node_type,
+					"lan_nodes": res.lan_nodes.duplicate(),
 				}
 				register_node(data)
 		file_name = dir.get_next()

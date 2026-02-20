@@ -1,0 +1,69 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/record_editor.gd" id="2_re"]
+
+[node name="RecordEditor" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(520, 420)
+script = ExtResource("2_re")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatusLabel" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = "Connect to a database node."
+
+[node name="FileRow" type="HBoxContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="FileLabel" type="Label" parent="ContentArea/Margin/VBox/FileRow"]
+layout_mode = 2
+text = "File:"
+
+[node name="FileSelect" type="OptionButton" parent="ContentArea/Margin/VBox/FileRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RecordScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RecordList" type="VBoxContainer" parent="ContentArea/Margin/VBox/RecordScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ProgressBar" type="ProgressBar" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+show_percentage = false
+value = 0
+visible = false
+
+[node name="ProgressLabel" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = ""
+visible = false
+
+[node name="BtnRow" type="HBoxContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ModifyBtn" type="Button" parent="ContentArea/Margin/VBox/BtnRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MODIFY SELECTED"
+
+[node name="CancelBtn" type="Button" parent="ContentArea/Margin/VBox/BtnRow"]
+layout_mode = 2
+text = "CANCEL"

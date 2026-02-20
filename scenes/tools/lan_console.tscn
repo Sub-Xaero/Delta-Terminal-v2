@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/lan_console.gd" id="2_lc"]
+
+[node name="LanConsole" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(500, 320)
+script = ExtResource("2_lc")

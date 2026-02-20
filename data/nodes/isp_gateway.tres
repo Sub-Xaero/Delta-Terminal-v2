@@ -12,7 +12,7 @@ security = 1
 map_position = Vector2(280, 280)
 files = [{"id": "isp_f1", "name": "routing.cfg", "type": "config", "size": 512, "content": "# Sentinel ISP Routing Config\ngateway=81.14.22.254\ndns_primary=81.14.0.1\ndns_secondary=81.14.0.2\nmax_hops=16\nlog_level=warn"}]
 services = ["relay", "node_directory"]
-connections = ["local_machine", "meridian_isp", "novacorp_hq", "personal_machine_01"]
+connections = ["local_machine", "meridian_isp", "novacorp_hq", "personal_machine_01", "syn_underground_bank", "offshore_relay", "globenet_isp", "euro_relay", "internic_central", "darkweb_hub", "academic_records_db", "meridian_city_bank", "crypto_exchange", "nat_security_archive"]
 users = [{"username": "admin", "password_hash": "$2b$12$Kj3lYvGq8eWzXo1N5rQXOe7vH8mP4wS6tUcAzBn0Lk9DfRgHjI2Yq", "role": "admin"}, {"username": "netops", "password_hash": "$2b$12$Xm4oPqR7sT9uVwYzA1bCdEfG3hI5jK7lN8oP0qR2sT4uV6wX8yZ0a", "role": "operator"}]
 faction_id = ""
 public_interfaces = []

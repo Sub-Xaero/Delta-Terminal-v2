@@ -1,0 +1,48 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/voice_comms.gd" id="2_vc"]
+
+[node name="VoiceComms" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(380, 280)
+script = ExtResource("2_vc")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StatusLabel" type="Label" parent="ContentArea/Margin/VBox"]
+text = "VOICE COMMS OFFLINE"
+horizontal_alignment = 1
+
+[node name="Sep1" type="HSeparator" parent="ContentArea/Margin/VBox"]
+
+[node name="NodeLabel" type="Label" parent="ContentArea/Margin/VBox"]
+text = "No voice-auth node targeted"
+
+[node name="SampleSelect" type="OptionButton" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+
+[node name="DialBar" type="ProgressBar" parent="ContentArea/Margin/VBox"]
+show_percentage = false
+value = 0
+
+[node name="DialLabel" type="Label" parent="ContentArea/Margin/VBox"]
+text = ""
+
+[node name="Spacer" type="Control" parent="ContentArea/Margin/VBox"]
+custom_minimum_size = Vector2(0, 4)
+size_flags_vertical = 3
+
+[node name="DialBtn" type="Button" parent="ContentArea/Margin/VBox"]
+text = "INITIATE VOICE AUTH"
+disabled = true

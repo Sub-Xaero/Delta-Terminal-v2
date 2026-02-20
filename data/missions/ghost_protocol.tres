@@ -1,0 +1,51 @@
+[gd_resource type="Resource" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]
+
+[sub_resource type="Resource" id="Obj_1"]
+script = ExtResource("2_od")
+description = "Connect to NovaCorp HQ"
+type = 0
+target = "novacorp_hq"
+completed = false
+
+[sub_resource type="Resource" id="Obj_2"]
+script = ExtResource("2_od")
+description = "Run a port scan on NovaCorp HQ"
+type = 3
+target = "novacorp_hq"
+completed = false
+
+[sub_resource type="Resource" id="Obj_3"]
+script = ExtResource("2_od")
+description = "Crack the server"
+type = 1
+target = "novacorp_hq"
+completed = false
+
+[sub_resource type="Resource" id="Obj_4"]
+script = ExtResource("2_od")
+description = "Steal login credentials"
+type = 6
+target = "novacorp_hq"
+completed = false
+
+[sub_resource type="Resource" id="Obj_5"]
+script = ExtResource("2_od")
+description = "Delete the access log"
+type = 5
+target = "novacorp_hq"
+completed = false
+
+[resource]
+script = ExtResource("1_md")
+id = "ghost_protocol"
+title = "Ghost Protocol"
+faction_id = "syn_underground"
+min_rep = 1
+reward_credits = 1500
+reward_rating = 2
+reward_per_rating_point = 100
+description = "Full black-bag job: recon, infiltrate, steal creds, and vanish without a trace."
+objectives = [SubResource("Obj_1"), SubResource("Obj_2"), SubResource("Obj_3"), SubResource("Obj_4"), SubResource("Obj_5")]

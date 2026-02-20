@@ -1,0 +1,43 @@
+[gd_resource type="Resource" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]
+
+[sub_resource type="Resource" id="Obj_1"]
+script = ExtResource("2_od")
+description = "Connect to the offshore relay"
+type = 0
+target = "offshore_relay"
+completed = false
+
+[sub_resource type="Resource" id="Obj_2"]
+script = ExtResource("2_od")
+description = "Crack the relay server"
+type = 1
+target = "offshore_relay"
+completed = false
+
+[sub_resource type="Resource" id="Obj_3"]
+script = ExtResource("2_od")
+description = "Transfer funds through the relay"
+type = 8
+target = "offshore_relay"
+completed = false
+
+[sub_resource type="Resource" id="Obj_4"]
+script = ExtResource("2_od")
+description = "Disconnect cleanly"
+type = 4
+target = ""
+completed = false
+
+[resource]
+script = ExtResource("1_md")
+id = "launder_funds"
+title = "Launder Funds"
+description = "Route dirty money through an offshore relay node. Connect, crack, transfer, and disconnect cleanly before anyone notices."
+faction_id = "syn_underground"
+min_rep = 1
+reward_credits = 1800
+reward_rating = 1
+objectives = [SubResource("Obj_1"), SubResource("Obj_2"), SubResource("Obj_3"), SubResource("Obj_4")]

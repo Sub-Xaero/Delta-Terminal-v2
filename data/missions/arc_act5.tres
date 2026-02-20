@@ -1,0 +1,46 @@
+[gd_resource type="Resource" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]
+
+[sub_resource type="Resource" id="Obj_1"]
+script = ExtResource("2_od")
+description = "Connect to ArcTech Mainframe"
+type = 0
+target = "arctech_mainframe"
+completed = false
+
+[sub_resource type="Resource" id="Obj_2"]
+script = ExtResource("2_od")
+description = "Crack ArcTech Mainframe"
+type = 1
+target = "arctech_mainframe"
+completed = false
+
+[sub_resource type="Resource" id="Obj_3"]
+script = ExtResource("2_od")
+description = "Extract the mainframe database"
+type = 2
+target = "mainframe_db.dat"
+completed = false
+
+[sub_resource type="Resource" id="Obj_4"]
+script = ExtResource("2_od")
+description = "Disconnect and vanish"
+type = 4
+target = ""
+completed = false
+
+[resource]
+script = ExtResource("1_md")
+id = "arc_act5"
+title = "Endgame"
+description = "The Ghost Collective has been watching this entire operation. Whatever side you chose, the truth lies in ArcTech's mainframe.\n\nExtract the mainframe database and disappear forever. The truth will do the rest."
+faction_id = "ghost_collective"
+min_rep = 0
+reward_credits = 5000
+reward_rating = 3
+objectives = [SubResource("Obj_1"), SubResource("Obj_2"), SubResource("Obj_3"), SubResource("Obj_4")]
+triggers_story_mission = ""
+delivery_method = "email"
+auto_deliver_on_start = false

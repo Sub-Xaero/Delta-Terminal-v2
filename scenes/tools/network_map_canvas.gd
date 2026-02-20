@@ -75,6 +75,13 @@ const _continent_outlines: Array = [
 ]
 
 var _edges: Array = []  # Array of { from:Vector2, to:Vector2, color:Color, width:float }
+var _zoom: float = 1.0
+var _pan_offset: Vector2 = Vector2.ZERO
+var _is_panning: bool = false
+var _pan_mouse_start: Vector2 = Vector2.ZERO
+var _pan_offset_start: Vector2 = Vector2.ZERO
+const ZOOM_MIN := 0.35
+const ZOOM_MAX := 3.0
 
 # ── Continent polygon cache ───────────────────────────────────────────────────
 var _cached_continent_polys: Array[PackedVector2Array] = []
@@ -86,11 +93,50 @@ func update_edges(edges: Array) -> void:
 	queue_redraw()
 
 
+func map_to_canvas(pos: Vector2) -> Vector2:
+	return (pos - size * 0.5) * _zoom + size * 0.5 + _pan_offset
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
+			var pivot := get_local_mouse_position()
+			var old_zoom := _zoom
+			_zoom = clampf(_zoom * 1.15, ZOOM_MIN, ZOOM_MAX)
+			_pan_offset = pivot + (_pan_offset - pivot) * (_zoom / old_zoom)
+			_notify_map_changed()
+			accept_event()
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
+			var pivot := get_local_mouse_position()
+			var old_zoom := _zoom
+			_zoom = clampf(_zoom / 1.15, ZOOM_MIN, ZOOM_MAX)
+			_pan_offset = pivot + (_pan_offset - pivot) * (_zoom / old_zoom)
+			_notify_map_changed()
+			accept_event()
+		elif event.button_index == MOUSE_BUTTON_MIDDLE:
+			_is_panning = event.pressed
+			if _is_panning:
+				_pan_mouse_start = event.position
+				_pan_offset_start = _pan_offset
+	elif event is InputEventMouseMotion and _is_panning:
+		_pan_offset = _pan_offset_start + (event.position - _pan_mouse_start)
+		_notify_map_changed()
+		accept_event()
+
+
+func _notify_map_changed() -> void:
+	queue_redraw()
+	var nm = get_parent().get_parent()
+	if nm.has_method("_reposition_node_widgets"):
+		nm._reposition_node_widgets()
+
+
 func _geo_to_canvas(lon: float, lat: float) -> Vector2:
-	return Vector2(
+	var base := Vector2(
 		(lon + 180.0) / 360.0 * size.x,
 		(LAT_MAX - lat) / (LAT_MAX - LAT_MIN) * size.y
 	)
+	return map_to_canvas(base)
 
 
 func _rebuild_continent_cache() -> void:
@@ -106,12 +152,11 @@ func _rebuild_continent_cache() -> void:
 func _draw() -> void:
 	if size.x < 1.0 or size.y < 1.0:
 		return
-	if size != _cached_size:
-		_rebuild_continent_cache()
+	_rebuild_continent_cache()
 	_draw_grid()
 	_draw_continents()
 	for edge in _edges:
-		draw_line(edge.from, edge.to, edge.color, edge.width, true)
+		draw_line(map_to_canvas(edge.from), map_to_canvas(edge.to), edge.color, edge.width, true)
 
 
 func _draw_grid() -> void:

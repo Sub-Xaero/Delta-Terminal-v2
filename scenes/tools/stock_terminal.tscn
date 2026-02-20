@@ -1,0 +1,63 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/stock_terminal.gd" id="2_st"]
+
+[node name="StockTerminal" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(500, 360)
+script = ExtResource("2_st")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderRow" type="HBoxContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+
+[node name="SymbolHeader" type="Label" parent="ContentArea/Margin/VBox/HeaderRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+text = "SYMBOL"
+
+[node name="PriceHeader" type="Label" parent="ContentArea/Margin/VBox/HeaderRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+text = "PRICE"
+
+[node name="ChangeHeader" type="Label" parent="ContentArea/Margin/VBox/HeaderRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(70, 0)
+text = "CHANGE"
+
+[node name="HeldHeader" type="Label" parent="ContentArea/Margin/VBox/HeaderRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(60, 0)
+text = "HELD"
+
+[node name="TradeHeader" type="Label" parent="ContentArea/Margin/VBox/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "TRADE"
+
+[node name="Separator0" type="HSeparator" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+
+[node name="StockRows" type="VBoxContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Separator1" type="HSeparator" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+
+[node name="PortfolioLabel" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = "Portfolio value: ¥0   |   Credits: ¥0"

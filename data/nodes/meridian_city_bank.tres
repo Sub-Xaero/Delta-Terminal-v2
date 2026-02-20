@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "meridian_city_bank"
+ip = "10.14.1.1"
+name = "Meridian City Bank"
+organisation = "Meridian Financial"
+security = 4
+map_position = Vector2(370, 460)
+files = [{"id": "mcb_f1", "name": "accounts_db.dat", "type": "data", "size": 8192, "content": "MERIDIAN CITY BANK — ACCOUNT REGISTRY\n\nACCOUNT   | HOLDER          | BALANCE      | STATUS\n----------|-----------------|--------------|--------\nMCB-00101 | Meridian Gov    | ¥84,000,000  | ACTIVE\nMCB-00102 | ArcTech Ind.    | ¥230,000,000 | ACTIVE\nMCB-00103 | [CORPORATE]     | ¥15,000,000  | LOCKED\nMCB-00104 | NovaCorp        | ¥67,500,000  | ACTIVE"}, {"id": "mcb_f2", "name": "transfer_log.log", "type": "log", "size": 1024, "content": "[2057-11-01] MCB-00102 -> OFFSHORE ¥5,000,000 STATUS:OK\n[2057-11-03] MCB-00101 -> MCB-00104 ¥2,000,000 STATUS:OK"}]
+services = ["banking"]
+connections = ["isp_gateway", "meridian_corp_hq"]
+users = [{"username": "bank_admin", "password_hash": "$2b$12$Op1Qr2St3Uv4Wx5Yz6Ab7Cd8Ef9Gh0Ij1Kl2Mn3Op4Qr5St6Uv7Wx", "role": "admin"}]
+faction_id = "meridian_gov"
+shop_catalogue = []
+public_interfaces = []
+node_type = "bank"
+lan_nodes = []

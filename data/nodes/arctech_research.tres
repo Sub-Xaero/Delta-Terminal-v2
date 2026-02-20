@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "arctech_research"
+ip = "10.20.1.50"
+name = "ArcTech Research"
+organisation = "ArcTech Industries"
+security = 4
+map_position = Vector2(820, 200)
+files = [{"id": "ar_f1", "name": "project_hydra.doc", "type": "data", "size": 8192, "content": "PROJECT HYDRA — CLASSIFIED\n\nPhase 1: Neural interface mass deployment\nPhase 2: Passive data extraction without consent\nPhase 3: Behavioral modification protocol\n\nEthics board sign-off: [FORGED]\nRegulatory clearance: [BYPASSED]\n\nEstimated affected population: 2.3 million\nDeadline: 2058-Q1\n\nDO NOT DISTRIBUTE"}, {"id": "ar_f2", "name": "research_log.log", "type": "log", "size": 1024, "content": "[2057-10-15] Phase 1 complete\n[2057-11-01] Phase 2 trials begun\n[2057-11-03] SECURITY ALERT: Anomaly in relay traffic"}]
+services = ["database", "shell"]
+connections = ["arc_relay_node", "arctech_mainframe"]
+users = [{"username": "researcher_01", "password_hash": "$2b$12$Cd3Ef4Gh5Ij6Kl7Mn8Op9Qr0St1Uv2Wx3Yz4Ab5Cd6Ef7Gh8Ij9Kl", "role": "user"}, {"username": "arc_admin", "password_hash": "$2b$12$Mn8Op9Qr0St1Uv2Wx3Yz4Ab5Cd6Ef7Gh8Ij9KlAb1Cd2Ef3Gh4Ij5", "role": "admin"}]
+faction_id = "arctech"
+shop_catalogue = []
+public_interfaces = []
+node_type = "corporate"
+lan_nodes = []

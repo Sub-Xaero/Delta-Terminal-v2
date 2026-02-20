@@ -150,7 +150,10 @@ func _on_delete_complete() -> void:
 	_write_log_back()
 
 	_set_state(State.DONE)
-	EventBus.tool_task_completed.emit("log_deleter", "delete", true)
+	var sec: int = NetworkSim.get_node_data(_node_id).get("security", 1)
+	GameManager.add_heat(-sec)
+	NetworkSim.clear_intrusion_log(_node_id)
+	EventBus.tool_task_completed.emit("log_deleter", _node_id, true)
 	EventBus.log_message.emit("Log entries deleted successfully.", "info")
 
 	# After a moment, go back to idle if still connected

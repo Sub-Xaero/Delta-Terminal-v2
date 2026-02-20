@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "globenet_isp"
+ip = "94.200.1.1"
+name = "GlobeNet ISP"
+organisation = "GlobeNet International"
+security = 2
+map_position = Vector2(200, 80)
+files = [{"id": "gn_f1", "name": "routing_table.dat", "type": "data", "size": 1024, "content": "GLOBENET ROUTING TABLE\n\n94.200.0.0/16 -> BACKBONE\n192.168.0.0/16 -> CUSTOMER\n10.0.0.0/8 -> INTERNAL"}]
+services = ["relay"]
+connections = ["isp_gateway", "euro_relay", "internic_central"]
+users = []
+faction_id = ""
+shop_catalogue = []
+public_interfaces = []
+node_type = "isp"
+lan_nodes = []

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="NodeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/node_data.gd" id="1_nd"]
+
+[resource]
+script = ExtResource("1_nd")
+id = "academic_records_db"
+ip = "195.2.0.1"
+name = "Academic Records DB"
+organisation = "Global Education Authority"
+security = 3
+map_position = Vector2(430, 280)
+files = [{"id": "acd_f1", "name": "degree_records.dat", "type": "data", "size": 4096, "content": "ACADEMIC RECORDS DATABASE\n\nID: ARD-001  NAME: [STUDENT]    DEGREE: CompSci   GPA: 3.8  STATUS: GRADUATED\nID: ARD-002  NAME: [STUDENT]    DEGREE: Medicine  GPA: 3.1  STATUS: ENROLLED\nID: ARD-003  NAME: Lawson, C.   DEGREE: MBA       GPA: 3.9  STATUS: GRADUATED"}]
+services = ["database"]
+connections = ["isp_gateway"]
+users = []
+faction_id = ""
+shop_catalogue = []
+public_interfaces = []
+node_type = "academic_db"
+lan_nodes = []

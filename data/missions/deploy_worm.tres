@@ -1,0 +1,29 @@
+[gd_resource type="Resource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/mission_data.gd" id="1_md"]
+[ext_resource type="Script" path="res://scripts/data/objective_data.gd" id="2_od"]
+
+[sub_resource type="Resource" id="Obj_1"]
+script = ExtResource("2_od")
+description = "Crack personal_machine_02"
+type = 1
+target = "personal_machine_02"
+completed = false
+
+[sub_resource type="Resource" id="Obj_2"]
+script = ExtResource("2_od")
+description = "Deploy a WORM virus on personal_machine_02"
+type = 9
+target = "personal_machine_02"
+completed = false
+
+[resource]
+script = ExtResource("1_md")
+id = "deploy_worm"
+title = "Deploy Worm"
+faction_id = "syn_underground"
+min_rep = 0
+reward_credits = 3000
+reward_rating = 0
+description = "Connect to personal_machine_02 and deploy a WORM virus. Let it spread through the neighborhood network."
+objectives = [SubResource("Obj_1"), SubResource("Obj_2")]
