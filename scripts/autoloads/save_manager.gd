@@ -117,10 +117,7 @@ func _collect_node_state() -> Dictionary:
 		var node: Dictionary = NetworkSim.nodes[node_id]
 		var entry: Dictionary = {}
 		if node.has("files"):
-			var files: Array = []
-			for f: Dictionary in node["files"]:
-				files.append(f.duplicate())
-			entry["files"] = files
+			entry["files"] = node["files"].duplicate()
 		var ports: Array = node.get("scanned_ports", [])
 		if not ports.is_empty():
 			entry["scanned_ports"] = ports.duplicate()
