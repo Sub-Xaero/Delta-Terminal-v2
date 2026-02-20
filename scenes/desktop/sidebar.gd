@@ -29,6 +29,9 @@ var _trace_bar_fill:   StyleBoxFlat = null
 var _trace_route_lbl:  Label        = null
 var _trace_flicker:    float        = 0.0
 
+# ── Faction rep refs ──────────────────────────────────────────────────────────
+var _faction_rows: Dictionary = {}   # faction_id -> { label: Label, bar: ProgressBar, fill: StyleBoxFlat, val: Label }
+
 
 func _ready() -> void:
 	_apply_theme()
@@ -41,8 +44,10 @@ func _ready() -> void:
 	EventBus.trace_started.connect(_on_trace_started)
 	EventBus.trace_progress.connect(_on_trace_progress)
 	EventBus.trace_completed.connect(_on_trace_completed)
+	EventBus.faction_rep_changed.connect(_on_faction_rep_changed)
 	_build_hardware_section()
 	_build_trace_section()
+	_build_faction_section()
 
 
 func _process(delta: float) -> void:
@@ -198,6 +203,78 @@ func _build_trace_section() -> void:
 	_trace_route_lbl.add_theme_color_override("font_color", Color(0.35, 0.35, 0.45))
 	_trace_route_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_widget_slots.add_child(_trace_route_lbl)
+
+
+# ── Faction rep widget ────────────────────────────────────────────────────────
+
+func _build_faction_section() -> void:
+	_widget_slots.add_child(HSeparator.new())
+
+	var section_lbl := Label.new()
+	section_lbl.text = "// FACTIONS //"
+	section_lbl.add_theme_font_size_override("font_size", 9)
+	section_lbl.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	_widget_slots.add_child(section_lbl)
+
+	_widget_slots.add_child(HSeparator.new())
+
+	for faction_id in FactionManager.factions:
+		var faction: FactionData = FactionManager.factions[faction_id]
+		var row := _build_faction_row(faction)
+		_widget_slots.add_child(row)
+
+	_update_faction_rows()
+
+
+func _build_faction_row(faction: FactionData) -> HBoxContainer:
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 4)
+
+	# Colour dot
+	var dot := Label.new()
+	dot.text = "\u25CF"
+	dot.add_theme_font_size_override("font_size", 8)
+	dot.add_theme_color_override("font_color", faction.color)
+	dot.custom_minimum_size = Vector2(10, 0)
+	hbox.add_child(dot)
+
+	# Faction name
+	var name_lbl := Label.new()
+	name_lbl.text = faction.name
+	name_lbl.add_theme_font_size_override("font_size", 8)
+	name_lbl.add_theme_color_override("font_color", Color(0.55, 0.65, 0.7))
+	name_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_lbl.clip_text = true
+	hbox.add_child(name_lbl)
+
+	# Rep value label
+	var val_lbl := Label.new()
+	val_lbl.add_theme_font_size_override("font_size", 8)
+	val_lbl.add_theme_color_override("font_color", Color(0.55, 0.65, 0.7))
+	val_lbl.custom_minimum_size = Vector2(28, 0)
+	val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	hbox.add_child(val_lbl)
+
+	_faction_rows[faction.id] = { "label": name_lbl, "val": val_lbl }
+	return hbox
+
+
+func _update_faction_rows() -> void:
+	for faction_id in _faction_rows:
+		var rep: int = FactionManager.get_rep(faction_id)
+		var row_data: Dictionary = _faction_rows[faction_id]
+		var val_lbl: Label = row_data["val"]
+		val_lbl.text = "%+d" % rep
+		if rep > 0:
+			val_lbl.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+		elif rep < 0:
+			val_lbl.add_theme_color_override("font_color", Color(1.0, 0.08, 0.55))
+		else:
+			val_lbl.add_theme_color_override("font_color", Color(0.35, 0.35, 0.45))
+
+
+func _on_faction_rep_changed(_faction_id: String, _new_rep: int) -> void:
+	_update_faction_rows()
 
 
 func _update_monitors() -> void:
