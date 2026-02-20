@@ -1,0 +1,7 @@
+[gd_resource type="Theme" format=3]
+
+[ext_resource type="FontFile" uid="uid://dau1c33p2ogrr" path="res://assets/fonts/Rajdhani-Regular.ttf" id="1_font"]
+
+[resource]
+default_font = ExtResource("1_font")
+default_font_size = 14

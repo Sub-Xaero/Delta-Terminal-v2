@@ -1,7 +1,7 @@
 class_name Taskbar
 extends Panel
 ## Taskbar / dock showing open tool buttons and a system clock.
-## Reacts to EventBus.tool_opened / tool_closed.
+## Reacts to EventBus.tool_opened / tool_closed / hardware_changed.
 
 @onready var task_items: HBoxContainer = $TaskItems
 @onready var clock_label: Label = $ClockLabel
@@ -21,7 +21,7 @@ func _ready() -> void:
 func _add_launch_button() -> void:
 	var btn := Button.new()
 	btn.text = "[ LAUNCH ]"
-	btn.add_theme_color_override("font_color", Color(1.0, 0.08, 0.55))
+	_style_button(btn, Color(1.0, 0.08, 0.55))
 	btn.pressed.connect(func():
 		EventBus.context_menu_requested.emit(btn.global_position + Vector2(0.0, -4.0))
 	)
@@ -29,6 +29,22 @@ func _add_launch_button() -> void:
 	# Separator to visually divide launch button from tool buttons
 	var sep := VSeparator.new()
 	task_items.add_child(sep)
+
+
+func _style_button(btn: Button, color: Color) -> void:
+	btn.add_theme_color_override("font_color", color)
+	var n := StyleBoxFlat.new()
+	n.bg_color = Color(0.04, 0.03, 0.10)
+	n.border_color = Color(color.r, color.g, color.b, 0.5)
+	n.set_border_width_all(1)
+	n.set_content_margin_all(4.0)
+	var h := n.duplicate() as StyleBoxFlat
+	h.bg_color = Color(0.0, 0.1, 0.15)
+	h.border_color = color
+	btn.add_theme_stylebox_override("normal",  n)
+	btn.add_theme_stylebox_override("hover",   h)
+	btn.add_theme_stylebox_override("pressed", h)
+	btn.add_theme_stylebox_override("focus",   n)
 
 
 func _process(_delta: float) -> void:
@@ -40,8 +56,8 @@ func _apply_theme() -> void:
 	style.bg_color = Color(0.04, 0.03, 0.10)
 	style.border_color = Color(0.0, 0.88, 1.0)
 	style.border_width_top = 1
-	style.shadow_color = Color(0.0, 0.88, 1.0, 0.18)
-	style.shadow_size = 4
+	style.shadow_color = Color(0.0, 0.88, 1.0, 0.25)
+	style.shadow_size = 8
 	add_theme_stylebox_override("panel", style)
 
 	clock_label.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
@@ -49,7 +65,7 @@ func _apply_theme() -> void:
 
 func _update_clock() -> void:
 	var t := Time.get_time_dict_from_system()
-	clock_label.text = "%02d:%02d:%02d" % [t.hour, t.minute, t.second]
+	clock_label.text = "[ %02d:%02d:%02d ]" % [t.hour, t.minute, t.second]
 
 
 func _on_tool_opened(p_tool_name: String) -> void:
@@ -58,7 +74,7 @@ func _on_tool_opened(p_tool_name: String) -> void:
 
 	var btn := Button.new()
 	btn.text = "[ %s ]" % p_tool_name
-	btn.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	_style_button(btn, Color(0.0, 0.88, 1.0))
 	btn.pressed.connect(func(): EventBus.tool_focus_requested.emit(p_tool_name))
 	task_items.add_child(btn)
 	_task_buttons[p_tool_name] = btn

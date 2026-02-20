@@ -28,13 +28,31 @@ func _on_log_message(text: String, level: String) -> void:
 		"warn":  colour = COLOUR_WARN
 		"error": colour = COLOUR_ERROR
 
+	var prefix := "  "
+	match level:
+		"warn":  prefix = "▲ "
+		"error": prefix = "✕ "
+
 	var t := Time.get_time_dict_from_system()
 	var label := Label.new()
-	label.text = "[%02d:%02d:%02d]  %s" % [t.hour, t.minute, t.second, text]
+	label.text = "[%02d:%02d:%02d]  %s%s" % [t.hour, t.minute, t.second, prefix, text]
 	label.add_theme_color_override("font_color", colour)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	log_container.add_child(label)
+
+	if level == "error":
+		var wrapper := PanelContainer.new()
+		var ws := StyleBoxFlat.new()
+		ws.bg_color = Color(1.0, 0.08, 0.55, 0.05)
+		ws.set_border_width_all(0)
+		ws.border_width_left = 2
+		ws.border_color = Color(1.0, 0.08, 0.55)
+		wrapper.add_theme_stylebox_override("panel", ws)
+		wrapper.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		wrapper.add_child(label)
+		log_container.add_child(wrapper)
+	else:
+		log_container.add_child(label)
 
 	# Prune oldest entries to stay under cap
 	while log_container.get_child_count() > MAX_ENTRIES:

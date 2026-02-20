@@ -10,6 +10,10 @@ signal window_focused(tool_name: String)
 
 var _dragging: bool = false
 var _drag_offset: Vector2 = Vector2.ZERO
+var _close_hovered: bool = false
+
+const _CORNER_CUT   := 10.0
+const _BORDER_COLOR := Color(0.0, 0.88, 1.0, 0.9)
 
 @onready var title_bar: Panel = $TitleBar
 @onready var title_label: Label = $TitleBar/TitleLabel
@@ -26,22 +30,79 @@ func _ready() -> void:
 
 
 func _apply_theme() -> void:
+	# TitleBar: transparent — its region is drawn as a polygon in _draw()
 	var title_style := StyleBoxFlat.new()
-	title_style.bg_color = Color(0.06, 0.04, 0.14)
-	title_style.border_color = Color(0.0, 0.88, 1.0)
-	title_style.set_border_width_all(1)
+	title_style.bg_color = Color(0, 0, 0, 0)
 	title_bar.add_theme_stylebox_override("panel", title_style)
 
+	# Panel StyleBox: transparent bg (fill drawn as polygon in _draw) + glow shadow
 	var window_style := StyleBoxFlat.new()
-	window_style.bg_color = Color(0.04, 0.03, 0.10, 0.95)
-	window_style.border_color = Color(0.0, 0.88, 1.0)
-	window_style.set_border_width_all(1)
-	window_style.shadow_color = Color(0.0, 0.88, 1.0, 0.18)
-	window_style.shadow_size = 4
+	window_style.bg_color     = Color(0, 0, 0, 0)
+	window_style.shadow_color = Color(0.0, 0.88, 1.0, 0.30)
+	window_style.shadow_size  = 14
 	add_theme_stylebox_override("panel", window_style)
 
-	title_label.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0))
-	close_button.add_theme_color_override("font_color", Color(1.0, 0.08, 0.55))
+	title_label.add_theme_color_override("font_color", Color(0.05, 0.02, 0.12))
+
+	# Close button: transparent bg — polygon drawn in _draw(); ✕ drawn by widget
+	var close_empty := StyleBoxEmpty.new()
+	close_button.add_theme_stylebox_override("normal",  close_empty)
+	close_button.add_theme_stylebox_override("hover",   close_empty)
+	close_button.add_theme_stylebox_override("pressed", close_empty)
+	close_button.add_theme_stylebox_override("focus",   close_empty)
+	close_button.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	close_button.text = "✕"
+	close_button.add_theme_font_size_override("font_size", 13)
+	close_button.mouse_entered.connect(func(): _close_hovered = true;  queue_redraw())
+	close_button.mouse_exited.connect( func(): _close_hovered = false; queue_redraw())
+
+
+func _draw() -> void:
+	var w := size.x
+	var h := size.y
+	var c := _CORNER_CUT
+	const TB := 28.0  # title bar height
+
+	# Full window chamfered background
+	var body_pts := PackedVector2Array([
+		Vector2(c, 0), Vector2(w - c, 0),
+		Vector2(w, c), Vector2(w, h - c),
+		Vector2(w - c, h), Vector2(c, h),
+		Vector2(0, h - c), Vector2(0, c),
+	])
+	draw_polygon(body_pts, PackedColorArray([Color(0.04, 0.03, 0.10, 0.95)]))
+
+	# Title bar — hot pink, right edge follows close button's bottom-left chamfer
+	var title_pts := PackedVector2Array([
+		Vector2(c, 0),           Vector2(w - TB, 0),
+		Vector2(w - TB, TB - c), Vector2(w - c, TB),
+		Vector2(0, TB),          Vector2(0, c),
+	])
+	draw_polygon(title_pts, PackedColorArray([Color(1.0, 0.08, 0.55)]))
+
+	# Close button — contrasting dark navy, cyan border; brightens on hover
+	var btn_bg := Color(0.08, 0.12, 0.20) if _close_hovered else Color(0.04, 0.03, 0.10)
+	var btn_pts := PackedVector2Array([
+		Vector2(w - TB, 0),
+		Vector2(w - c,  0),
+		Vector2(w,      c),
+		Vector2(w,      TB),
+		Vector2(w - c,  TB),
+		Vector2(w - TB, TB - c),
+	])
+	draw_polygon(btn_pts, PackedColorArray([btn_bg]))
+	var btn_border := PackedVector2Array(btn_pts)
+	btn_border.append(btn_pts[0])
+	draw_polyline(btn_border, Color(0.0, 0.88, 1.0, 0.8), 1.0, true)
+
+	# Chamfered border outline
+	var border_pts := PackedVector2Array(body_pts)
+	border_pts.append(body_pts[0])
+	draw_polyline(border_pts, _BORDER_COLOR, 1.5, true)
+
+	# Cyan left accent stripe on content area (below title bar)
+	draw_rect(Rect2(0, TB, 3, h - TB - c), Color(0.0, 0.88, 1.0, 0.6))
+	queue_redraw()
 
 
 func _on_self_input(event: InputEvent) -> void:

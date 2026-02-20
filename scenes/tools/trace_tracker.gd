@@ -4,6 +4,8 @@ extends ToolWindow
 ## Any tool that starts a trace (password cracker, firewall bypasser, etc.)
 ## feeds it automatically via EventBus — this tool owns no game logic.
 
+const BlinkingCursorScript := preload("res://scripts/ui/blinking_cursor.gd")
+
 enum State { INACTIVE, ACTIVE, COMPLETE }
 
 @onready var status_label: Label       = $ContentArea/Margin/VBox/StatusLabel
@@ -13,6 +15,8 @@ enum State { INACTIVE, ACTIVE, COMPLETE }
 
 var _state:      State        = State.INACTIVE
 var _trace_fill: StyleBoxFlat
+var _flicker:    float        = 0.0
+var _cursor: Node = null
 
 
 func _ready() -> void:
@@ -26,12 +30,25 @@ func _ready() -> void:
 	_update_ui()
 
 
+func _process(delta: float) -> void:
+	if _state != State.ACTIVE:
+		return
+	_flicker += delta * 3.5
+	status_label.modulate = Color(1, 1, 1, 0.55 + 0.45 * abs(sin(_flicker)))
+
+
 func _on_trace_started(_duration: float) -> void:
 	_state = State.ACTIVE
 	trace_bar.value = 0.0
 	trace_pct.text  = "TRACE:  0%"
 	_trace_fill.bg_color = Color(0.0, 0.88, 1.0)
-	_update_ui()
+	_set_window_alert(Color(1.0, 0.75, 0.0))
+	if not _cursor:
+		_cursor = BlinkingCursorScript.new()
+		add_child(_cursor)
+	_cursor.set_target(status_label)
+	_cursor.set_base_text("TRACE STATUS:  ACTIVE")
+	status_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.0))
 
 
 func _on_trace_progress(p: float) -> void:
@@ -44,6 +61,10 @@ func _on_trace_completed() -> void:
 	_state = State.COMPLETE
 	trace_bar.value      = 100.0
 	_trace_fill.bg_color = Color(1.0, 0.08, 0.55)
+	_set_window_alert(Color(1.0, 0.08, 0.55))
+	if _cursor:
+		_cursor.queue_free()
+		_cursor = null
 	_update_ui()
 
 
@@ -53,6 +74,10 @@ func _on_network_disconnected() -> void:
 	trace_pct.text       = "TRACE:  0%"
 	chain_label.text     = "ROUTE:  —"
 	_trace_fill.bg_color = Color(0.0, 0.88, 1.0)
+	_set_window_alert(Color(0.0, 0.88, 1.0))
+	if _cursor:
+		_cursor.queue_free()
+		_cursor = null
 	_update_ui()
 
 
@@ -61,7 +86,17 @@ func _on_bounce_chain_updated(chain: Array) -> void:
 					else "ROUTE:  " + "  →  ".join(chain)
 
 
+func _set_window_alert(border_color: Color) -> void:
+	var s := StyleBoxFlat.new()
+	s.bg_color     = Color(0.04, 0.03, 0.10, 0.95)
+	s.shadow_color = Color(border_color.r, border_color.g, border_color.b, 0.40)
+	s.shadow_size  = 18
+	add_theme_stylebox_override("panel", s)
+	queue_redraw()
+
+
 func _update_ui() -> void:
+	status_label.modulate = Color(1, 1, 1, 1)
 	match _state:
 		State.INACTIVE:
 			status_label.text = "TRACE STATUS:  INACTIVE"

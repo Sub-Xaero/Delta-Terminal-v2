@@ -15,8 +15,8 @@ offset_bottom = 28.0
 layout_mode = 1
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 8.0
-offset_right = -32.0
+offset_left = 14.0
+offset_right = -30.0
 vertical_alignment = 1
 text = "Tool"
 
@@ -25,10 +25,10 @@ layout_mode = 1
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -30.0
-offset_right = -2.0
-offset_top = 2.0
-offset_bottom = -2.0
+offset_left = -28.0
+offset_right = 0.0
+offset_top = 0.0
+offset_bottom = 0.0
 text = "x"
 
 [node name="ContentArea" type="Control" parent="."]

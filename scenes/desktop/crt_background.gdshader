@@ -35,5 +35,16 @@ void fragment() {
 	col += grid_color.rgb * accent_alpha * accent_line;
 	col *= vignette;
 
+	// Horizontal scan sweep — holographic display band drifting downward
+	float scan_y    = mod(TIME * 0.10, 1.0);
+	float scan_dist = abs(UV.y - scan_y);
+	float scan_beam = max(0.0, 1.0 - scan_dist * 50.0) * 0.04;
+	col += grid_color.rgb * scan_beam;
+
+	// Edge chromatic tint — subtle warm/cool RGB split at screen edges
+	float ca = dot(vig_uv, vig_uv);
+	col.r += ca * 0.018;
+	col.b += ca * 0.010;
+
 	COLOR = vec4(col, 1.0);
 }
