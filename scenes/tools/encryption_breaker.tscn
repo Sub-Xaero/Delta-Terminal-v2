@@ -1,0 +1,57 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/encryption_breaker.gd" id="2_eb"]
+
+[node name="EncryptionBreaker" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(380, 320)
+script = ExtResource("2_eb")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StatusLabel" type="Label" parent="ContentArea/Margin/VBox"]
+text = "NO ENCRYPTED TARGET"
+horizontal_alignment = 1
+
+[node name="Sep1" type="HSeparator" parent="ContentArea/Margin/VBox"]
+
+[node name="CipherPanel" type="PanelContainer" parent="ContentArea/Margin/VBox"]
+
+[node name="CipherMargin" type="MarginContainer" parent="ContentArea/Margin/VBox/CipherPanel"]
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="CipherDisplay" type="RichTextLabel" parent="ContentArea/Margin/VBox/CipherPanel/CipherMargin"]
+layout_mode = 2
+bbcode_enabled = true
+scroll_active = false
+fit_content = true
+text = ""
+
+[node name="DecryptPct" type="Label" parent="ContentArea/Margin/VBox"]
+text = "DECRYPT:  0%"
+
+[node name="DecryptBar" type="ProgressBar" parent="ContentArea/Margin/VBox"]
+show_percentage = false
+value = 0
+
+[node name="Spacer" type="Control" parent="ContentArea/Margin/VBox"]
+custom_minimum_size = Vector2(0, 4)
+size_flags_vertical = 3
+
+[node name="ActionBtn" type="Button" parent="ContentArea/Margin/VBox"]
+text = "INITIATE DECRYPT"
+disabled = true

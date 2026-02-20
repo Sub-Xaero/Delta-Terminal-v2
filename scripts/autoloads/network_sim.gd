@@ -11,6 +11,7 @@ var bounce_chain: Array[String] = []   # ordered list of node ids routed through
 var is_connected: bool = false
 var cracked_nodes: Array[String] = []
 var bypassed_nodes: Array[String] = []
+var encryption_broken_nodes: Array[String] = []
 
 # ── Trace state ───────────────────────────────────────────────────────────────
 var trace_active: bool = false
@@ -105,6 +106,16 @@ func node_requires_bypass(node_id: String) -> bool:
 	return data.get("security", 0) >= 3 or data.get("has_firewall", false)
 
 
+func break_encryption(node_id: String) -> void:
+	if node_id in encryption_broken_nodes:
+		return
+	encryption_broken_nodes.append(node_id)
+	EventBus.log_message.emit(
+		"Encryption broken: %s  [%s]" % [nodes[node_id]["ip"], nodes[node_id]["name"]], "info"
+	)
+
+
+
 # ── Node data ─────────────────────────────────────────────────────────────────
 
 func register_node(data: Dictionary) -> void:
@@ -179,6 +190,7 @@ func _register_default_nodes() -> void:
 		"ip": "193.62.18.5",
 		"name": "NeoTech University",
 		"security": 2,
+		"encrypted": true,
 		"map_position": Vector2(621, 167),  # Tokyo, Japan  (36°N, 140°E)
 		"files": [
 			{
@@ -204,6 +216,7 @@ func _register_default_nodes() -> void:
 		"ip": "84.23.119.41",
 		"name": "ArcTech Systems",
 		"security": 3,
+		"encrypted": true,
 		"map_position": Vector2(206, 148),  # New York, USA  (41°N, 74°W)
 		"files": [
 			{
@@ -236,6 +249,7 @@ func _register_default_nodes() -> void:
 		"ip": "10.0.13.37",
 		"name": "Darknet Relay",
 		"security": 2,
+		"encrypted": true,
 		"map_position": Vector2(535, 83),   # Siberia, Russia  (58°N, 95°E)
 		"files": [
 			{
