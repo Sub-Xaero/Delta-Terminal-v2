@@ -1,0 +1,85 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/bank_terminal.gd" id="2_bt"]
+
+[node name="BankTerminal" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(520, 380)
+script = ExtResource("2_bt")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NodeHeader" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = "BANK TERMINAL"
+
+[node name="Sep" type="HSeparator" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+
+[node name="LoginPanel" type="VBoxContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="LoginHeader" type="Label" parent="ContentArea/Margin/VBox/LoginPanel"]
+layout_mode = 2
+text = "SELECT CREDENTIALS"
+
+[node name="UserDropdown" type="OptionButton" parent="ContentArea/Margin/VBox/LoginPanel"]
+layout_mode = 2
+
+[node name="LoginBtn" type="Button" parent="ContentArea/Margin/VBox/LoginPanel"]
+layout_mode = 2
+text = "LOGIN"
+
+[node name="AccountPanel" type="VBoxContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+visible = false
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="AccountScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox/AccountPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AccountList" type="VBoxContainer" parent="ContentArea/Margin/VBox/AccountPanel/AccountScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="StealPanel" type="VBoxContainer" parent="ContentArea/Margin/VBox/AccountPanel"]
+layout_mode = 2
+visible = false
+theme_override_constants/separation = 6
+
+[node name="StealSep" type="HSeparator" parent="ContentArea/Margin/VBox/AccountPanel/StealPanel"]
+layout_mode = 2
+
+[node name="StealHeader" type="Label" parent="ContentArea/Margin/VBox/AccountPanel/StealPanel"]
+layout_mode = 2
+text = "STEAL FUNDS"
+
+[node name="AmountSpin" type="SpinBox" parent="ContentArea/Margin/VBox/AccountPanel/StealPanel"]
+layout_mode = 2
+min_value = 100.0
+max_value = 500000.0
+step = 100.0
+value = 1000.0
+
+[node name="ExecuteBtn" type="Button" parent="ContentArea/Margin/VBox/AccountPanel/StealPanel"]
+layout_mode = 2
+text = "EXECUTE TRANSFER"
+
+[node name="StatusLabel" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = ""

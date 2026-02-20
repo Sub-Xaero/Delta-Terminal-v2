@@ -15,3 +15,4 @@ services = ["relay", "marketplace"]
 connections = ["syn_underground_market", "meridian_isp"]
 users = [{"username": "sp3ctr3", "password_hash": "$2b$12$X2yZ3aB4cD5eF6gH7iJ8kL9mN0oP1qR2sT3uV4wX5yZ6aB7cD8e", "role": "admin"}, {"username": "null_ref", "password_hash": "$2b$12$F9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9aB0cD1eF2gH3iJ4kL5m", "role": "moderator"}]
 faction_id = "ghost_collective"
+shop_catalogue = [{"exe": "firewall_bypass.exe", "name": "Firewall Bypasser", "description": "Bypass node firewall protection", "price": 1500}, {"exe": "log_deleter.exe", "name": "Log Deleter", "description": "Scrub access logs from compromised nodes", "price": 1200}, {"exe": "credential_manager.exe", "name": "Credential Manager", "description": "View and manage stolen credentials", "price": 800}]

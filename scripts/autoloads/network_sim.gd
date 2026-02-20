@@ -177,6 +177,7 @@ func _load_nodes_from_data() -> void:
 					"connections": res.connections,
 					"users": res.users,
 					"faction_id": res.faction_id,
+					"shop_catalogue": res.shop_catalogue,
 				}
 				register_node(data)
 		file_name = dir.get_next()

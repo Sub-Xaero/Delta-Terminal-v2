@@ -15,3 +15,4 @@ services = ["marketplace"]
 connections = ["ghost_collective_darknet", "personal_machine_01"]
 users = [{"username": "market_admin", "password_hash": "$2b$12$N6oP7qR8sT9uV0wX1yZ2aB3cD4eF5gH6iJ7kL8mN9oP0qR1sT2u", "role": "admin"}]
 faction_id = "syn_syndicate"
+shop_catalogue = [{"exe": "encryption_breaker.exe", "name": "Encryption Breaker", "description": "Decrypt encrypted files and databases", "price": 2000}, {"exe": "firewall_bypass.exe", "name": "Firewall Bypasser", "description": "Bypass node firewall protection", "price": 1800}]

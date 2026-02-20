@@ -13,3 +13,4 @@ extends Resource
 @export var connections: Array = []
 @export var users: Array = []
 @export var faction_id: String = ""
+@export var shop_catalogue: Array = []

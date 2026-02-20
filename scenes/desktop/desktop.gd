@@ -16,6 +16,8 @@ const CredentialManagerScene  := preload("res://scenes/tools/credential_manager.
 const LogDeleterScene         := preload("res://scenes/tools/log_deleter.tscn")
 const CommsClientScene        := preload("res://scenes/tools/comms_client.tscn")
 const PlayerProfileScene      := preload("res://scenes/tools/player_profile.tscn")
+const SoftwareShopScene       := preload("res://scenes/tools/software_shop.tscn")
+const BankTerminalScene       := preload("res://scenes/tools/bank_terminal.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -34,6 +36,7 @@ const TOOL_EXE_REQUIREMENTS: Dictionary = {
 @onready var context_menu: PopupMenu = $ContextMenu
 @onready var _crt_bg: ColorRect = $Background
 @onready var _pause_menu: PauseMenu = $PauseMenu
+@onready var _desktop_icons_layer: Control = $DesktopIconsLayer
 
 
 func _ready() -> void:
@@ -42,6 +45,8 @@ func _ready() -> void:
 	EventBus.open_tool_requested.connect(_on_open_tool_requested)
 	EventBus.system_nuke_triggered.connect(_on_system_nuke)
 	EventBus.pause_requested.connect(_pause_menu.toggle)
+	EventBus.network_connected.connect(_on_node_connected)
+	EventBus.network_disconnected.connect(_on_node_disconnected)
 	SettingsManager.settings_changed.connect(_apply_crt_settings)
 	_apply_crt_settings()
 	window_manager.spawn_tool_window(SystemLogScene, "System Log")
@@ -187,6 +192,74 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			)
 		12:
 			SaveManager.save_game()
+
+
+# ── Desktop service icons ─────────────────────────────────────────────────────
+
+func _on_node_connected(_node_id: String) -> void:
+	_refresh_desktop_icons()
+
+
+func _on_node_disconnected() -> void:
+	_refresh_desktop_icons()
+
+
+func _refresh_desktop_icons() -> void:
+	for child in _desktop_icons_layer.get_children():
+		child.queue_free()
+	if not NetworkSim.is_connected:
+		return
+	var node: Dictionary = NetworkSim.get_node_data(NetworkSim.connected_node_id)
+	var services: Array  = node.get("services", [])
+	var container := HBoxContainer.new()
+	container.position = Vector2(12, 12)
+	container.add_theme_constant_override("separation", 8)
+	if "marketplace" in services:
+		container.add_child(_create_desktop_icon(
+			"[SHOP]", "SOFTWARE\nSHOP",
+			func() -> void: window_manager.spawn_tool_window(SoftwareShopScene, "Software Shop")
+		))
+	if "banking" in services:
+		container.add_child(_create_desktop_icon(
+			"[BANK]", "BANK\nTERMINAL",
+			func() -> void: window_manager.spawn_tool_window(BankTerminalScene, "Bank Terminal")
+		))
+	if container.get_child_count() > 0:
+		_desktop_icons_layer.add_child(container)
+
+
+func _create_desktop_icon(icon_text: String, label: String, callback: Callable) -> Button:
+	var btn := Button.new()
+	btn.custom_minimum_size = Vector2(84, 72)
+	btn.text = icon_text + "\n" + label
+	btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+	var sn := StyleBoxFlat.new()
+	sn.bg_color = Color(0.04, 0.03, 0.12, 0.88)
+	sn.border_color = Color(0.0, 0.88, 1.0, 0.55)
+	sn.set_border_width_all(1)
+	sn.set_corner_radius_all(2)
+	sn.content_margin_top    = 8
+	sn.content_margin_bottom = 8
+	sn.content_margin_left   = 6
+	sn.content_margin_right  = 6
+	btn.add_theme_stylebox_override("normal", sn)
+
+	var sh := sn.duplicate() as StyleBoxFlat
+	sh.bg_color    = Color(0.08, 0.06, 0.18, 0.95)
+	sh.border_color = Color(0.0, 0.88, 1.0)
+	btn.add_theme_stylebox_override("hover", sh)
+
+	var sp := sn.duplicate() as StyleBoxFlat
+	sp.bg_color    = Color(0.0, 0.12, 0.2)
+	sp.border_color = Color(0.0, 0.88, 1.0)
+	btn.add_theme_stylebox_override("pressed", sp)
+	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+
+	btn.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	btn.add_theme_color_override("font_hover_color", Color(0.4, 0.95, 1.0))
+	btn.pressed.connect(callback)
+	return btn
 
 
 func _on_system_nuke() -> void:

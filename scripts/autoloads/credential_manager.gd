@@ -4,12 +4,26 @@ extends Node
 
 # ── Credential storage ────────────────────────────────────────────────────────
 # node_id → Array[{ username: String, password_hash: String, role: String,
-#                    cracked: bool, plaintext: String }]
+#                    cracked: bool, plaintext: String, type: String }]
+# type: "organic" = player legitimately owns this credential
+#       "cracked"  = obtained by cracking the hash
+#       "stolen"   = lifted from a file/database
 var credentials: Dictionary = {}
 
 
 func _ready() -> void:
 	credentials = GameManager.credentials.duplicate(true)
+	# Seed the player's own bank account credential on new game
+	if not credentials.has("novacorp_bank"):
+		credentials["novacorp_bank"] = [{
+			"username": GameManager.player_data.get("handle", "ghost"),
+			"password_hash": "",
+			"role": "user",
+			"cracked": false,
+			"plaintext": "delta_init_01",
+			"type": "organic",
+		}]
+		_sync_to_game_manager()
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
