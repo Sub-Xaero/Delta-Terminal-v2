@@ -1,0 +1,69 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/log_deleter.gd" id="2_ld"]
+
+[node name="LogDeleter" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(520, 360)
+script = ExtResource("2_ld")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatusLabel" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+text = "Connect to a node first."
+horizontal_alignment = 1
+
+[node name="LogPanel" type="PanelContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LogMargin" type="MarginContainer" parent="ContentArea/Margin/VBox/LogPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="LogScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox/LogPanel/LogMargin"]
+layout_mode = 2
+
+[node name="LogList" type="VBoxContainer" parent="ContentArea/Margin/VBox/LogPanel/LogMargin/LogScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="BtnRow" type="HBoxContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="QueueBtn" type="Button" parent="ContentArea/Margin/VBox/BtnRow"]
+text = "QUEUE SELECTED"
+disabled = true
+
+[node name="DeleteBtn" type="Button" parent="ContentArea/Margin/VBox/BtnRow"]
+text = "DELETE QUEUED"
+disabled = true
+
+[node name="ProgressBar" type="ProgressBar" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+visible = false
+show_percentage = false
+value = 0
+
+[node name="ProgressLabel" type="Label" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+visible = false
+text = "DELETING:  0%"
+horizontal_alignment = 1
