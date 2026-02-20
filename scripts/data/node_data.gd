@@ -14,3 +14,4 @@ extends Resource
 @export var users: Array = []
 @export var faction_id: String = ""
 @export var shop_catalogue: Array = []
+@export var public_interfaces: Array = []  # [{name, description, tool?}]

@@ -110,10 +110,13 @@ func _add_interface_card(iface: Dictionary, node_name: String) -> void:
 
 	var cap_name:      String = iface_name
 	var cap_node_name: String = node_name
+	var tool_name:     String = iface.get("tool", "")
 	name_btn.pressed.connect(func() -> void:
 		EventBus.log_message.emit(
 			"[%s] Public interface accessed: %s" % [cap_node_name, cap_name], "info"
 		)
+		if not tool_name.is_empty():
+			EventBus.open_tool_requested.emit(tool_name)
 	)
 
 	var desc_lbl := Label.new()
@@ -191,6 +194,13 @@ func _show_post_login(data: Dictionary, _node_id: String, account: Dictionary) -
 		_protections_panel.add_child(_make_service_button(
 			"BANK TERMINAL", "[BANK TERMINAL]",
 			func() -> void: EventBus.open_tool_requested.emit("Bank Terminal")
+		))
+
+	var connections: Array = data.get("connections", [])
+	if not connections.is_empty():
+		_protections_panel.add_child(_make_service_button(
+			"LINKED SYSTEMS", "[LINKS]",
+			func() -> void: EventBus.open_tool_requested.emit("System Links")
 		))
 
 	EventBus.log_message.emit(

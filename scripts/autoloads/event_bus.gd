@@ -39,6 +39,7 @@ signal system_nuke_triggered()     # fired after full state reset; desktop react
 
 # ── Discovery & Intrusion ────────────────────────────────────────────────────
 signal node_discovered(node_id: String)
+signal node_removed(node_id: String)
 signal intrusion_logged(node_id: String)
 signal credentials_stolen(node_id: String, count: int)
 signal exploit_installed(node_id: String, exploit_type: String)

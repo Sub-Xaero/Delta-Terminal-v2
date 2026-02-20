@@ -19,6 +19,8 @@ const PlayerProfileScene      := preload("res://scenes/tools/player_profile.tscn
 const SoftwareShopScene       := preload("res://scenes/tools/software_shop.tscn")
 const BankTerminalScene       := preload("res://scenes/tools/bank_terminal.tscn")
 const FactionJobBoardScene    := preload("res://scenes/tools/faction_job_board.tscn")
+const NodeDirectoryScene      := preload("res://scenes/tools/node_directory.tscn")
+const SystemLinksScene        := preload("res://scenes/tools/system_links.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -137,6 +139,10 @@ func _on_open_tool_requested(tool_name: String) -> void:
 			window_manager.spawn_tool_window(BankTerminalScene, "Bank Terminal")
 		"Faction Job Board":
 			window_manager.spawn_tool_window(FactionJobBoardScene, "Faction Job Board")
+		"Node Directory":
+			window_manager.spawn_tool_window(NodeDirectoryScene, "Node Directory")
+		"System Links":
+			window_manager.spawn_tool_window(SystemLinksScene, "System Links")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:
@@ -233,6 +239,11 @@ func _refresh_desktop_icons() -> void:
 		container.add_child(_create_desktop_icon(
 			"JOB\nBOARD",
 			func() -> void: window_manager.spawn_tool_window(FactionJobBoardScene, "Faction Job Board")
+		))
+	if "node_directory" in services:
+		container.add_child(_create_desktop_icon(
+			"NODE\nDIRECTORY",
+			func() -> void: window_manager.spawn_tool_window(NodeDirectoryScene, "Node Directory")
 		))
 	if container.get_child_count() > 0:
 		_desktop_icons_layer.add_child(container)

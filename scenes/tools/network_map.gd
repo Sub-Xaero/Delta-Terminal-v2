@@ -27,6 +27,7 @@ func _ready() -> void:
 	EventBus.network_disconnected.connect(_on_network_disconnected)
 	EventBus.bounce_chain_updated.connect(_on_bounce_chain_updated)
 	EventBus.node_discovered.connect(_on_node_discovered)
+	EventBus.node_removed.connect(_on_node_removed)
 	connect_btn.pressed.connect(_on_connect_pressed)
 	disconnect_btn.pressed.connect(NetworkSim.disconnect_from_node)
 	_apply_info_panel_theme()
@@ -200,6 +201,12 @@ func _on_bounce_chain_updated(chain: Array) -> void:
 func _on_node_discovered(node_id: String) -> void:
 	if _node_widgets.has(node_id):
 		_node_widgets[node_id].set_undiscovered(false)
+	_rebuild_edges()
+
+
+func _on_node_removed(node_id: String) -> void:
+	if _node_widgets.has(node_id):
+		_node_widgets[node_id].set_undiscovered(true)
 	_rebuild_edges()
 
 

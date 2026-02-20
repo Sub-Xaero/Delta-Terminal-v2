@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/node_directory.gd" id="2_nd"]
+
+[node name="NodeDirectory" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(660, 420)
+script = ExtResource("2_nd")

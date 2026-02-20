@@ -14,6 +14,8 @@ var bounce_chain: Array  = []
 func _ready() -> void:
 	mouse_filter = MOUSE_FILTER_STOP
 	mouse_default_cursor_shape = CURSOR_POINTING_HAND
+	EventBus.node_discovered.connect(func(_id: String) -> void: queue_redraw())
+	EventBus.node_removed.connect(func(_id: String) -> void: queue_redraw())
 
 
 func _draw() -> void:

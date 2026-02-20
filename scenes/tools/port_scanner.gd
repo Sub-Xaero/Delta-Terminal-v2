@@ -135,14 +135,6 @@ func _finish_scan() -> void:
 		Color(0.0, 0.88, 1.0) if port_cnt > 0 else Color(1.0, 0.75, 0.0),
 	)
 
-	# ── Node discovery ────────────────────────────────────────────────────────
-	var discovered_count: int = _discover_adjacent_nodes(data)
-	if discovered_count > 0:
-		_add_line(
-			"[Discovery] %d new node(s) found in routing table" % discovered_count,
-			Color(1.0, 0.75, 0.0),
-		)
-
 	scan_bar.visible  = false
 	scan_btn.disabled = false
 
@@ -150,21 +142,6 @@ func _finish_scan() -> void:
 	EventBus.log_message.emit(
 		"Scan complete: %d open port(s) found on %s" % [port_cnt, ip], "info"
 	)
-
-
-# ── Discovery ─────────────────────────────────────────────────────────────────
-
-func _discover_adjacent_nodes(node_data: Dictionary) -> int:
-	if not NetworkSim.has_method("discover_node"):
-		# TODO: NetworkSim.discover_node() — see Task #1
-		return 0
-	var connections: Array = node_data.get("connections", [])
-	var count: int = 0
-	for conn_id: String in connections:
-		if conn_id not in NetworkSim.discovered_nodes:
-			NetworkSim.discover_node(conn_id)
-			count += 1
-	return count
 
 
 # ── Output helpers ─────────────────────────────────────────────────────────────

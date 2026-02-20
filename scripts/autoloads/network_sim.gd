@@ -126,6 +126,19 @@ func break_encryption(node_id: String) -> void:
 
 # ── Discovery ────────────────────────────────────────────────────────────────
 
+const _PROTECTED_NODES := ["local_machine"]
+
+func remove_node(node_id: String) -> void:
+	if node_id in _PROTECTED_NODES or node_id == connected_node_id:
+		return
+	discovered_nodes.erase(node_id)
+	EventBus.node_removed.emit(node_id)
+	if nodes.has(node_id):
+		EventBus.log_message.emit(
+			"Node removed from address book: %s  [%s]" % [nodes[node_id]["ip"], nodes[node_id]["name"]], "info"
+		)
+
+
 func discover_node(node_id: String) -> void:
 	if node_id in discovered_nodes:
 		return
@@ -185,6 +198,7 @@ func _load_nodes_from_data() -> void:
 					"users": res.users,
 					"faction_id": res.faction_id,
 					"shop_catalogue": res.shop_catalogue,
+					"public_interfaces": res.public_interfaces,
 				}
 				register_node(data)
 		file_name = dir.get_next()
