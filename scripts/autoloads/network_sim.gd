@@ -67,6 +67,13 @@ func add_to_bounce_chain(node_id: String) -> void:
 		EventBus.bounce_chain_updated.emit(bounce_chain)
 
 
+func remove_from_bounce_chain(node_id: String) -> void:
+	var idx := bounce_chain.find(node_id)
+	if idx >= 0:
+		bounce_chain.remove_at(idx)
+		EventBus.bounce_chain_updated.emit(bounce_chain)
+
+
 # ── Trace ─────────────────────────────────────────────────────────────────────
 
 func start_trace(duration: float) -> void:

@@ -5,10 +5,11 @@ extends Control
 
 signal node_clicked(node_id: String)
 signal node_double_clicked(node_id: String)
+signal node_shift_clicked(node_id: String)
 
-const ICON_SIZE  := 56.0   # widget width; circle fills this square area
-const RADIUS     := 22.0
-const LABEL_H    := 18.0   # height reserved below circle for the IP label
+const ICON_SIZE  := 32.0   # widget width; circle fills this square area
+const RADIUS     := 10.0
+const LABEL_H    := 12.0   # height reserved below circle for the name label
 
 var node_id:   String     = ""
 var node_data: Dictionary = {}
@@ -17,6 +18,7 @@ var _selected:     bool = false
 var _connected:    bool = false
 var _hovered:      bool = false
 var _undiscovered: bool = false
+var _chain_pos:    int  = -1   # -1 = not in chain; 0+ = hop index
 
 @onready var ip_label: Label = $IPLabel
 
@@ -30,14 +32,20 @@ func setup(data: Dictionary) -> void:
 	node_id   = data["id"]
 	node_data = data
 	_undiscovered = node_id not in NetworkSim.discovered_nodes
-	ip_label.text = "???.???.???.???" if _undiscovered else data.get("ip", "")
+	ip_label.text = data.get("name", "") if not _undiscovered else ""
 	custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE + LABEL_H)
+	if _undiscovered:
+		hide()
 	queue_redraw()
 
 
 func set_undiscovered(val: bool) -> void:
 	_undiscovered = val
-	ip_label.text = "???.???.???.???" if _undiscovered else node_data.get("ip", "")
+	ip_label.text = node_data.get("name", "") if not _undiscovered else ""
+	if _undiscovered:
+		hide()
+	else:
+		show()
 	queue_redraw()
 
 
@@ -51,38 +59,44 @@ func set_connected(active: bool) -> void:
 	queue_redraw()
 
 
+func set_chain_position(pos: int) -> void:
+	_chain_pos = pos
+	queue_redraw()
+
+
 func _draw() -> void:
 	var center := Vector2(ICON_SIZE * 0.5, ICON_SIZE * 0.5)
 	var border := _border_colour()
 	var fill   := Color(0.04, 0.03, 0.10)
 
 	draw_circle(center, RADIUS, fill)
-	draw_arc(center, RADIUS, 0.0, TAU, 64, border, 2.0 if not _undiscovered else 1.0, true)
-
-	# Draw "?" label in centre for undiscovered nodes
-	if _undiscovered:
-		var font := ThemeDB.fallback_font
-		var font_size: int = 16
-		var text_size := font.get_string_size("?", HORIZONTAL_ALIGNMENT_CENTER, -1, font_size)
-		var text_pos := center - text_size * 0.5 + Vector2(0, text_size.y * 0.5)
-		draw_string(font, text_pos, "?", HORIZONTAL_ALIGNMENT_CENTER, -1, font_size, Color(0.25, 0.25, 0.35))
-		return
+	draw_arc(center, RADIUS, 0.0, TAU, 64, border, 2.0, true)
 
 	# Outer glow ring on selection / active connection / hover
 	if _selected or _connected or _hovered:
 		var glow := Color(border.r, border.g, border.b, 0.22)
-		draw_arc(center, RADIUS + 6.0, 0.0, TAU, 64, glow, 4.0, true)
+		draw_arc(center, RADIUS + 3.0, 0.0, TAU, 64, glow, 3.0, true)
 
 	# Filled centre dot when connected
 	if _connected:
-		draw_circle(center, 5.0, border)
+		draw_circle(center, 3.0, border)
+
+	# Amber hop number badge at top-right when in bounce chain
+	if _chain_pos >= 0:
+		var font      := ThemeDB.fallback_font
+		var font_size := 8
+		var label     := str(_chain_pos + 1)
+		var badge_col := Color(1.0, 0.75, 0.0)          # amber
+		var badge_pos := Vector2(ICON_SIZE - 2.0, 6.0)  # top-right corner
+		draw_string(font, badge_pos, label,
+				HORIZONTAL_ALIGNMENT_RIGHT, -1, font_size, badge_col)
 
 
 func _border_colour() -> Color:
-	if _undiscovered:
-		return Color(0.2, 0.2, 0.28)    # dim grey — undiscovered
 	if _connected:
 		return Color(0.0, 0.88, 1.0)    # cyan — active
+	if _chain_pos >= 0:
+		return Color(1.0, 0.75, 0.0)    # amber — in bounce chain
 	if _selected:
 		return Color(0.75, 0.92, 1.0)   # near-white — selected
 	var sec: int = node_data.get("security", 1)
@@ -101,6 +115,8 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if event.double_click:
 			node_double_clicked.emit(node_id)
+		elif event.shift_pressed:
+			node_shift_clicked.emit(node_id)
 		else:
 			node_clicked.emit(node_id)
 		accept_event()
