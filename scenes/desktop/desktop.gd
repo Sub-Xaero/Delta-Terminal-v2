@@ -12,6 +12,8 @@ const MissionLogScene         := preload("res://scenes/tools/mission_log.tscn")
 const FileBrowserScene        := preload("res://scenes/tools/file_browser.tscn")
 const EncryptionBreakerScene  := preload("res://scenes/tools/encryption_breaker.tscn")
 const HardwareViewerScene     := preload("res://scenes/tools/hardware_viewer.tscn")
+const CredentialManagerScene  := preload("res://scenes/tools/credential_manager.tscn")
+const LogDeleterScene         := preload("res://scenes/tools/log_deleter.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -58,7 +60,9 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("Password Cracker", 1)
 	context_menu.add_item("Firewall Bypasser", 9)
 	context_menu.add_item("Encryption Breaker", 10)
+	context_menu.add_item("Log Deleter", 14)
 	context_menu.add_item("File Browser", 7)
+	context_menu.add_item("Credential Manager", 13)
 	context_menu.add_separator()
 	context_menu.add_item("Mission Log", 6)
 	context_menu.add_separator()
@@ -138,6 +142,16 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			window_manager.spawn_tool_window(EncryptionBreakerScene, "Encryption Breaker")
 		11:
 			window_manager.spawn_tool_window(HardwareViewerScene, "Hardware Viewer")
+		13:
+			if not _has_exe("Credential Manager"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Credential Manager"], "error")
+				return
+			window_manager.spawn_tool_window(CredentialManagerScene, "Credential Manager")
+		14:
+			if not _has_exe("Log Deleter"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Log Deleter"], "error")
+				return
+			window_manager.spawn_tool_window(LogDeleterScene, "Log Deleter")
 		4:
 			var handle: String = GameManager.player_data.get("handle", "ghost")
 			EventBus.log_message.emit(
