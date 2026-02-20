@@ -10,7 +10,13 @@ var player_data: Dictionary = {
 	"handle": "ghost",
 	"credits": 1000,
 	"rating": 1,
+	"heat": 0,
+	"faction_rep": {},
+	"local_storage": ["password_cracker.exe", "port_scanner.exe"],
 }
+
+# Stolen/discovered credentials per node: node_id → Array of credential dicts
+var credentials: Dictionary = {}
 
 var active_missions: Array[String] = []
 var completed_missions: Array[String] = []
