@@ -40,7 +40,7 @@ func save_game() -> void:
 		"node_state":         _collect_node_state(),
 		"hardware":           HardwareManager.get_save_data(),
 		"credentials":        GameManager.credentials.duplicate(),
-		"comms_inbox":        [],
+		"comms_inbox":        CommsManager.inbox.duplicate(true),
 		"exploits_installed": {},
 		"discovered_nodes":   NetworkSim.cracked_nodes.duplicate(),
 		"tutorial_flags":     {},
@@ -82,6 +82,7 @@ func load_game() -> bool:
 	_restore_node_state(data.get("node_state", {}))
 	if data.has("hardware"):
 		HardwareManager.load_save_data(data["hardware"])
+	CommsManager.inbox = data.get("comms_inbox", [])
 	MissionManager.restore_active_missions(GameManager.active_missions)
 	return true
 

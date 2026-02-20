@@ -27,6 +27,7 @@ SaveManager="*res://scripts/autoloads/save_manager.gd"
 SettingsManager="*res://scripts/autoloads/settings_manager.gd"
 CredentialManager="*res://scripts/autoloads/credential_manager.gd"
 FactionManager="*res://scripts/autoloads/faction_manager.gd"
+CommsManager="*res://scripts/autoloads/comms_manager.gd"
 
 [display]
 
