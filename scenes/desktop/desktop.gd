@@ -10,8 +10,9 @@ const FirewallBypasserScene := preload("res://scenes/tools/firewall_bypasser.tsc
 const PortScannerScene     := preload("res://scenes/tools/port_scanner.tscn")
 const TraceTrackerScene    := preload("res://scenes/tools/trace_tracker.tscn")
 const MissionLogScene      := preload("res://scenes/tools/mission_log.tscn")
-const FileBrowserScene     := preload("res://scenes/tools/file_browser.tscn")
-const SettingsScene        := preload("res://scenes/ui/settings.tscn")
+const FileBrowserScene        := preload("res://scenes/tools/file_browser.tscn")
+const EncryptionBreakerScene  := preload("res://scenes/tools/encryption_breaker.tscn")
+const SettingsScene           := preload("res://scenes/ui/settings.tscn")
 
 @onready var window_manager: WindowManager = $WindowLayer
 @onready var context_menu: PopupMenu = $ContextMenu
@@ -42,6 +43,7 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("Port Scanner", 5)
 	context_menu.add_item("Password Cracker", 1)
 	context_menu.add_item("Firewall Bypasser", 9)
+	context_menu.add_item("Encryption Breaker", 10)
 	context_menu.add_item("File Browser", 7)
 	context_menu.add_item("Trace Tracker", 2)
 	context_menu.add_separator()
@@ -95,6 +97,8 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			window_manager.spawn_tool_window(FileBrowserScene, "File Browser")
 		9:
 			window_manager.spawn_tool_window(FirewallBypasserScene, "Firewall Bypasser")
+		10:
+			window_manager.spawn_tool_window(EncryptionBreakerScene, "Encryption Breaker")
 		4:
 			var handle: String = GameManager.player_data.get("handle", "ghost")
 			EventBus.log_message.emit(
