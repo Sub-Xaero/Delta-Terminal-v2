@@ -61,6 +61,8 @@ func _draw() -> void:
 	var w := size.x
 	var h := size.y
 	var c := _CORNER_CUT
+	if w < c * 2.0 or h < c * 2.0:
+		return
 	const TB := 28.0  # title bar height
 
 	# Full window chamfered background
