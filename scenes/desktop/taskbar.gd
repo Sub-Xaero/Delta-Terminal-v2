@@ -24,6 +24,7 @@ func _add_launch_button() -> void:
 	btn.text = "[ LAUNCH ]"
 	_style_button(btn, Color(1.0, 0.08, 0.55))
 	btn.pressed.connect(func():
+		EventBus.ui_button_pressed.emit()
 		EventBus.context_menu_requested.emit(btn.global_position + Vector2(0.0, -4.0))
 	)
 	task_items.add_child(btn)
@@ -52,7 +53,10 @@ func _add_pc_button() -> void:
 	var btn := Button.new()
 	btn.text = "[ PC ]"
 	_style_button(btn, Color(0.0, 0.88, 1.0))
-	btn.pressed.connect(func(): EventBus.open_tool_requested.emit("Hardware Viewer"))
+	btn.pressed.connect(func():
+		EventBus.ui_button_pressed.emit()
+		EventBus.open_tool_requested.emit("Hardware Viewer")
+	)
 	task_items.add_child(btn)
 
 	var sep := VSeparator.new()
@@ -95,7 +99,10 @@ func _on_tool_opened(p_tool_name: String) -> void:
 	var btn := Button.new()
 	btn.text = "[ %s ]" % p_tool_name
 	_style_button(btn, Color(0.0, 0.88, 1.0))
-	btn.pressed.connect(func(): EventBus.tool_focus_requested.emit(p_tool_name))
+	btn.pressed.connect(func():
+		EventBus.ui_button_pressed.emit()
+		EventBus.tool_focus_requested.emit(p_tool_name)
+	)
 	task_items.add_child(btn)
 	_task_buttons[p_tool_name] = btn
 

@@ -58,11 +58,13 @@ func set_master_volume(val: float) -> void:
 
 func set_sfx_volume(val: float) -> void:
 	sfx_volume = val
+	settings_changed.emit()
 	save_settings()
 
 
 func set_ambient_volume(val: float) -> void:
 	ambient_volume = val
+	settings_changed.emit()
 	save_settings()
 
 
