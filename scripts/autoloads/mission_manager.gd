@@ -100,3 +100,16 @@ func _complete_mission(mission: MissionData) -> void:
 	EventBus.log_message.emit(
 		"Mission complete: %s  —  +%d credits" % [mission.title, mission.reward_credits], "info"
 	)
+
+
+# ── Save / load support ────────────────────────────────────────────────────────
+
+## Re-activates missions by id after a save is loaded.
+## Duplicates the mission template so objective state is fresh.
+func restore_active_missions(ids: Array) -> void:
+	for id in ids:
+		if not available_missions.has(id):
+			continue
+		if active_missions.has(id):
+			continue
+		active_missions[id] = available_missions[id].duplicate(true)

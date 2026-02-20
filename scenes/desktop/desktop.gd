@@ -56,6 +56,8 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("Hardware Viewer", 11)
 	context_menu.add_separator()
 	context_menu.add_item("Settings", 8)
+	context_menu.add_separator()
+	context_menu.add_item("Save Game", 12)
 	context_menu.id_pressed.connect(_on_context_menu_id_pressed)
 
 
@@ -118,6 +120,8 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			)
 		8:
 			window_manager.spawn_tool_window(SettingsScene, "Settings")
+		12:
+			SaveManager.save_game()
 
 
 func _on_system_nuke() -> void:
