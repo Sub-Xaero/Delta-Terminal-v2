@@ -8,7 +8,6 @@ const NetworkMapScene         := preload("res://scenes/tools/network_map.tscn")
 const PasswordCrackerScene    := preload("res://scenes/tools/password_cracker.tscn")
 const FirewallBypasserScene   := preload("res://scenes/tools/firewall_bypasser.tscn")
 const PortScannerScene        := preload("res://scenes/tools/port_scanner.tscn")
-const TraceTrackerScene       := preload("res://scenes/tools/trace_tracker.tscn")
 const MissionLogScene         := preload("res://scenes/tools/mission_log.tscn")
 const FileBrowserScene        := preload("res://scenes/tools/file_browser.tscn")
 const EncryptionBreakerScene  := preload("res://scenes/tools/encryption_breaker.tscn")
@@ -29,7 +28,6 @@ func _ready() -> void:
 	SettingsManager.settings_changed.connect(_apply_crt_settings)
 	_apply_crt_settings()
 	window_manager.spawn_tool_window(SystemLogScene, "System Log")
-	window_manager.spawn_tool_window(TraceTrackerScene, "Trace Tracker")
 
 
 func _apply_crt_settings() -> void:
@@ -47,7 +45,6 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("Firewall Bypasser", 9)
 	context_menu.add_item("Encryption Breaker", 10)
 	context_menu.add_item("File Browser", 7)
-	context_menu.add_item("Trace Tracker", 2)
 	context_menu.add_separator()
 	context_menu.add_item("Mission Log", 6)
 	context_menu.add_separator()
@@ -92,8 +89,6 @@ func _on_context_menu_id_pressed(id: int) -> void:
 			window_manager.spawn_tool_window(NetworkMapScene, "Network Map")
 		1:
 			window_manager.spawn_tool_window(PasswordCrackerScene, "Password Cracker")
-		2:
-			window_manager.spawn_tool_window(TraceTrackerScene, "Trace Tracker")
 		3:
 			window_manager.spawn_tool_window(SystemLogScene, "System Log")
 		5:
@@ -127,7 +122,7 @@ func _on_context_menu_id_pressed(id: int) -> void:
 func _on_system_nuke() -> void:
 	var to_close: Array = window_manager.open_windows.keys().duplicate()
 	for tool_name: String in to_close:
-		if tool_name in ["System Log", "Trace Tracker"]:
+		if tool_name in ["System Log"]:
 			continue
 		EventBus.tool_closed.emit(tool_name)
 		if window_manager.open_windows.has(tool_name):

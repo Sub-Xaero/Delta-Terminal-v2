@@ -1,6 +1,6 @@
 class_name Sidebar
 extends Panel
-## Persistent right-side panel: network minimap + connection status + hardware monitors.
+## Persistent right-side panel: network minimap + connection status + hardware monitors + trace.
 ## Not a ToolWindow — always visible, never spawned by WindowManager.
 
 @onready var minimap: SidebarMinimap   = $MarginContainer/VBoxContainer/MinimapContainer/NetworkMinimap
@@ -20,6 +20,15 @@ var _cpu_bar:        ProgressBar  = null
 var _cpu_val_label:  Label        = null
 var _cpu_fill_style: StyleBoxFlat = null
 
+# ── Trace monitor refs ─────────────────────────────────────────────────────────
+enum TraceState { INACTIVE, ACTIVE, COMPLETE }
+var _trace_state:      TraceState   = TraceState.INACTIVE
+var _trace_status_lbl: Label        = null
+var _trace_bar:        ProgressBar  = null
+var _trace_bar_fill:   StyleBoxFlat = null
+var _trace_route_lbl:  Label        = null
+var _trace_flicker:    float        = 0.0
+
 
 func _ready() -> void:
 	_apply_theme()
@@ -29,14 +38,20 @@ func _ready() -> void:
 	EventBus.hardware_changed.connect(_update_monitors)
 	EventBus.tool_opened.connect(func(_n: String): _update_monitors())
 	EventBus.tool_closed.connect(func(_n: String): _update_monitors())
+	EventBus.trace_started.connect(_on_trace_started)
+	EventBus.trace_progress.connect(_on_trace_progress)
+	EventBus.trace_completed.connect(_on_trace_completed)
 	_build_hardware_section()
+	_build_trace_section()
 
 
 func _process(delta: float) -> void:
-	if _connected_id.is_empty():
-		return
-	_pulse_timer += delta * 2.2
-	conn_label.modulate = Color(1, 1, 1, 0.65 + 0.35 * abs(sin(_pulse_timer)))
+	if not _connected_id.is_empty():
+		_pulse_timer += delta * 2.2
+		conn_label.modulate = Color(1, 1, 1, 0.65 + 0.35 * abs(sin(_pulse_timer)))
+	if _trace_state == TraceState.ACTIVE and _trace_status_lbl != null:
+		_trace_flicker += delta * 3.5
+		_trace_status_lbl.modulate = Color(1, 1, 1, 0.55 + 0.45 * abs(sin(_trace_flicker)))
 
 
 func _apply_theme() -> void:
@@ -140,6 +155,51 @@ func _build_monitor_row(tag: String) -> HBoxContainer:
 	return hbox
 
 
+func _build_trace_section() -> void:
+	_widget_slots.add_child(HSeparator.new())
+
+	var section_lbl := Label.new()
+	section_lbl.text = "// TRACE //"
+	section_lbl.add_theme_font_size_override("font_size", 9)
+	section_lbl.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	_widget_slots.add_child(section_lbl)
+
+	_widget_slots.add_child(HSeparator.new())
+
+	_trace_status_lbl = Label.new()
+	_trace_status_lbl.text = "STATUS:  INACTIVE"
+	_trace_status_lbl.add_theme_font_size_override("font_size", 9)
+	_trace_status_lbl.add_theme_color_override("font_color", Color(0.35, 0.35, 0.45))
+	_widget_slots.add_child(_trace_status_lbl)
+
+	_trace_bar = ProgressBar.new()
+	_trace_bar.custom_minimum_size = Vector2(0, 6)
+	_trace_bar.max_value = 100.0
+	_trace_bar.show_percentage = false
+
+	_trace_bar_fill = StyleBoxFlat.new()
+	_trace_bar_fill.bg_color = Color(0.0, 0.88, 1.0)
+	_trace_bar_fill.corner_radius_top_left     = 2
+	_trace_bar_fill.corner_radius_top_right    = 2
+	_trace_bar_fill.corner_radius_bottom_left  = 2
+	_trace_bar_fill.corner_radius_bottom_right = 2
+	_trace_bar.add_theme_stylebox_override("fill", _trace_bar_fill)
+
+	var bar_bg := StyleBoxFlat.new()
+	bar_bg.bg_color     = Color(0.04, 0.06, 0.10)
+	bar_bg.border_color = Color(0.0, 0.88, 1.0, 0.25)
+	bar_bg.set_border_width_all(1)
+	_trace_bar.add_theme_stylebox_override("background", bar_bg)
+	_widget_slots.add_child(_trace_bar)
+
+	_trace_route_lbl = Label.new()
+	_trace_route_lbl.text = "ROUTE:  —"
+	_trace_route_lbl.add_theme_font_size_override("font_size", 8)
+	_trace_route_lbl.add_theme_color_override("font_color", Color(0.35, 0.35, 0.45))
+	_trace_route_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_widget_slots.add_child(_trace_route_lbl)
+
+
 func _update_monitors() -> void:
 	if _ram_bar == null:
 		return
@@ -161,6 +221,16 @@ func _update_monitors() -> void:
 	_cpu_val_label.text      = "%.1fx" % HardwareManager.effective_stack_speed
 
 
+func _trace_colour(progress: float) -> Color:
+	if progress < 0.5:
+		return Color(0.0, 0.88, 1.0)
+	if progress < 0.8:
+		var t: float = (progress - 0.5) / 0.3
+		return Color(0.0, 0.88, 1.0).lerp(Color(1.0, 0.75, 0.0), t)
+	var t: float = (progress - 0.8) / 0.2
+	return Color(1.0, 0.75, 0.0).lerp(Color(1.0, 0.08, 0.55), t)
+
+
 func _monitor_color(pct: float) -> Color:
 	if pct < 0.6:
 		return Color(0.0, 0.88, 1.0)   # cyan — low load
@@ -168,6 +238,32 @@ func _monitor_color(pct: float) -> Color:
 		return Color(1.0, 0.75, 0.0)   # amber — moderate
 	else:
 		return Color(1.0, 0.08, 0.55)  # hot pink — critical
+
+
+# ── Trace reactions ───────────────────────────────────────────────────────────
+
+func _on_trace_started(_duration: float) -> void:
+	_trace_state = TraceState.ACTIVE
+	_trace_flicker = 0.0
+	_trace_bar.value = 0.0
+	_trace_bar_fill.bg_color = Color(0.0, 0.88, 1.0)
+	_trace_status_lbl.modulate = Color(1, 1, 1, 1)
+	_trace_status_lbl.text = "STATUS:  ACTIVE"
+	_trace_status_lbl.add_theme_color_override("font_color", Color(1.0, 0.75, 0.0))
+
+
+func _on_trace_progress(p: float) -> void:
+	_trace_bar.value = p * 100.0
+	_trace_bar_fill.bg_color = _trace_colour(p)
+
+
+func _on_trace_completed() -> void:
+	_trace_state = TraceState.COMPLETE
+	_trace_bar.value = 100.0
+	_trace_bar_fill.bg_color = Color(1.0, 0.08, 0.55)
+	_trace_status_lbl.modulate = Color(1, 1, 1, 1)
+	_trace_status_lbl.text = "STATUS:  COMPLETE"
+	_trace_status_lbl.add_theme_color_override("font_color", Color(1.0, 0.08, 0.55))
 
 
 # ── EventBus reactions ─────────────────────────────────────────────────────────
@@ -200,8 +296,19 @@ func _on_network_disconnected() -> void:
 	disconnect_btn.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
 	minimap.connected_id = ""
 	minimap.queue_redraw()
+	if _trace_status_lbl != null:
+		_trace_state = TraceState.INACTIVE
+		_trace_bar.value = 0.0
+		_trace_bar_fill.bg_color = Color(0.0, 0.88, 1.0)
+		_trace_status_lbl.modulate = Color(1, 1, 1, 1)
+		_trace_status_lbl.text = "STATUS:  INACTIVE"
+		_trace_status_lbl.add_theme_color_override("font_color", Color(0.35, 0.35, 0.45))
+		_trace_route_lbl.text = "ROUTE:  —"
 
 
 func _on_bounce_chain_updated(chain: Array) -> void:
 	minimap.bounce_chain = chain
 	minimap.queue_redraw()
+	if _trace_route_lbl != null:
+		_trace_route_lbl.text = "ROUTE:  —" if chain.is_empty() \
+				else "ROUTE:  " + "  →  ".join(chain)
