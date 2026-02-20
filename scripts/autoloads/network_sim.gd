@@ -115,7 +115,9 @@ func delete_file_from_node(node_id: String, file_id: String) -> bool:
 
 func _register_default_nodes() -> void:
 	# Starting network — replace with data-driven loading later.
-	# map_position: pixel coords on the NetworkMapCanvas (~490 × 420 visible area)
+	# map_position: pixel coords on the NetworkMapCanvas, equirectangular projection.
+	#   x = (lon + 180) / 360 * canvas_w   (canvas_w ≈ 700)
+	#   y = (80 - lat)  / 135 * canvas_h   (canvas_h ≈ 510, lat range −55 to +80)
 	# connections: array of node IDs this node has a known route to
 
 	register_node({
@@ -123,7 +125,7 @@ func _register_default_nodes() -> void:
 		"ip": "127.0.0.1",
 		"name": "Local Machine",
 		"security": 0,
-		"map_position": Vector2(70, 200),
+		"map_position": Vector2(334, 102),  # Ireland / West UK  (53°N, 8°W)
 		"files": [],
 		"services": [],
 		"connections": ["isp_01", "isp_02"],
@@ -133,7 +135,7 @@ func _register_default_nodes() -> void:
 		"ip": "81.14.22.1",
 		"name": "Sentinel ISP",
 		"security": 1,
-		"map_position": Vector2(210, 110),
+		"map_position": Vector2(399, 68),   # Scandinavia / Sweden  (62°N, 25°E)
 		"files": [
 			{
 				"id": "isp01_f1",
@@ -149,9 +151,9 @@ func _register_default_nodes() -> void:
 	register_node({
 		"id": "isp_02",
 		"ip": "81.14.22.2",
-		"name": "Sentinel ISP (Backup)",
+		"name": "Sentinel ISP (Asia-Pacific)",
 		"security": 1,
-		"map_position": Vector2(210, 300),
+		"map_position": Vector2(552, 297),  # Singapore  (1°N, 104°E)
 		"files": [],
 		"services": ["relay"],
 		"connections": ["corp_01", "darknet_01"],
@@ -161,7 +163,7 @@ func _register_default_nodes() -> void:
 		"ip": "193.62.18.5",
 		"name": "NeoTech University",
 		"security": 2,
-		"map_position": Vector2(370, 60),
+		"map_position": Vector2(621, 167),  # Tokyo, Japan  (36°N, 140°E)
 		"files": [
 			{
 				"id": "univ01_f1",
@@ -186,7 +188,7 @@ func _register_default_nodes() -> void:
 		"ip": "84.23.119.41",
 		"name": "ArcTech Systems",
 		"security": 3,
-		"map_position": Vector2(370, 200),
+		"map_position": Vector2(206, 148),  # New York, USA  (41°N, 74°W)
 		"files": [
 			{
 				"id": "corp01_f1",
@@ -218,7 +220,7 @@ func _register_default_nodes() -> void:
 		"ip": "10.0.13.37",
 		"name": "Darknet Relay",
 		"security": 2,
-		"map_position": Vector2(370, 350),
+		"map_position": Vector2(535, 83),   # Siberia, Russia  (58°N, 95°E)
 		"files": [
 			{
 				"id": "dark01_f1",

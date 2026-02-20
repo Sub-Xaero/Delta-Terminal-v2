@@ -67,7 +67,12 @@ func _show_context_menu(at_position: Vector2) -> void:
 func _on_open_tool_requested(tool_name: String) -> void:
 	match tool_name:
 		"Network Map":
-			window_manager.spawn_tool_window(NetworkMapScene, "Network Map")
+			if window_manager.open_windows.has("Network Map"):
+				var w: ToolWindow = window_manager.open_windows["Network Map"]
+				EventBus.tool_closed.emit("Network Map")
+				w.queue_free()
+			else:
+				window_manager.spawn_tool_window(NetworkMapScene, "Network Map")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:
