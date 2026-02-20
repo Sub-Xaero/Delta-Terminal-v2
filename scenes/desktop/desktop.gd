@@ -38,7 +38,6 @@ const TOOL_EXE_REQUIREMENTS: Dictionary = {
 
 func _ready() -> void:
 	GameManager.transition_to(GameManager.State.DESKTOP)
-	_setup_context_menu()
 	EventBus.context_menu_requested.connect(_show_context_menu)
 	EventBus.open_tool_requested.connect(_on_open_tool_requested)
 	EventBus.system_nuke_triggered.connect(_on_system_nuke)
@@ -55,16 +54,21 @@ func _apply_crt_settings() -> void:
 
 func _setup_context_menu() -> void:
 	context_menu.clear()
-	# Stubs — populate with real tool scenes as they are built
 	context_menu.add_item("Network Map", 0)
 	context_menu.add_separator()
-	context_menu.add_item("Port Scanner", 5)
-	context_menu.add_item("Password Cracker", 1)
-	context_menu.add_item("Firewall Bypasser", 9)
-	context_menu.add_item("Encryption Breaker", 10)
-	context_menu.add_item("Log Deleter", 14)
+	if _has_exe("Port Scanner"):
+		context_menu.add_item("Port Scanner", 5)
+	if _has_exe("Password Cracker"):
+		context_menu.add_item("Password Cracker", 1)
+	if _has_exe("Firewall Bypasser"):
+		context_menu.add_item("Firewall Bypasser", 9)
+	if _has_exe("Encryption Breaker"):
+		context_menu.add_item("Encryption Breaker", 10)
+	if _has_exe("Log Deleter"):
+		context_menu.add_item("Log Deleter", 14)
 	context_menu.add_item("File Browser", 7)
-	context_menu.add_item("Credential Manager", 13)
+	if _has_exe("Credential Manager"):
+		context_menu.add_item("Credential Manager", 13)
 	context_menu.add_separator()
 	context_menu.add_item("Mission Log", 6)
 	context_menu.add_separator()
@@ -75,7 +79,8 @@ func _setup_context_menu() -> void:
 	context_menu.add_item("Player Profile", 16)
 	context_menu.add_separator()
 	context_menu.add_item("Save Game", 12)
-	context_menu.id_pressed.connect(_on_context_menu_id_pressed)
+	if not context_menu.id_pressed.is_connected(_on_context_menu_id_pressed):
+		context_menu.id_pressed.connect(_on_context_menu_id_pressed)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -90,6 +95,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _show_context_menu(at_position: Vector2) -> void:
+	_setup_context_menu()
 	context_menu.position = Vector2i(at_position)
 	context_menu.popup()
 

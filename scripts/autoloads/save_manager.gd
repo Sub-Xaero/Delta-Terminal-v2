@@ -73,7 +73,7 @@ func load_game() -> bool:
 	if not GameManager.player_data.has("faction_rep"):
 		GameManager.player_data["faction_rep"] = {}
 	if not GameManager.player_data.has("local_storage"):
-		GameManager.player_data["local_storage"] = ["password_cracker.exe", "port_scanner.exe", "firewall_bypass.exe", "encryption_breaker.exe"]
+		GameManager.player_data["local_storage"] = ["password_cracker.exe", "port_scanner.exe"]
 	GameManager.active_missions.assign(data.get("active_missions", []))
 	GameManager.completed_missions.assign(data.get("completed_missions", []))
 	GameManager.local_storage = _deserialize_local_storage(data.get("local_storage", []))

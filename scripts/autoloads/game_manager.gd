@@ -12,7 +12,7 @@ var player_data: Dictionary = {
 	"rating": 1,
 	"heat": 0,
 	"faction_rep": {},
-	"local_storage": ["password_cracker.exe", "port_scanner.exe", "firewall_bypass.exe", "encryption_breaker.exe"],
+	"local_storage": ["password_cracker.exe", "port_scanner.exe"],
 }
 
 # Stolen/discovered credentials per node: node_id → Array of credential dicts
