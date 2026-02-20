@@ -3,11 +3,33 @@ extends Panel
 ## Taskbar / dock showing open tool buttons and a system clock.
 ## Reacts to EventBus.tool_opened / tool_closed.
 
+# Gated tools — only shown when the player has the exe in local_storage.
+const _GATED_TOOLS: Array = [
+	{"name": "Password Cracker",   "exe": "password_cracker.exe"},
+	{"name": "Port Scanner",       "exe": "port_scanner.exe"},
+	{"name": "Firewall Bypasser",  "exe": "firewall_bypass.exe"},
+	{"name": "Encryption Breaker", "exe": "encryption_breaker.exe"},
+	{"name": "Log Deleter",        "exe": "log_deleter.exe"},
+	{"name": "Credential Manager", "exe": "credential_manager.exe"},
+]
+# Always-available tools (no exe required).
+const _FREE_TOOLS: Array = [
+	"Network Map",
+	"File Browser",
+	"Mission Log",
+	"System Log",
+	"Hardware Viewer",
+	"Comms Client",
+	"Player Profile",
+]
+
 @onready var task_items: HBoxContainer = $TaskItems
 @onready var clock_label: Label = $ClockLabel
 
 # tool_name -> Button
 var _task_buttons: Dictionary = {}
+var _tools_menu: PopupMenu = null
+var _tools_btn: Button = null
 
 
 func _ready() -> void:
@@ -15,21 +37,55 @@ func _ready() -> void:
 	EventBus.tool_closed.connect(_on_tool_closed)
 	_apply_theme()
 	_update_clock()
-	_add_launch_button()
+	_add_tools_button()
 	_add_pc_button()
 
 
-func _add_launch_button() -> void:
-	var btn := Button.new()
-	btn.text = "[ LAUNCH ]"
-	_style_button(btn, Color(1.0, 0.08, 0.55))
-	btn.pressed.connect(func():
-		EventBus.context_menu_requested.emit(btn.global_position + Vector2(0.0, -4.0))
-	)
-	task_items.add_child(btn)
-	# Separator to visually divide launch button from tool buttons
+func _add_tools_button() -> void:
+	_tools_btn = Button.new()
+	_tools_btn.text = "[ TOOLS ]"
+	_style_button(_tools_btn, Color(1.0, 0.08, 0.55))
+
+	_tools_menu = PopupMenu.new()
+	_tools_btn.add_child(_tools_menu)
+	_tools_menu.id_pressed.connect(_on_tools_menu_id_pressed)
+
+	_tools_btn.pressed.connect(_open_tools_menu)
+	task_items.add_child(_tools_btn)
+
 	var sep := VSeparator.new()
 	task_items.add_child(sep)
+
+
+func _open_tools_menu() -> void:
+	_tools_menu.clear()
+	var storage: Array = GameManager.player_data.get("local_storage", [])
+	var idx: int = 0
+	for tool: Dictionary in _GATED_TOOLS:
+		if tool["exe"] in storage:
+			_tools_menu.add_item(tool["name"], idx)
+		idx += 1
+	if _tools_menu.item_count > 0:
+		_tools_menu.add_separator()
+	for tool_name: String in _FREE_TOOLS:
+		_tools_menu.add_item(tool_name, idx)
+		idx += 1
+	_tools_menu.reset_size()
+	var pos := _tools_btn.global_position
+	pos.y -= _tools_menu.size.y
+	_tools_menu.position = Vector2i(pos)
+	_tools_menu.popup()
+
+
+func _on_tools_menu_id_pressed(id: int) -> void:
+	# Resolve id back to tool name
+	var all_tools: Array = []
+	for tool: Dictionary in _GATED_TOOLS:
+		all_tools.append(tool["name"])
+	for tool_name: String in _FREE_TOOLS:
+		all_tools.append(tool_name)
+	if id < all_tools.size():
+		EventBus.open_tool_requested.emit(all_tools[id])
 
 
 func _style_button(btn: Button, color: Color) -> void:

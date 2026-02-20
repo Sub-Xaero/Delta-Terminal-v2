@@ -54,29 +54,7 @@ func _apply_crt_settings() -> void:
 
 func _setup_context_menu() -> void:
 	context_menu.clear()
-	context_menu.add_item("Network Map", 0)
-	context_menu.add_separator()
-	if _has_exe("Port Scanner"):
-		context_menu.add_item("Port Scanner", 5)
-	if _has_exe("Password Cracker"):
-		context_menu.add_item("Password Cracker", 1)
-	if _has_exe("Firewall Bypasser"):
-		context_menu.add_item("Firewall Bypasser", 9)
-	if _has_exe("Encryption Breaker"):
-		context_menu.add_item("Encryption Breaker", 10)
-	if _has_exe("Log Deleter"):
-		context_menu.add_item("Log Deleter", 14)
-	context_menu.add_item("File Browser", 7)
-	if _has_exe("Credential Manager"):
-		context_menu.add_item("Credential Manager", 13)
-	context_menu.add_separator()
-	context_menu.add_item("Mission Log", 6)
-	context_menu.add_separator()
-	context_menu.add_item("System Log", 3)
 	context_menu.add_item("System Info", 4)
-	context_menu.add_item("Hardware Viewer", 11)
-	context_menu.add_item("Comms Client", 15)
-	context_menu.add_item("Player Profile", 16)
 	context_menu.add_separator()
 	context_menu.add_item("Save Game", 12)
 	if not context_menu.id_pressed.is_connected(_on_context_menu_id_pressed):
@@ -116,8 +94,30 @@ func _on_open_tool_requested(tool_name: String) -> void:
 				w.queue_free()
 			else:
 				window_manager.spawn_tool_window(NetworkMapScene, "Network Map")
+		"Password Cracker":
+			window_manager.spawn_tool_window(PasswordCrackerScene, "Password Cracker")
+		"Port Scanner":
+			window_manager.spawn_tool_window(PortScannerScene, "Port Scanner")
+		"Firewall Bypasser":
+			window_manager.spawn_tool_window(FirewallBypasserScene, "Firewall Bypasser")
+		"Encryption Breaker":
+			window_manager.spawn_tool_window(EncryptionBreakerScene, "Encryption Breaker")
+		"Log Deleter":
+			window_manager.spawn_tool_window(LogDeleterScene, "Log Deleter")
+		"Credential Manager":
+			window_manager.spawn_tool_window(CredentialManagerScene, "Credential Manager")
+		"File Browser":
+			window_manager.spawn_tool_window(FileBrowserScene, "File Browser")
+		"Mission Log":
+			window_manager.spawn_tool_window(MissionLogScene, "Mission Log")
+		"System Log":
+			window_manager.spawn_tool_window(SystemLogScene, "System Log")
 		"Hardware Viewer":
 			window_manager.spawn_tool_window(HardwareViewerScene, "Hardware Viewer")
+		"Comms Client":
+			window_manager.spawn_tool_window(CommsClientScene, "Comms Client")
+		"Player Profile":
+			window_manager.spawn_tool_window(PlayerProfileScene, "Player Profile")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:
