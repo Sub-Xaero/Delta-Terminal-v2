@@ -80,8 +80,9 @@ func _show_context_menu(at_position: Vector2) -> void:
 
 func _toggle_tool(scene: PackedScene, tool_name: String) -> void:
 	if window_manager.open_windows.has(tool_name):
+		var w: ToolWindow = window_manager.open_windows[tool_name]
 		EventBus.tool_closed.emit(tool_name)
-		window_manager.open_windows[tool_name].queue_free()
+		w.queue_free()
 	else:
 		window_manager.spawn_tool_window(scene, tool_name)
 
