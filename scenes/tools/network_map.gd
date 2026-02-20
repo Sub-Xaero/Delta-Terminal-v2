@@ -123,6 +123,8 @@ func _on_node_double_clicked(node_id: String) -> void:
 
 
 func _on_node_shift_clicked(node_id: String) -> void:
+	if NetworkSim.is_connected:
+		return
 	if node_id in NetworkSim.bounce_chain:
 		NetworkSim.remove_from_bounce_chain(node_id)
 	else:
@@ -174,12 +176,8 @@ func _security_label(level: int) -> String:
 
 # ── EventBus reactions ─────────────────────────────────────────────────────────
 
-func _on_network_connected(node_id: String) -> void:
-	for id in _node_widgets:
-		_node_widgets[id].set_connected(id == node_id)
-	_rebuild_edges()
-	if _selected_id == node_id:
-		_update_info_panel(node_id)
+func _on_network_connected(_node_id: String) -> void:
+	queue_free()
 
 
 func _on_network_disconnected() -> void:
