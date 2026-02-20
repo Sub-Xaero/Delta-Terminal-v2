@@ -89,7 +89,7 @@ func _show_context_menu(at_position: Vector2) -> void:
 func _has_exe(tool_name: String) -> bool:
 	if tool_name not in TOOL_EXE_REQUIREMENTS:
 		return true  # ungated tool
-	var required := TOOL_EXE_REQUIREMENTS[tool_name]
+	var required: String = TOOL_EXE_REQUIREMENTS[tool_name]
 	return required in GameManager.player_data.get("local_storage", [])
 
 
