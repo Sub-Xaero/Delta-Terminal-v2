@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="DeltaTerminal"
-run/main_scene="res://scenes/desktop/desktop.tscn"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -21,6 +21,8 @@ EventBus="*res://scripts/autoloads/event_bus.gd"
 GameManager="*res://scripts/autoloads/game_manager.gd"
 NetworkSim="*res://scripts/autoloads/network_sim.gd"
 MissionManager="*res://scripts/autoloads/mission_manager.gd"
+SaveManager="*res://scripts/autoloads/save_manager.gd"
+SettingsManager="*res://scripts/autoloads/settings_manager.gd"
 
 [physics]
 

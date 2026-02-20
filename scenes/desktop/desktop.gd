@@ -10,6 +10,7 @@ const PortScannerScene     := preload("res://scenes/tools/port_scanner.tscn")
 const TraceTrackerScene    := preload("res://scenes/tools/trace_tracker.tscn")
 const MissionLogScene      := preload("res://scenes/tools/mission_log.tscn")
 const FileBrowserScene     := preload("res://scenes/tools/file_browser.tscn")
+const SettingsScene        := preload("res://scenes/ui/settings.tscn")
 
 @onready var window_manager: WindowManager = $WindowLayer
 @onready var context_menu: PopupMenu = $ContextMenu
@@ -38,6 +39,8 @@ func _setup_context_menu() -> void:
 	context_menu.add_separator()
 	context_menu.add_item("System Log", 3)
 	context_menu.add_item("System Info", 4)
+	context_menu.add_separator()
+	context_menu.add_item("Settings", 8)
 	context_menu.id_pressed.connect(_on_context_menu_id_pressed)
 
 
@@ -85,3 +88,5 @@ func _on_context_menu_id_pressed(id: int) -> void:
 				],
 				"info"
 			)
+		8:
+			window_manager.spawn_tool_window(SettingsScene, "Settings")
