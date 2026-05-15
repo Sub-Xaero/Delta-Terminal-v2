@@ -131,6 +131,8 @@ func _complete_mission(mission: MissionData) -> void:
 	GameManager.add_credits(total_reward)
 	if mission.reward_rating > 0:
 		GameManager.add_rating(mission.reward_rating)
+	if not mission.faction_id.is_empty():
+		FactionManager.modify_rep(mission.faction_id, 10)
 	EventBus.mission_completed.emit(mission.id)
 	EventBus.log_message.emit(
 		"Mission complete: %s  —  +%d credits" % [mission.title, total_reward], "info"

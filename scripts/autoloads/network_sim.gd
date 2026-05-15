@@ -190,7 +190,22 @@ func bypass_node(node_id: String) -> void:
 
 func node_requires_bypass(node_id: String) -> bool:
 	var data: Dictionary = get_node_data(node_id)
+	# Friendly factions (rep > 75) waive the firewall stage entirely.
+	var faction_id: String = data.get("faction_id", "")
+	if not faction_id.is_empty() and FactionManager.get_rep(faction_id) > 75:
+		return false
 	return data.get("security", 0) >= 3 or data.get("has_firewall", false)
+
+
+## Effective security a hostile faction inflicts on the player.
+## +1 against any node whose faction the player has reputation < -50 with.
+func effective_security(node_id: String) -> int:
+	var data: Dictionary = get_node_data(node_id)
+	var base: int = data.get("security", 0)
+	var faction_id: String = data.get("faction_id", "")
+	if not faction_id.is_empty() and FactionManager.get_rep(faction_id) < -50:
+		base += 1
+	return base
 
 
 func break_encryption(node_id: String) -> void:

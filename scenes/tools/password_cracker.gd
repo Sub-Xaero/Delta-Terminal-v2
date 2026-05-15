@@ -80,7 +80,9 @@ func _on_action_pressed() -> void:
 
 func _start_crack() -> void:
 	var data:     Dictionary = NetworkSim.get_node_data(NetworkSim.connected_node_id)
-	var security: int        = data.get("security", 1)
+	var security: int        = NetworkSim.effective_security(NetworkSim.connected_node_id)
+	if security <= 0:
+		security = data.get("security", 1)
 	_crack_duration = _crack_time(security)
 	_crack_elapsed  = 0.0
 	_crack_progress = 0.0
