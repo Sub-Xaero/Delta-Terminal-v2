@@ -15,6 +15,10 @@ var encryption_broken_nodes: Array[String] = []
 var discovered_nodes: Array = ["local_machine", "isp_gateway", "ghost_collective_darknet", "novacorp_bank"]
 var exploits_installed: Dictionary = {}   # node_id -> Array[String] of exploit types
 var _nodes_with_intrusion_logs: Dictionary = {}
+# Sysadmin-flagged nodes (HOT): node_id -> unix timestamp the flag expires at.
+# Flagged nodes give 30% trace-duration reduction on next intrusion; reset after 10 in-game days.
+var intrusion_flagged_nodes: Dictionary = {}
+const INTRUSION_FLAG_DURATION_SEC: float = 600.0   # 10 in-game days × 60s/day
 
 # ── Trace state ───────────────────────────────────────────────────────────────
 var trace_active: bool = false
@@ -34,6 +38,24 @@ func _process(delta: float) -> void:
 		EventBus.trace_progress.emit(trace_progress)
 		if trace_progress >= 1.0:
 			_complete_trace()
+	_expire_intrusion_flags()
+
+
+func _expire_intrusion_flags() -> void:
+	if intrusion_flagged_nodes.is_empty():
+		return
+	var now: float = Time.get_unix_time_from_system()
+	var expired: Array[String] = []
+	for nid: String in intrusion_flagged_nodes:
+		if intrusion_flagged_nodes[nid] <= now:
+			expired.append(nid)
+	for nid: String in expired:
+		intrusion_flagged_nodes.erase(nid)
+		EventBus.log_message.emit(
+			"%s: sysadmin patched the hole — node no longer flagged." %
+				nodes.get(nid, {}).get("ip", nid),
+			"info"
+		)
 
 
 # ── Connection ────────────────────────────────────────────────────────────────
@@ -77,6 +99,9 @@ func disconnect_from_node() -> void:
 			"WARNING: Passive trace initiated from %s — intrusion logs not deleted!" % nodes.get(dirty_nodes[0], {}).get("ip", dirty_nodes[0]),
 			"warn"
 		)
+		# Mark every dirty node HOT — sysadmin reads the logs after disconnect
+		for nid: String in dirty_nodes:
+			_flag_intrusion(nid)
 	elif trace_active:
 		trace_active = false
 
@@ -100,11 +125,35 @@ func remove_from_bounce_chain(node_id: String) -> void:
 # ── Trace ─────────────────────────────────────────────────────────────────────
 
 func start_trace(duration: float) -> void:
+	# Sysadmin-flagged nodes shave 30% off any trace they initiate against the player.
+	if connected_node_id != "" and intrusion_flagged_nodes.has(connected_node_id):
+		duration *= 0.7
+	# High player heat also tightens the trace window (issue #23).
+	var heat: int = GameManager.player_data.get("heat", 0)
+	if heat >= 75:
+		duration *= 0.7
 	trace_active = true
 	_trace_duration = duration
 	_trace_elapsed = 0.0
 	trace_progress = 0.0
 	EventBus.trace_started.emit(duration)
+
+
+func _flag_intrusion(node_id: String) -> void:
+	intrusion_flagged_nodes[node_id] = Time.get_unix_time_from_system() + INTRUSION_FLAG_DURATION_SEC
+	EventBus.intrusion_logged.emit(node_id)
+	GameManager.add_heat(5)
+	EventBus.log_message.emit(
+		"Node flagged HOT: %s — sysadmin response active." %
+			nodes.get(node_id, {}).get("ip", node_id),
+		"warn"
+	)
+
+
+func is_node_flagged(node_id: String) -> bool:
+	if not intrusion_flagged_nodes.has(node_id):
+		return false
+	return intrusion_flagged_nodes[node_id] > Time.get_unix_time_from_system()
 
 
 func _complete_trace() -> void:

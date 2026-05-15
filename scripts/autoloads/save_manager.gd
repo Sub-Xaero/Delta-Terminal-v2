@@ -41,9 +41,10 @@ func save_game() -> void:
 		"hardware":           HardwareManager.get_save_data(),
 		"credentials":        GameManager.credentials.duplicate(),
 		"comms_inbox":        CommsManager.inbox.duplicate(true),
-		"exploits_installed": {},
-		"discovered_nodes":   NetworkSim.cracked_nodes.duplicate(),
-		"tutorial_flags":     {},
+		"exploits_installed":      NetworkSim.exploits_installed.duplicate(true),
+		"discovered_nodes":        NetworkSim.discovered_nodes.duplicate(),
+		"intrusion_flagged_nodes": NetworkSim.intrusion_flagged_nodes.duplicate(),
+		"tutorial_flags":          GameManager.player_data.get("tutorial_flags", {}).duplicate(),
 		"market":             MarketManager.get_save_data(),
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -79,6 +80,9 @@ func load_game() -> bool:
 	GameManager.completed_missions.assign(data.get("completed_missions", []))
 	GameManager.local_storage = _deserialize_local_storage(data.get("local_storage", []))
 	NetworkSim.cracked_nodes.assign(data.get("cracked_nodes", []))
+	NetworkSim.discovered_nodes = data.get("discovered_nodes", NetworkSim.discovered_nodes)
+	NetworkSim.exploits_installed = data.get("exploits_installed", {})
+	NetworkSim.intrusion_flagged_nodes = data.get("intrusion_flagged_nodes", {})
 	GameManager.credentials = data.get("credentials", {})
 	_restore_node_state(data.get("node_state", {}))
 	if data.has("hardware"):
