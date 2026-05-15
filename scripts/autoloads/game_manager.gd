@@ -26,10 +26,54 @@ var active_missions: Array[String] = []
 var completed_missions: Array[String] = []
 var local_storage: Array[Dictionary] = []
 
+# In-game time accumulates while the desktop runs. 60 real seconds = 1 in-game day.
+const SECONDS_PER_INGAME_DAY: float = 60.0
+var _day_accumulator: float = 0.0
+var _last_warrant_headline_day: int = -1
+var in_game_day: int = 0
+
 
 func _ready() -> void:
 	EventBus.mission_completed.connect(_on_mission_completed)
 	EventBus.mission_failed.connect(_on_mission_failed)
+	EventBus.bank_transfer_completed.connect(_on_bank_transfer_completed)
+	EventBus.trace_completed.connect(_on_trace_completed)
+
+
+func _process(delta: float) -> void:
+	if state != State.DESKTOP:
+		return
+	_day_accumulator += delta
+	if _day_accumulator >= SECONDS_PER_INGAME_DAY:
+		_day_accumulator -= SECONDS_PER_INGAME_DAY
+		in_game_day += 1
+		_on_day_passed()
+
+
+func _on_day_passed() -> void:
+	# Heat decays −1 per in-game day (issue #23)
+	var heat: int = player_data.get("heat", 0)
+	if heat > 0:
+		add_heat(-1)
+	# Surface a warrant headline once per day while the player is hot
+	var new_heat: int = player_data.get("heat", 0)
+	if new_heat >= 90 and in_game_day != _last_warrant_headline_day:
+		_last_warrant_headline_day = in_game_day
+		EventBus.news_headline_added.emit(
+			"INTERPOL flags unknown hacker '%s' for high-value cyber crimes." %
+				player_data.get("handle", "ghost")
+		)
+
+
+func _on_bank_transfer_completed(_node_id: String, _amount: int) -> void:
+	add_heat(20)
+
+
+func _on_trace_completed() -> void:
+	# NetworkSim adds +20 already; surface a milestone headline when heat is high.
+	var heat: int = player_data.get("heat", 0)
+	if heat >= 75:
+		EventBus.news_headline_added.emit("Cyber Division opens a major investigation.")
 
 
 func transition_to(new_state: State) -> void:

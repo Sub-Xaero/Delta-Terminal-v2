@@ -158,7 +158,7 @@ func is_node_flagged(node_id: String) -> bool:
 
 func _complete_trace() -> void:
 	trace_active = false
-	GameManager.add_heat(20)
+	GameManager.add_heat(15)
 	EventBus.trace_completed.emit()
 
 
