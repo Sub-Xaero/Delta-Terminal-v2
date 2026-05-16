@@ -5,10 +5,17 @@ extends ToolWindow
 ## and reacts to trace_completed to detect failure.
 
 enum State { IDLE, FIREWALL_LOCKED, READY, CRACKING, SUCCESS, FAILED }
+enum Mode  { ONLINE, OFFLINE }
 
 const HEX_CHARS := "0123456789ABCDEF"
 const GRID_COLS := 8
 const GRID_ROWS := 4
+
+# Plaintext words checked sequentially by the offline wordlist crack.
+const COMMON_WORDLIST: Array[String] = [
+	"password", "letmein", "qwerty", "admin", "ghost", "delta", "neon", "1234",
+	"sunshine", "matrix", "trinity", "synapse", "cipher", "phantom",
+]
 
 # ── Node refs ──────────────────────────────────────────────────────────────────
 @onready var status_label: Label         = $ContentArea/Margin/VBox/StatusLabel
@@ -19,9 +26,14 @@ const GRID_ROWS := 4
 
 # ── State ──────────────────────────────────────────────────────────────────────
 var _state:          State = State.IDLE
+var _mode:           Mode  = Mode.ONLINE
 var _crack_progress: float = 0.0
 var _crack_duration: float = 0.0
 var _crack_elapsed:  float = 0.0
+var _offline_node_id: String = ""
+var _offline_username: String = ""
+var _offline_picker: OptionButton = null
+var _mode_btn: Button = null
 
 
 func _ready() -> void:
@@ -31,11 +43,74 @@ func _ready() -> void:
 	EventBus.trace_completed.connect(_on_trace_completed)
 	EventBus.firewall_bypassed.connect(_on_firewall_bypassed)
 	action_btn.pressed.connect(_on_action_pressed)
+	_build_mode_controls()
 	_setup_theme()
 	if NetworkSim.is_connected:
 		_on_network_connected(NetworkSim.connected_node_id)
 	else:
 		_update_ui()
+
+
+func _build_mode_controls() -> void:
+	# Drop in an [ONLINE | OFFLINE] toggle + offline target picker at the top.
+	var vbox: VBoxContainer = $ContentArea/Margin/VBox
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	_mode_btn = Button.new()
+	_mode_btn.text = "MODE: ONLINE"
+	_mode_btn.add_theme_color_override("font_color", Color(0.0, 0.88, 1.0))
+	_mode_btn.pressed.connect(_on_mode_toggle)
+	row.add_child(_mode_btn)
+	_offline_picker = OptionButton.new()
+	_offline_picker.visible = false
+	_offline_picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_offline_picker.item_selected.connect(_on_offline_target_selected)
+	row.add_child(_offline_picker)
+	vbox.add_child(row)
+	vbox.move_child(row, 0)
+
+
+func _on_mode_toggle() -> void:
+	_mode = Mode.OFFLINE if _mode == Mode.ONLINE else Mode.ONLINE
+	_mode_btn.text = "MODE: %s" % ("OFFLINE" if _mode == Mode.OFFLINE else "ONLINE")
+	if _mode == Mode.OFFLINE:
+		_populate_offline_targets()
+		_offline_picker.visible = true
+	else:
+		_offline_picker.visible = false
+		if NetworkSim.is_connected:
+			_on_network_connected(NetworkSim.connected_node_id)
+		else:
+			_state = State.IDLE
+	_update_ui()
+
+
+func _populate_offline_targets() -> void:
+	_offline_picker.clear()
+	var entries: Array = []
+	for node_id: String in CredentialManager.credentials:
+		for cred: Dictionary in CredentialManager.get_credentials(node_id):
+			if cred.get("cracked", false):
+				continue
+			if cred.get("password_hash", "").is_empty():
+				continue
+			entries.append({ "node_id": node_id, "username": cred.get("username", "?") })
+			_offline_picker.add_item("%s @ %s" % [cred.get("username", "?"), NetworkSim.get_node_data(node_id).get("name", node_id)])
+	_offline_picker.set_meta("entries", entries)
+	if entries.is_empty():
+		_state = State.IDLE
+	else:
+		_on_offline_target_selected(0)
+
+
+func _on_offline_target_selected(idx: int) -> void:
+	var entries: Array = _offline_picker.get_meta("entries", [])
+	if idx < 0 or idx >= entries.size():
+		return
+	_offline_node_id  = entries[idx]["node_id"]
+	_offline_username = entries[idx]["username"]
+	_state = State.READY
+	_update_ui()
 
 
 func _process(delta: float) -> void:
@@ -79,6 +154,9 @@ func _on_action_pressed() -> void:
 
 
 func _start_crack() -> void:
+	if _mode == Mode.OFFLINE:
+		_start_offline_crack()
+		return
 	var data:     Dictionary = NetworkSim.get_node_data(NetworkSim.connected_node_id)
 	var security: int        = NetworkSim.effective_security(NetworkSim.connected_node_id)
 	if security <= 0:
@@ -95,6 +173,22 @@ func _start_crack() -> void:
 	_update_ui()
 
 
+func _start_offline_crack() -> void:
+	if _offline_node_id.is_empty():
+		return
+	var sec: int = NetworkSim.get_node_data(_offline_node_id).get("security", 1)
+	_crack_duration = maxf(6.0, float(sec) * 6.0)
+	_crack_elapsed  = 0.0
+	_crack_progress = 0.0
+	_state = State.CRACKING
+	# Offline mode is local — no trace, no remote signal.
+	EventBus.tool_task_started.emit("password_cracker", "%s:%s" % [_offline_node_id, _offline_username])
+	EventBus.log_message.emit(
+		"Offline wordlist attack: %s @ %s" % [_offline_username, _offline_node_id], "info"
+	)
+	_update_ui()
+
+
 func _abort_crack() -> void:
 	_state          = State.READY
 	_crack_progress = 0.0
@@ -107,6 +201,9 @@ func _abort_crack() -> void:
 
 
 func _on_crack_complete() -> void:
+	if _mode == Mode.OFFLINE:
+		_on_offline_complete()
+		return
 	_state = State.SUCCESS
 	var node_id := NetworkSim.connected_node_id
 	NetworkSim.crack_node(node_id)
@@ -114,9 +211,33 @@ func _on_crack_complete() -> void:
 	_update_ui()
 
 
+func _on_offline_complete() -> void:
+	# Pick a plausible plaintext from the wordlist. High-security nodes only
+	# yield a result some of the time — the player is meant to upgrade lists.
+	var sec: int = NetworkSim.get_node_data(_offline_node_id).get("security", 1)
+	var success_chance: float = clampf(1.0 - (float(sec) - 1.0) * 0.18, 0.15, 1.0)
+	var plaintext: String = ""
+	if randf() < success_chance:
+		plaintext = COMMON_WORDLIST[randi() % COMMON_WORDLIST.size()]
+		CredentialManager.mark_cracked(_offline_node_id, _offline_username, plaintext)
+		EventBus.log_message.emit(
+			"Hash cracked: %s -> %s" % [_offline_username, plaintext], "info"
+		)
+		_state = State.SUCCESS
+	else:
+		EventBus.log_message.emit(
+			"Wordlist exhausted — upgrade required to crack %s" % _offline_username, "warn"
+		)
+		_state = State.FAILED
+	EventBus.tool_task_completed.emit("password_cracker", "%s:%s" % [_offline_node_id, _offline_username], _state == State.SUCCESS)
+	_update_ui()
+
+
 # ── EventBus handlers ──────────────────────────────────────────────────────────
 
 func _on_network_connected(node_id: String) -> void:
+	if _mode == Mode.OFFLINE:
+		return
 	_crack_progress = 0.0
 	_crack_elapsed  = 0.0
 	crack_bar.value = 0.0
@@ -139,6 +260,8 @@ func _on_firewall_bypassed(node_id: String) -> void:
 
 
 func _on_network_disconnected() -> void:
+	if _mode == Mode.OFFLINE:
+		return
 	_state          = State.IDLE
 	_crack_progress = 0.0
 	_crack_elapsed  = 0.0
@@ -173,13 +296,19 @@ func _update_ui() -> void:
 			action_btn.text     = "FIREWALL LOCKED"
 			action_btn.disabled = true
 		State.READY:
-			var data: Dictionary = NetworkSim.get_node_data(NetworkSim.connected_node_id)
-			status_label.text = "TARGET:  %s  —  %s" % [
-				data.get("ip", "?"), data.get("name", "?")
-			]
-			status_label.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0))
-			action_btn.text     = "INITIATE CRACK"
-			action_btn.disabled = false
+			if _mode == Mode.OFFLINE:
+				status_label.text = "OFFLINE TARGET:  %s @ %s" % [_offline_username, _offline_node_id]
+				status_label.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0))
+				action_btn.text     = "START WORDLIST"
+				action_btn.disabled = false
+			else:
+				var data: Dictionary = NetworkSim.get_node_data(NetworkSim.connected_node_id)
+				status_label.text = "TARGET:  %s  —  %s" % [
+					data.get("ip", "?"), data.get("name", "?")
+				]
+				status_label.add_theme_color_override("font_color", Color(0.75, 0.92, 1.0))
+				action_btn.text     = "INITIATE CRACK"
+				action_btn.disabled = false
 		State.CRACKING:
 			action_btn.text     = "ABORT"
 			action_btn.disabled = false
