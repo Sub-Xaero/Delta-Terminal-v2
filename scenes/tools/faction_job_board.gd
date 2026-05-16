@@ -114,12 +114,13 @@ func _rebuild_available() -> void:
 
 	var available := MissionManager.available_missions
 	var rating: int = GameManager.player_data.get("rating", 1)
+	var rep: int    = FactionManager.get_rep(_faction_id)
 	var has_any := false
 	for mission_id: String in available:
 		var mission: MissionData = available[mission_id]
 		if mission.faction_id != _faction_id:
 			continue
-		if mission.min_rep > rating:
+		if mission.min_rep > rep:
 			continue
 		if mission.min_rating > rating:
 			continue

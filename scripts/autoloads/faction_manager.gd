@@ -10,6 +10,24 @@ var _rep: Dictionary = {}       # id -> int
 func _ready() -> void:
 	_load_factions()
 	_sync_rep()
+	EventBus.mission_failed.connect(_on_mission_failed)
+	EventBus.trace_completed.connect(_on_trace_completed)
+
+
+func _on_mission_failed(mission_id: String, _reason: String) -> void:
+	var mission: MissionData = MissionManager.available_missions.get(mission_id, null)
+	if mission and not mission.faction_id.is_empty():
+		modify_rep(mission.faction_id, -8)
+
+
+func _on_trace_completed() -> void:
+	# Every faction whose node was the trace origin loses a little rep.
+	var origin: String = NetworkSim.connected_node_id
+	if origin.is_empty():
+		return
+	var faction: String = NetworkSim.get_node_data(origin).get("faction_id", "")
+	if not faction.is_empty():
+		modify_rep(faction, -5)
 
 
 # ── Public API ───────────────────────────────────────────────────────────────

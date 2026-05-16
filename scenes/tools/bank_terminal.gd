@@ -129,13 +129,30 @@ func _process(delta: float) -> void:
 func _on_transfer_complete() -> void:
 	var node_id: String = NetworkSim.connected_node_id
 	GameManager.add_credits(_transfer_amount)
-	# Append to transfer_log if it exists
-	for file: Dictionary in NetworkSim.nodes[node_id].get("files", []):
-		if file.get("name", "") == "transfer_log.log":
-			var ts: String = Time.get_datetime_string_from_system()
-			file["content"] = file.get("content", "") \
-				+ "\n[%s] TRANSFER -> ANON  ¥%d  STATUS:OK" % [ts, _transfer_amount]
+	# Append a persistent audit entry to the node's transfer log. Two filenames
+	# are recognised in node data; if neither is present a new entry is created.
+	var files: Array = NetworkSim.nodes[node_id].get("files", [])
+	var ts: String = Time.get_datetime_string_from_system()
+	var entry: String = "\n[%s] TRANSFER %s -> ANON-%s  ¥%d  STATUS:OK  OVERRIDE:ALPHA-ZERO" % [
+		ts, _source_account(node_id), GameManager.player_data.get("handle", "ghost").to_upper(),
+		_transfer_amount,
+	]
+	var appended := false
+	for file: Dictionary in files:
+		var name: String = file.get("name", "")
+		if name == "transfer_log.log" or name == "transactions.log":
+			file["content"] = file.get("content", "") + entry
+			appended = true
 			break
+	if not appended:
+		files.append({
+			"id": "audit_%d" % Time.get_ticks_msec(),
+			"name": "transactions.log",
+			"type": "log",
+			"size": entry.length(),
+			"content": entry.strip_edges(true, false),
+		})
+		NetworkSim.nodes[node_id]["files"] = files
 	_state = State.ADMIN
 	execute_btn.disabled = false
 	EventBus.tool_task_completed.emit("bank_terminal", node_id, true)
@@ -244,6 +261,21 @@ func _set_status(text: String, color: Color) -> void:
 # legitimately owns it ("organic") or its hash has been cracked/stolen.
 func _is_usable_credential(c: Dictionary) -> bool:
 	return c.get("type", "") == "organic" or c.get("cracked", false)
+
+
+func _source_account(node_id: String) -> String:
+	# Best-effort: pull the first account id out of accounts_db.dat for the audit trail.
+	for file: Dictionary in NetworkSim.nodes[node_id].get("files", []):
+		if file.get("name", "") != "accounts_db.dat":
+			continue
+		for line: String in (file.get("content", "") as String).split("\n"):
+			var stripped: String = line.strip_edges()
+			if stripped.length() < 6 or stripped.begins_with("-") or stripped.begins_with("["):
+				continue
+			var first_token: String = stripped.split("|")[0].strip_edges()
+			if first_token.length() >= 4 and first_token != "ACCT" and first_token != "ACCOUNT":
+				return first_token
+	return "UNKNOWN"
 
 
 # ── Theme ──────────────────────────────────────────────────────────────────────

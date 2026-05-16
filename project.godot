@@ -31,6 +31,7 @@ CommsManager="*res://scripts/autoloads/comms_manager.gd"
 MarketManager="*res://scripts/autoloads/market_manager.gd"
 VoiceManager="*res://scripts/autoloads/voice_manager.gd"
 AudioManager="*res://scripts/autoloads/audio_manager.gd"
+TutorialManager="*res://scripts/autoloads/tutorial_manager.gd"
 
 [display]
 

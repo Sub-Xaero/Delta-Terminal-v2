@@ -14,7 +14,13 @@ var bypassed_nodes: Array[String] = []
 var encryption_broken_nodes: Array[String] = []
 var discovered_nodes: Array = ["local_machine", "isp_gateway", "ghost_collective_darknet", "novacorp_bank"]
 var exploits_installed: Dictionary = {}   # node_id -> Array[String] of exploit types
+# Per-exploit expiry unix timestamps: { node_id: { exploit_id: expires_at_unix } }
+var _exploit_expiries: Dictionary = {}
 var _nodes_with_intrusion_logs: Dictionary = {}
+# Sysadmin-flagged nodes (HOT): node_id -> unix timestamp the flag expires at.
+# Flagged nodes give 30% trace-duration reduction on next intrusion; reset after 10 in-game days.
+var intrusion_flagged_nodes: Dictionary = {}
+const INTRUSION_FLAG_DURATION_SEC: float = 600.0   # 10 in-game days × 60s/day
 
 # ── Trace state ───────────────────────────────────────────────────────────────
 var trace_active: bool = false
@@ -34,6 +40,56 @@ func _process(delta: float) -> void:
 		EventBus.trace_progress.emit(trace_progress)
 		if trace_progress >= 1.0:
 			_complete_trace()
+	_expire_intrusion_flags()
+
+
+func _expire_intrusion_flags() -> void:
+	var now: float = Time.get_unix_time_from_system()
+	if not intrusion_flagged_nodes.is_empty():
+		var expired: Array[String] = []
+		for nid: String in intrusion_flagged_nodes:
+			if intrusion_flagged_nodes[nid] <= now:
+				expired.append(nid)
+		for nid: String in expired:
+			intrusion_flagged_nodes.erase(nid)
+			EventBus.log_message.emit(
+				"%s: sysadmin patched the hole — node no longer flagged." %
+					nodes.get(nid, {}).get("ip", nid),
+				"info"
+			)
+	_expire_installed_exploits(now)
+
+
+func _expire_installed_exploits(now: float) -> void:
+	for nid: String in _exploit_expiries.keys():
+		var expiries: Dictionary = _exploit_expiries[nid]
+		var expired: Array[String] = []
+		for kind: String in expiries:
+			if expiries[kind] <= now:
+				expired.append(kind)
+		for kind: String in expired:
+			expiries.erase(kind)
+			var list: Array = exploits_installed.get(nid, [])
+			list.erase(kind)
+			if list.is_empty():
+				exploits_installed.erase(nid)
+			else:
+				exploits_installed[nid] = list
+			EventBus.log_message.emit(
+				"Exploit '%s' on %s detected and removed by sysadmin." %
+					[kind, nodes.get(nid, {}).get("ip", nid)], "warn"
+			)
+			EventBus.hardware_changed.emit()
+		if expiries.is_empty():
+			_exploit_expiries.erase(nid)
+
+
+func register_exploit_expiry(node_id: String, exploit_id: String) -> void:
+	if not _exploit_expiries.has(node_id):
+		_exploit_expiries[node_id] = {}
+	# 12–72 in-game hours; in-game day = 60 real seconds → 1 hour = 2.5 real seconds.
+	var lifetime: float = randf_range(30.0, 180.0)
+	_exploit_expiries[node_id][exploit_id] = Time.get_unix_time_from_system() + lifetime
 
 
 # ── Connection ────────────────────────────────────────────────────────────────
@@ -77,6 +133,9 @@ func disconnect_from_node() -> void:
 			"WARNING: Passive trace initiated from %s — intrusion logs not deleted!" % nodes.get(dirty_nodes[0], {}).get("ip", dirty_nodes[0]),
 			"warn"
 		)
+		# Mark every dirty node HOT — sysadmin reads the logs after disconnect
+		for nid: String in dirty_nodes:
+			_flag_intrusion(nid)
 	elif trace_active:
 		trace_active = false
 
@@ -100,6 +159,13 @@ func remove_from_bounce_chain(node_id: String) -> void:
 # ── Trace ─────────────────────────────────────────────────────────────────────
 
 func start_trace(duration: float) -> void:
+	# Sysadmin-flagged nodes shave 30% off any trace they initiate against the player.
+	if connected_node_id != "" and intrusion_flagged_nodes.has(connected_node_id):
+		duration *= 0.7
+	# High player heat also tightens the trace window (issue #23).
+	var heat: int = GameManager.player_data.get("heat", 0)
+	if heat >= 75:
+		duration *= 0.7
 	trace_active = true
 	_trace_duration = duration
 	_trace_elapsed = 0.0
@@ -107,9 +173,26 @@ func start_trace(duration: float) -> void:
 	EventBus.trace_started.emit(duration)
 
 
+func _flag_intrusion(node_id: String) -> void:
+	intrusion_flagged_nodes[node_id] = Time.get_unix_time_from_system() + INTRUSION_FLAG_DURATION_SEC
+	EventBus.intrusion_logged.emit(node_id)
+	GameManager.add_heat(5)
+	EventBus.log_message.emit(
+		"Node flagged HOT: %s — sysadmin response active." %
+			nodes.get(node_id, {}).get("ip", node_id),
+		"warn"
+	)
+
+
+func is_node_flagged(node_id: String) -> bool:
+	if not intrusion_flagged_nodes.has(node_id):
+		return false
+	return intrusion_flagged_nodes[node_id] > Time.get_unix_time_from_system()
+
+
 func _complete_trace() -> void:
 	trace_active = false
-	GameManager.add_heat(20)
+	GameManager.add_heat(15)
 	EventBus.trace_completed.emit()
 
 
@@ -141,7 +224,35 @@ func bypass_node(node_id: String) -> void:
 
 func node_requires_bypass(node_id: String) -> bool:
 	var data: Dictionary = get_node_data(node_id)
+	# Friendly factions (rep > 75) waive the firewall stage entirely.
+	var faction_id: String = data.get("faction_id", "")
+	if not faction_id.is_empty() and FactionManager.get_rep(faction_id) > 75:
+		return false
 	return data.get("security", 0) >= 3 or data.get("has_firewall", false)
+
+
+## Effective security a hostile faction inflicts on the player.
+## +1 against any node whose faction the player has reputation < -50 with.
+func effective_security(node_id: String) -> int:
+	var data: Dictionary = get_node_data(node_id)
+	var base: int = data.get("security", 0)
+	var faction_id: String = data.get("faction_id", "")
+	if not faction_id.is_empty() and FactionManager.get_rep(faction_id) < -50:
+		base += 1
+	return base
+
+
+## True if the player can read files / use services on this node — either via
+## a successful crack or by holding a usable (cracked / organic) admin credential.
+func is_authorised(node_id: String) -> bool:
+	if node_id in cracked_nodes:
+		return true
+	for cred: Dictionary in CredentialManager.get_credentials(node_id):
+		if cred.get("role", "") != "admin":
+			continue
+		if cred.get("cracked", false) or cred.get("type", "") == "organic":
+			return true
+	return false
 
 
 func break_encryption(node_id: String) -> void:
@@ -191,6 +302,38 @@ func get_node_data(node_id: String) -> Dictionary:
 
 func clear_intrusion_log(node_id: String) -> void:
 	_nodes_with_intrusion_logs.erase(node_id)
+
+
+## Reads a file's content but synthesises a live warrant entry for the player
+## handle when heat is high and the file is a known warrants database. Used by
+## the Record Editor so the player can SEE the heat consequence in-game.
+func read_file_content(node_id: String, file_name: String) -> String:
+	var data: Dictionary = get_node_data(node_id)
+	for file: Dictionary in data.get("files", []):
+		if file.get("name", "") != file_name:
+			continue
+		var content: String = file.get("content", "")
+		if _is_warrants_file(file_name):
+			var heat: int = GameManager.player_data.get("heat", 0)
+			if heat >= 75 and not content.contains(_player_warrant_marker()):
+				content += "\n" + _player_warrant_row()
+		return content
+	return ""
+
+
+func _is_warrants_file(file_name: String) -> bool:
+	return file_name in ["active_warrants.db", "active_warrants.dat", "criminal_records.dat", "active_cases.dat"]
+
+
+func _player_warrant_marker() -> String:
+	return "WR-LIVE-" + GameManager.player_data.get("handle", "ghost").to_upper()
+
+
+func _player_warrant_row() -> String:
+	var handle: String = GameManager.player_data.get("handle", "ghost").to_upper()
+	return "%s | handle '%s'    | High-Priority Cyber Crimes  | ACTIVE   | INTERPOL" % [
+		_player_warrant_marker(), handle,
+	]
 
 
 func delete_file_from_node(node_id: String, file_id: String) -> bool:

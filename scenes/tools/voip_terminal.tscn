@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://ctwabcdef01234" path="res://scenes/desktop/tool_window.tscn" id="1_tw"]
+[ext_resource type="Script" path="res://scenes/tools/voip_terminal.gd" id="2_vt"]
+
+[node name="VoipTerminal" instance=ExtResource("1_tw")]
+custom_minimum_size = Vector2(460, 380)
+script = ExtResource("2_vt")
+
+[node name="Margin" type="MarginContainer" parent="ContentArea"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="ContentArea/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="Label" parent="ContentArea/Margin/VBox"]
+text = "VOIP TERMINAL — Dial a number"
+horizontal_alignment = 1
+
+[node name="DialRow" type="HBoxContainer" parent="ContentArea/Margin/VBox"]
+theme_override_constants/separation = 6
+
+[node name="NumberEdit" type="LineEdit" parent="ContentArea/Margin/VBox/DialRow"]
+placeholder_text = "+1-555-0100"
+size_flags_horizontal = 3
+
+[node name="DialBtn" type="Button" parent="ContentArea/Margin/VBox/DialRow"]
+text = "DIAL"
+
+[node name="Sep" type="HSeparator" parent="ContentArea/Margin/VBox"]
+
+[node name="TranscriptHeader" type="Label" parent="ContentArea/Margin/VBox"]
+text = "TRANSCRIPT"
+
+[node name="TranscriptScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Transcript" type="RichTextLabel" parent="ContentArea/Margin/VBox/TranscriptScroll"]
+bbcode_enabled = true
+scroll_active = true
+fit_content = true
+size_flags_horizontal = 3
+
+[node name="Sep2" type="HSeparator" parent="ContentArea/Margin/VBox"]
+
+[node name="HistoryHeader" type="Label" parent="ContentArea/Margin/VBox"]
+text = "CALL HISTORY"
+
+[node name="HistoryScroll" type="ScrollContainer" parent="ContentArea/Margin/VBox"]
+custom_minimum_size = Vector2(0, 90)
+
+[node name="HistoryList" type="VBoxContainer" parent="ContentArea/Margin/VBox/HistoryScroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 2

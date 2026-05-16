@@ -26,6 +26,16 @@ var _chain_pos:    int  = -1   # -1 = not in chain; 0+ = hop index
 func _ready() -> void:
 	mouse_entered.connect(func(): _hovered = true;  queue_redraw())
 	mouse_exited.connect(func():  _hovered = false; queue_redraw())
+	EventBus.intrusion_logged.connect(_on_intrusion_logged)
+	EventBus.exploit_installed.connect(_on_exploit_installed)
+
+
+func _on_intrusion_logged(_node_id: String) -> void:
+	queue_redraw()
+
+
+func _on_exploit_installed(_node_id: String, _kind: String) -> void:
+	queue_redraw()
 
 
 func setup(data: Dictionary) -> void:
@@ -90,6 +100,22 @@ func _draw() -> void:
 		var badge_pos := Vector2(ICON_SIZE - 2.0, 6.0)  # top-right corner
 		draw_string(font, badge_pos, label,
 				HORIZONTAL_ALIGNMENT_RIGHT, -1, font_size, badge_col)
+
+	# Red HOT badge at bottom-right when the sysadmin has flagged this node
+	if NetworkSim.is_node_flagged(node_id):
+		var font2     := ThemeDB.fallback_font
+		var hot_col   := Color(1.0, 0.08, 0.55)
+		var hot_pos   := Vector2(ICON_SIZE - 2.0, ICON_SIZE - 1.0)
+		draw_string(font2, hot_pos, "HOT",
+				HORIZONTAL_ALIGNMENT_RIGHT, -1, 7, hot_col)
+
+	# Amber tint + exploit icon when the player has an installed exploit here
+	if NetworkSim.exploits_installed.has(node_id) and not NetworkSim.exploits_installed[node_id].is_empty():
+		var amber := Color(1.0, 0.75, 0.0, 0.18)
+		draw_circle(center, RADIUS - 2.0, amber)
+		var font3 := ThemeDB.fallback_font
+		draw_string(font3, Vector2(0.0, ICON_SIZE - 1.0), "X",
+				HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(1.0, 0.75, 0.0))
 
 
 func _border_colour() -> Color:

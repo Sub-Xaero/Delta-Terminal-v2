@@ -27,6 +27,8 @@ const LanConsoleScene         := preload("res://scenes/tools/lan_console.tscn")
 const DictionaryHackerScene   := preload("res://scenes/tools/dictionary_hacker.tscn")
 const VoiceAnalyserScene      := preload("res://scenes/tools/voice_analyser.tscn")
 const VoiceCommsScene         := preload("res://scenes/tools/voice_comms.tscn")
+const ExploitInstallerScene   := preload("res://scenes/tools/exploit_installer.tscn")
+const VoipTerminalScene       := preload("res://scenes/tools/voip_terminal.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -44,6 +46,7 @@ const TOOL_EXE_REQUIREMENTS: Dictionary = {
 	"Dictionary Hacker": "dictionary_hacker.exe",
 	"Voice Analyser": "voice_analyser.exe",
 	"Voice Comms": "voice_comms.exe",
+	"VOIP Terminal": "voip_terminal.exe",
 }
 
 @onready var window_manager: WindowManager = $WindowLayer
@@ -51,6 +54,7 @@ const TOOL_EXE_REQUIREMENTS: Dictionary = {
 @onready var _crt_bg: ColorRect = $Background
 @onready var _pause_menu: PauseMenu = $PauseMenu
 @onready var _desktop_icons_layer: Control = $DesktopIconsLayer
+@onready var _news_ticker: Panel = $NewsTicker
 
 
 func _ready() -> void:
@@ -69,6 +73,8 @@ func _ready() -> void:
 func _apply_crt_settings() -> void:
 	_crt_bg.visible  = SettingsManager.crt_enabled
 	_crt_bg.modulate = Color(1.0, 1.0, 1.0, SettingsManager.crt_intensity)
+	if _news_ticker:
+		_news_ticker.visible = SettingsManager.news_ticker_visible
 
 
 func _setup_context_menu() -> void:
@@ -190,6 +196,16 @@ func _on_open_tool_requested(tool_name: String) -> void:
 				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Voice Comms"], "error")
 				return
 			window_manager.spawn_tool_window(VoiceCommsScene, "Voice Comms")
+		"Exploit Installer":
+			if not _has_exe("Exploit Installer"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Exploit Installer"], "error")
+				return
+			window_manager.spawn_tool_window(ExploitInstallerScene, "Exploit Installer")
+		"VOIP Terminal":
+			if not _has_exe("VOIP Terminal"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["VOIP Terminal"], "error")
+				return
+			window_manager.spawn_tool_window(VoipTerminalScene, "VOIP Terminal")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:
