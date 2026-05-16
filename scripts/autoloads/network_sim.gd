@@ -44,20 +44,19 @@ func _process(delta: float) -> void:
 
 
 func _expire_intrusion_flags() -> void:
-	if intrusion_flagged_nodes.is_empty():
-		return
 	var now: float = Time.get_unix_time_from_system()
-	var expired: Array[String] = []
-	for nid: String in intrusion_flagged_nodes:
-		if intrusion_flagged_nodes[nid] <= now:
-			expired.append(nid)
-	for nid: String in expired:
-		intrusion_flagged_nodes.erase(nid)
-		EventBus.log_message.emit(
-			"%s: sysadmin patched the hole — node no longer flagged." %
-				nodes.get(nid, {}).get("ip", nid),
-			"info"
-		)
+	if not intrusion_flagged_nodes.is_empty():
+		var expired: Array[String] = []
+		for nid: String in intrusion_flagged_nodes:
+			if intrusion_flagged_nodes[nid] <= now:
+				expired.append(nid)
+		for nid: String in expired:
+			intrusion_flagged_nodes.erase(nid)
+			EventBus.log_message.emit(
+				"%s: sysadmin patched the hole — node no longer flagged." %
+					nodes.get(nid, {}).get("ip", nid),
+				"info"
+			)
 	_expire_installed_exploits(now)
 
 

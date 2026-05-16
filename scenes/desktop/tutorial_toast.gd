@@ -28,6 +28,7 @@ func _on_hint(_id: String, title: String, text: String) -> void:
 func _build_toast(title: String, text: String) -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.size_flags_horizontal = Control.SIZE_SHRINK_END
 	var style := StyleBoxFlat.new()
 	style.bg_color = COL_BG
 	style.border_color = COL_AMBER

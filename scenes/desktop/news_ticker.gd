@@ -59,8 +59,10 @@ func _advance_to_next() -> void:
 		next_text = ""
 	_current_text = next_text
 	label.text = next_text
-	label.position.x = clip.size.x
-	label.size.x = max(800.0, label.get_minimum_size().x + PADDING_PX)
+	# Resize label to fit text, then drop it just off the right edge of the clip.
+	var min_w: float = label.get_minimum_size().x + PADDING_PX
+	label.size = Vector2(max(800.0, min_w), clip.size.y)
+	label.position = Vector2(clip.size.x, 0.0)
 	_scroll_offset = 0.0
 
 
