@@ -12,6 +12,8 @@ var crt_enabled:     bool  = true
 var crt_intensity:   float = 0.8
 var fullscreen:      bool  = false
 var autosave:        bool  = true
+var news_ticker_visible: bool = true
+var tutorials_enabled:   bool = true
 
 signal settings_changed()
 
@@ -31,7 +33,9 @@ func save_settings() -> void:
 	config.set_value("display",  "crt_enabled",    crt_enabled)
 	config.set_value("display",  "crt_intensity",  crt_intensity)
 	config.set_value("display",  "fullscreen",     fullscreen)
-	config.set_value("gameplay", "autosave",       autosave)
+	config.set_value("gameplay", "autosave",            autosave)
+	config.set_value("gameplay", "news_ticker_visible", news_ticker_visible)
+	config.set_value("gameplay", "tutorials_enabled",   tutorials_enabled)
 	config.save(CONFIG_PATH)
 
 
@@ -45,7 +49,9 @@ func load_settings() -> void:
 	crt_enabled    = config.get_value("display",  "crt_enabled",    true)
 	crt_intensity  = config.get_value("display",  "crt_intensity",  0.8)
 	fullscreen     = config.get_value("display",  "fullscreen",     false)
-	autosave       = config.get_value("gameplay", "autosave",       true)
+	autosave            = config.get_value("gameplay", "autosave",            true)
+	news_ticker_visible = config.get_value("gameplay", "news_ticker_visible", true)
+	tutorials_enabled   = config.get_value("gameplay", "tutorials_enabled",   true)
 
 
 # ── Setters (apply immediately + persist) ─────────────────────────────────────
@@ -88,6 +94,18 @@ func set_fullscreen(val: bool) -> void:
 
 func set_autosave(val: bool) -> void:
 	autosave = val
+	save_settings()
+
+
+func set_news_ticker_visible(val: bool) -> void:
+	news_ticker_visible = val
+	settings_changed.emit()
+	save_settings()
+
+
+func set_tutorials_enabled(val: bool) -> void:
+	tutorials_enabled = val
+	settings_changed.emit()
 	save_settings()
 
 

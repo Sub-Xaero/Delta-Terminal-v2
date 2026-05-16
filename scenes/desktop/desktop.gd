@@ -54,6 +54,7 @@ const TOOL_EXE_REQUIREMENTS: Dictionary = {
 @onready var _crt_bg: ColorRect = $Background
 @onready var _pause_menu: PauseMenu = $PauseMenu
 @onready var _desktop_icons_layer: Control = $DesktopIconsLayer
+@onready var _news_ticker: Panel = $NewsTicker
 
 
 func _ready() -> void:
@@ -72,6 +73,8 @@ func _ready() -> void:
 func _apply_crt_settings() -> void:
 	_crt_bg.visible  = SettingsManager.crt_enabled
 	_crt_bg.modulate = Color(1.0, 1.0, 1.0, SettingsManager.crt_intensity)
+	if _news_ticker:
+		_news_ticker.visible = SettingsManager.news_ticker_visible
 
 
 func _setup_context_menu() -> void:
