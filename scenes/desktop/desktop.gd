@@ -28,6 +28,7 @@ const DictionaryHackerScene   := preload("res://scenes/tools/dictionary_hacker.t
 const VoiceAnalyserScene      := preload("res://scenes/tools/voice_analyser.tscn")
 const VoiceCommsScene         := preload("res://scenes/tools/voice_comms.tscn")
 const ExploitInstallerScene   := preload("res://scenes/tools/exploit_installer.tscn")
+const VoipTerminalScene       := preload("res://scenes/tools/voip_terminal.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -45,6 +46,7 @@ const TOOL_EXE_REQUIREMENTS: Dictionary = {
 	"Dictionary Hacker": "dictionary_hacker.exe",
 	"Voice Analyser": "voice_analyser.exe",
 	"Voice Comms": "voice_comms.exe",
+	"VOIP Terminal": "voip_terminal.exe",
 }
 
 @onready var window_manager: WindowManager = $WindowLayer
@@ -196,6 +198,11 @@ func _on_open_tool_requested(tool_name: String) -> void:
 				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Exploit Installer"], "error")
 				return
 			window_manager.spawn_tool_window(ExploitInstallerScene, "Exploit Installer")
+		"VOIP Terminal":
+			if not _has_exe("VOIP Terminal"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["VOIP Terminal"], "error")
+				return
+			window_manager.spawn_tool_window(VoipTerminalScene, "VOIP Terminal")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:
