@@ -131,7 +131,19 @@ var modem_trace_multiplier: float = 1.0
 var active_hack_count: int = 0
 
 var effective_stack_speed: float:
-	get: return installed_stack.get("cpu_speed", 1.0) / max(1, active_hack_count)
+	get:
+		var base: float = installed_stack.get("cpu_speed", 1.0) / max(1, active_hack_count)
+		return base * (1.0 + botnet_bonus_multiplier())
+
+
+## Returns the additive multiplier applied to stack speed from active botnet
+## agents. Caps at +50% no matter how many nodes are infected.
+func botnet_bonus_multiplier() -> float:
+	var count := 0
+	for node_id: String in NetworkSim.exploits_installed:
+		if "botnet_node" in NetworkSim.exploits_installed[node_id]:
+			count += 1
+	return minf(0.5, float(count) * 0.1)
 
 
 # ── Lifecycle ─────────────────────────────────────────────────────────────────

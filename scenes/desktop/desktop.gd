@@ -27,6 +27,7 @@ const LanConsoleScene         := preload("res://scenes/tools/lan_console.tscn")
 const DictionaryHackerScene   := preload("res://scenes/tools/dictionary_hacker.tscn")
 const VoiceAnalyserScene      := preload("res://scenes/tools/voice_analyser.tscn")
 const VoiceCommsScene         := preload("res://scenes/tools/voice_comms.tscn")
+const ExploitInstallerScene   := preload("res://scenes/tools/exploit_installer.tscn")
 
 # ── Tools-as-files gate ──────────────────────────────────────────────────────
 # Maps tool names to the executable file the player must possess in local_storage.
@@ -190,6 +191,11 @@ func _on_open_tool_requested(tool_name: String) -> void:
 				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Voice Comms"], "error")
 				return
 			window_manager.spawn_tool_window(VoiceCommsScene, "Voice Comms")
+		"Exploit Installer":
+			if not _has_exe("Exploit Installer"):
+				EventBus.log_message.emit("Missing executable: %s" % TOOL_EXE_REQUIREMENTS["Exploit Installer"], "error")
+				return
+			window_manager.spawn_tool_window(ExploitInstallerScene, "Exploit Installer")
 
 
 func _on_context_menu_id_pressed(id: int) -> void:

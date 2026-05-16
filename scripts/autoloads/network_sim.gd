@@ -14,6 +14,8 @@ var bypassed_nodes: Array[String] = []
 var encryption_broken_nodes: Array[String] = []
 var discovered_nodes: Array = ["local_machine", "isp_gateway", "ghost_collective_darknet", "novacorp_bank"]
 var exploits_installed: Dictionary = {}   # node_id -> Array[String] of exploit types
+# Per-exploit expiry unix timestamps: { node_id: { exploit_id: expires_at_unix } }
+var _exploit_expiries: Dictionary = {}
 var _nodes_with_intrusion_logs: Dictionary = {}
 # Sysadmin-flagged nodes (HOT): node_id -> unix timestamp the flag expires at.
 # Flagged nodes give 30% trace-duration reduction on next intrusion; reset after 10 in-game days.
@@ -56,6 +58,39 @@ func _expire_intrusion_flags() -> void:
 				nodes.get(nid, {}).get("ip", nid),
 			"info"
 		)
+	_expire_installed_exploits(now)
+
+
+func _expire_installed_exploits(now: float) -> void:
+	for nid: String in _exploit_expiries.keys():
+		var expiries: Dictionary = _exploit_expiries[nid]
+		var expired: Array[String] = []
+		for kind: String in expiries:
+			if expiries[kind] <= now:
+				expired.append(kind)
+		for kind: String in expired:
+			expiries.erase(kind)
+			var list: Array = exploits_installed.get(nid, [])
+			list.erase(kind)
+			if list.is_empty():
+				exploits_installed.erase(nid)
+			else:
+				exploits_installed[nid] = list
+			EventBus.log_message.emit(
+				"Exploit '%s' on %s detected and removed by sysadmin." %
+					[kind, nodes.get(nid, {}).get("ip", nid)], "warn"
+			)
+			EventBus.hardware_changed.emit()
+		if expiries.is_empty():
+			_exploit_expiries.erase(nid)
+
+
+func register_exploit_expiry(node_id: String, exploit_id: String) -> void:
+	if not _exploit_expiries.has(node_id):
+		_exploit_expiries[node_id] = {}
+	# 12–72 in-game hours; in-game day = 60 real seconds → 1 hour = 2.5 real seconds.
+	var lifetime: float = randf_range(30.0, 180.0)
+	_exploit_expiries[node_id][exploit_id] = Time.get_unix_time_from_system() + lifetime
 
 
 # ── Connection ────────────────────────────────────────────────────────────────
