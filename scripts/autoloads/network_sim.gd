@@ -270,6 +270,38 @@ func clear_intrusion_log(node_id: String) -> void:
 	_nodes_with_intrusion_logs.erase(node_id)
 
 
+## Reads a file's content but synthesises a live warrant entry for the player
+## handle when heat is high and the file is a known warrants database. Used by
+## the Record Editor so the player can SEE the heat consequence in-game.
+func read_file_content(node_id: String, file_name: String) -> String:
+	var data: Dictionary = get_node_data(node_id)
+	for file: Dictionary in data.get("files", []):
+		if file.get("name", "") != file_name:
+			continue
+		var content: String = file.get("content", "")
+		if _is_warrants_file(file_name):
+			var heat: int = GameManager.player_data.get("heat", 0)
+			if heat >= 75 and not content.contains(_player_warrant_marker()):
+				content += "\n" + _player_warrant_row()
+		return content
+	return ""
+
+
+func _is_warrants_file(file_name: String) -> bool:
+	return file_name in ["active_warrants.db", "active_warrants.dat", "criminal_records.dat", "active_cases.dat"]
+
+
+func _player_warrant_marker() -> String:
+	return "WR-LIVE-" + GameManager.player_data.get("handle", "ghost").to_upper()
+
+
+func _player_warrant_row() -> String:
+	var handle: String = GameManager.player_data.get("handle", "ghost").to_upper()
+	return "%s | handle '%s'    | High-Priority Cyber Crimes  | ACTIVE   | INTERPOL" % [
+		_player_warrant_marker(), handle,
+	]
+
+
 func delete_file_from_node(node_id: String, file_id: String) -> bool:
 	if not nodes.has(node_id):
 		return false

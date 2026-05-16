@@ -103,7 +103,8 @@ func _rebuild_record_list() -> void:
 	if _dat_files.is_empty() or _selected_file_idx >= _dat_files.size():
 		return
 
-	var content: String = _dat_files[_selected_file_idx].get("content", "")
+	var file_name: String = _dat_files[_selected_file_idx].get("name", "")
+	var content: String = NetworkSim.read_file_content(_node_id, file_name)
 	var lines: Array = content.split("\n", false)
 	var row_idx := 0
 	for line: String in lines:
@@ -151,9 +152,54 @@ func _on_modify_pressed() -> void:
 
 
 func _on_modify_complete() -> void:
+	_apply_record_modification()
 	_set_state(State.DONE)
 	EventBus.tool_task_completed.emit("record_editor", _node_id, true)
 	EventBus.log_message.emit("Record modified successfully.", "info")
+	_rebuild_record_list()
+
+
+func _apply_record_modification() -> void:
+	if _selected_file_idx >= _dat_files.size() or _selected_row < 0:
+		return
+	var file: Dictionary = _dat_files[_selected_file_idx]
+	# Mutate the picked row: prefix with [MOD] and flip status to MODIFIED.
+	var lines: PackedStringArray = (file.get("content", "") as String).split("\n", false)
+	var data_row_idx: int = 0
+	for i: int in lines.size():
+		var line: String = lines[i]
+		var s: String = line.strip_edges()
+		if s.is_empty() or s.begins_with("---") or s.begins_with("==="):
+			continue
+		if data_row_idx == _selected_row:
+			lines[i] = "[MOD] " + line
+			data_row_idx += 1
+			break
+		data_row_idx += 1
+	file["content"] = "\n".join(lines)
+	# Append an access.log entry for sysadmin evidence (issue #44 evidence loop).
+	var files: Array = NetworkSim.nodes[_node_id].get("files", [])
+	var ts: String = Time.get_datetime_string_from_system()
+	var entry: String = "\n[%s] RECORD EDIT  source:%s  file:%s  STATUS:OK" % [
+		ts,
+		GameManager.player_data.get("handle", "ghost").to_upper(),
+		file.get("name", ""),
+	]
+	var appended := false
+	for f: Dictionary in files:
+		if f.get("name", "") == "access.log":
+			f["content"] = f.get("content", "") + entry
+			appended = true
+			break
+	if not appended:
+		files.append({
+			"id": "access_log_%d" % Time.get_ticks_msec(),
+			"name": "access.log",
+			"type": "log",
+			"size": entry.length(),
+			"content": entry.strip_edges(true, false),
+		})
+		NetworkSim.nodes[_node_id]["files"] = files
 
 
 func _on_cancel_pressed() -> void:
