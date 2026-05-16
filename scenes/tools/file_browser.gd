@@ -18,9 +18,11 @@ const TYPE_PREFIX: Dictionary = {
 @onready var file_list:      VBoxContainer   = $ContentArea/Margin/VBox/HSplit/FileListPanel/FileListMargin/FileListScroll/FileList
 @onready var filename_label: Label           = $ContentArea/Margin/VBox/HSplit/DetailVBox/FilenameLabel
 @onready var file_info:      Label           = $ContentArea/Margin/VBox/HSplit/DetailVBox/FileInfoLabel
+@onready var action_row:     HBoxContainer   = $ContentArea/Margin/VBox/HSplit/DetailVBox/ActionRow
 @onready var view_btn:       Button          = $ContentArea/Margin/VBox/HSplit/DetailVBox/ActionRow/ViewBtn
 @onready var copy_btn:       Button          = $ContentArea/Margin/VBox/HSplit/DetailVBox/ActionRow/CopyBtn
 @onready var delete_btn:     Button          = $ContentArea/Margin/VBox/HSplit/DetailVBox/ActionRow/DeleteBtn
+var _steal_btn:              Button          = null
 @onready var content_scroll: ScrollContainer = $ContentArea/Margin/VBox/HSplit/DetailVBox/ContentScroll
 @onready var content_label:  RichTextLabel   = $ContentArea/Margin/VBox/HSplit/DetailVBox/ContentScroll/ContentLabel
 @onready var status_label:   Label           = $ContentArea/Margin/VBox/StatusLabel
@@ -37,8 +39,19 @@ func _ready() -> void:
 	view_btn.pressed.connect(_on_view_pressed)
 	copy_btn.pressed.connect(_on_copy_pressed)
 	delete_btn.pressed.connect(_on_delete_pressed)
+	_build_steal_button()
 	_setup_theme()
 	_refresh()
+
+
+func _build_steal_button() -> void:
+	_steal_btn = Button.new()
+	_steal_btn.text = "STEAL CREDS"
+	_steal_btn.disabled = true
+	_steal_btn.add_theme_color_override("font_color",          Color(1.0, 0.75, 0.0))
+	_steal_btn.add_theme_color_override("font_disabled_color", Color(0.35, 0.35, 0.45))
+	_steal_btn.pressed.connect(_on_steal_pressed)
+	action_row.add_child(_steal_btn)
 
 
 # ── Refresh ────────────────────────────────────────────────────────────────────
@@ -120,6 +133,16 @@ func _on_file_selected(file: Dictionary) -> void:
 	view_btn.disabled   = false
 	copy_btn.disabled   = false
 	delete_btn.disabled = false
+	if _steal_btn != null:
+		_steal_btn.disabled = not _file_holds_credentials(file)
+
+
+func _file_holds_credentials(file: Dictionary) -> bool:
+	var lname: String = file.get("name", "").to_lower()
+	return lname in [
+		"passwd", "/etc/passwd", "etc_passwd", "shadow", "users.db",
+		"user_accounts.db", "credentials.dat", "auth.db",
+	]
 
 
 # ── Actions ────────────────────────────────────────────────────────────────────
@@ -153,6 +176,32 @@ func _on_delete_pressed() -> void:
 		_populate_file_list(node_id)
 
 
+func _on_steal_pressed() -> void:
+	if _selected_file.is_empty():
+		return
+	if not _file_holds_credentials(_selected_file):
+		return
+	var node_id: String = NetworkSim.connected_node_id
+	var users: Array    = NetworkSim.get_node_data(node_id).get("users", [])
+	if users.is_empty():
+		EventBus.log_message.emit("No credentials present in %s." % _selected_file.get("name", ""), "warn")
+		return
+	var creds: Array = []
+	for user: Dictionary in users:
+		creds.append({
+			"username":      user.get("username", ""),
+			"password_hash": user.get("password_hash", ""),
+			"role":          user.get("role", "user"),
+			"cracked":       false,
+			"plaintext":     "",
+			"type":          "stolen",
+		})
+	CredentialManager.add_credentials(node_id, creds)
+	# Stealing leaves a footprint — the access log keeps growing until Log Deleter runs.
+	EventBus.tool_task_completed.emit("file_browser", node_id, true)
+	EventBus.log_message.emit("Lifted %d credential(s) from %s." % [creds.size(), _selected_file.get("name", "")], "info")
+
+
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 func _clear_detail() -> void:
@@ -164,6 +213,8 @@ func _clear_detail() -> void:
 	view_btn.disabled      = true
 	copy_btn.disabled      = true
 	delete_btn.disabled    = true
+	if _steal_btn != null:
+		_steal_btn.disabled = true
 
 
 func _format_size(bytes: int) -> String:

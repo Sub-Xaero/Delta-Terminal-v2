@@ -208,6 +208,19 @@ func effective_security(node_id: String) -> int:
 	return base
 
 
+## True if the player can read files / use services on this node — either via
+## a successful crack or by holding a usable (cracked / organic) admin credential.
+func is_authorised(node_id: String) -> bool:
+	if node_id in cracked_nodes:
+		return true
+	for cred: Dictionary in CredentialManager.get_credentials(node_id):
+		if cred.get("role", "") != "admin":
+			continue
+		if cred.get("cracked", false) or cred.get("type", "") == "organic":
+			return true
+	return false
+
+
 func break_encryption(node_id: String) -> void:
 	if node_id in encryption_broken_nodes:
 		return
