@@ -44,7 +44,7 @@ func save_game() -> void:
 		"exploits_installed":      NetworkSim.exploits_installed.duplicate(true),
 		"discovered_nodes":        NetworkSim.discovered_nodes.duplicate(),
 		"intrusion_flagged_nodes": NetworkSim.intrusion_flagged_nodes.duplicate(),
-		"tutorial_flags":          GameManager.player_data.get("tutorial_flags", {}).duplicate(),
+		"tutorial_flags":          (GameManager.player_data.get("tutorial_flags", {}) as Dictionary).duplicate(),
 		"market":             MarketManager.get_save_data(),
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -76,6 +76,7 @@ func load_game() -> bool:
 		GameManager.player_data["faction_rep"] = {}
 	if not GameManager.player_data.has("local_storage"):
 		GameManager.player_data["local_storage"] = ["password_cracker.exe", "port_scanner.exe"]
+	GameManager.player_data["tutorial_flags"] = data.get("tutorial_flags", {})
 	GameManager.active_missions.assign(data.get("active_missions", []))
 	GameManager.completed_missions.assign(data.get("completed_missions", []))
 	GameManager.local_storage = _deserialize_local_storage(data.get("local_storage", []))

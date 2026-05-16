@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://ct2jvkb2t0vuh" path="res://scenes/desktop/sidebar.tscn" id="5_sb"]
 [ext_resource type="PackedScene" path="res://scenes/tools/system_view.tscn" id="6_sv"]
 [ext_resource type="PackedScene" path="res://scenes/desktop/news_ticker.tscn" id="8_nt"]
+[ext_resource type="PackedScene" path="res://scenes/desktop/tutorial_toast.tscn" id="9_tt"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bg"]
 shader = ExtResource("4_crt")
@@ -111,6 +112,13 @@ offset_bottom = -36.0
 
 [node name="ContextMenu" type="PopupMenu" parent="." unique_id=2063644530]
 oversampling_override = 1.0
+
+[node name="TutorialToast" parent="." instance=ExtResource("9_tt")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
 
 [node name="PauseMenu" parent="." instance=ExtResource("7_pm")]
 layout_mode = 1

@@ -17,6 +17,7 @@ var player_data: Dictionary = {
 		"ghost_collective_darknet": { "username": "g_h0st", "role": "user" },
 		"novacorp_bank":            { "username": "g_h0st", "role": "customer" }
 	},
+	"tutorial_flags": {},
 }
 
 # Stolen/discovered credentials per node: node_id → Array of credential dicts
